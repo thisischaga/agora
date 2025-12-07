@@ -1,0 +1,219 @@
+.forums {
+    background-color: #1c1c1e;
+    position: fixed;
+    scrollbar-color: #444 transparent;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    padding-bottom: 20px;
+    width: 22%;
+    border-radius: 15px;
+    margin-top: 80px;
+    position: fixed;
+    right: 20px;
+    top: 0;
+    height: 85vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.forums::-webkit-scrollbar {
+    width: 6px;
+}
+.forums::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 3px;
+}
+
+/* Titre */
+.forums h3 {
+    text-align: center;
+    margin: 15px 0;
+    color: #fff;
+    font-size: 20px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 8px;
+}
+
+/* Barre d'outils */
+.tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    margin-bottom: 10px;
+}
+.tools input {
+    width: 70%;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background-color: #2a2a2a;
+    color: #fff;
+}
+.tools input::placeholder {
+    color: #888;
+}
+
+/* Bouton ajouter */
+.add p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #2563eb;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+.add p:hover {
+    background-color: #1e40af;
+}
+
+/* Bouton retour */
+.backBtn {
+    background-color: transparent;
+    border: none;
+    margin-bottom: 20px;
+    color: #2563eb;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.backBtn:hover {
+    color: #1e40af;
+}
+
+/* Cartes de forums */
+.forumCard {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    margin: 8px 10px;
+    border-radius: 12px;
+    background-color: #2a2a2a;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+.forumCard:hover {
+    background-color: #333;
+    transform: translateY(-2px);
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+    border: 2px solid #2563eb;
+}
+
+.roomInfo p {
+    margin: 0;
+    font-size: 16px;
+    color: #fff;
+}
+
+.roomInfo span {
+    font-size: 13px;
+    color: #888;
+}
+.roomInfo{
+    width: 100%;
+}
+.roomData{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.form {
+    padding: 10px;
+    margin: 0 10px;
+    border-radius: 12px;
+    background-color: #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.form h4 {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 10px;
+}
+.form input[type="text"],
+.form textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background-color: #1c1c1e;
+    color: #fff;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+.form textarea {
+    resize: none;
+    height: 80px;
+}
+.form button {
+    background-color: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.form button:hover {
+    background-color: #1e40af;
+}
+
+/* Image forum */
+.profilContainer {
+    position: relative;
+    width: fit-content;
+    margin: 0 auto;
+}
+.profilContainer img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #2563eb;
+}
+.editBtn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: #2563eb;
+    border-radius: 50%;
+    padding: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.editBtn:hover {
+    background-color: #1e40af;
+}
+
+.imgInput {
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+}
+.imgInput svg {
+    border: 2px dashed #444;
+    border-radius: 50%;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+.imgInput:hover svg {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+.roomData{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}

@@ -1,0 +1,91 @@
+body {
+  background-color: #121212;
+  color: #f1f1f1;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loginBox {
+  background-color: #1e1e1e;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+.logo{
+  display: flex;
+  align-items: center;
+  place-content: center;
+}
+.logo img {
+  width: 60px;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form input {
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: none;
+  background-color: #2c2c2c;
+  color: #f1f1f1;
+  font-size: 14px;
+}
+
+.form input::placeholder {
+  color: #aaa;
+}
+
+.form button {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #3b82f6;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.form button:hover {
+  background-color: #2563eb;
+}
+
+.form button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+.serverMessage {
+  color: #ff6b6b;
+  margin-bottom: 15px;
+}
+
+.signupLink {
+  margin-top: 15px;
+}
+
+.signupLink a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.signupLink a:hover {
+  text-decoration: underline;
+}

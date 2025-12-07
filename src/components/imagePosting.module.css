@@ -1,0 +1,157 @@
+.editor {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 20px;
+  color: #f5f5f5;
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.btns {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.back {
+  background: transparent;
+  color: #aaa;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.back:hover {
+  color: #fff;
+  background: #2563eb33;
+}
+
+.submitBtn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submitBtn:hover {
+  background: #1e40af;
+}
+
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btnInLoading {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ccc;
+  border-top: 3px solid #2563eb;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.article {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.imgInput {
+  border: 2px dashed #444;
+  border-radius: 12px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  background: #111;
+  transition: border-color 0.3s ease;
+}
+
+.imgInput:hover {
+  border-color: #2563eb;
+}
+
+.imgLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: gray;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.imgInput input {
+  display: none;
+}
+
+/* Preview */
+.previewContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.previewImage {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.previewImage img {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.removeImg {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.removeImg:hover {
+  background: rgba(255,0,0,0.7);
+}
+
+/* Texte */
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  background: #2a2a2a;
+  border: none;
+  border-radius: 8px;
+  color: #f5f5f5;
+  padding: 10px 12px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.textarea::placeholder {
+  color: #999;
+}

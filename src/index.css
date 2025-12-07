@@ -1,0 +1,117 @@
+body {
+  margin: 0;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(180deg, #ffffff 0%, #f8f9fb 100%);
+  color: #e0e0e0; 
+  box-sizing: border-box;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  background-color: #1f1f1f;
+  color: #c5c5c5;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+.box {
+  background-color: #1a1a1a;
+  border: 1px solid #333; 
+  color: #e0e0e0;
+  max-width: 400px;
+  margin-top: 20px;
+  border-radius: 10px;
+  padding: 15px 20px;
+}
+.buttonPrimary {
+  padding: 10px;
+  margin-right: 10px;
+  border-radius: 5px;
+  background-color: rgba(70, 130, 180, 0.4);
+  border: 1px solid rgba(70, 130, 180, 0.6);
+  outline: none;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.buttonPrimary:hover {
+  background-color: rgba(70, 130, 180, 0.2);
+}
+
+.ProseMirror {
+  outline: none !important;   
+  border: none !important;    
+  min-height: 150px;          
+  padding: 8px 0;  
+  font-size: 16px;            
+  line-height: 1.5;
+  color: #e0e0e0;
+  background-color: #1a1a1a;
+}
+
+.hidden {
+  display: none;
+  background: rgba(20, 20, 20, 0.6); 
+  backdrop-filter: blur(6px);
+}
+
+.blurBg {
+  background: rgba(20, 20, 20, 0.6); 
+  backdrop-filter: blur(6px);
+}
+
+.flexRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+}
+input, textarea {
+  background-color: #2a2a2a;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 8px 10px;
+  outline: none;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #aaa;
+}
+a {
+  color: #63a4ff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1a1a1a;
+  }
+}
+.flexColum{
+  display: flex;
+  flex-direction: column;
+}
