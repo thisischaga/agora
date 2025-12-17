@@ -1,11 +1,42 @@
+:root {
+    --bg-main: #0b0b0b;
+    --bg-panel: #1c1c1e;
+    --primary: #1e40ff;
+    --primary-hover: #1a36d2;
+    --text-main: #e5e7eb;
+    --text-muted: #9ca3af;
+    --photo-btn: #8b5cf6;
+    --photo-btn-hover: #7c3aed;
+    --pages-btn: rgb(0, 140, 255);
+    --pages-btn-hover: rgb(3, 112, 201);
+    --action-icon: #e1306c;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg-main: #f4f6f8;
+        --bg-panel: #ffffff;
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --text-main: #111827;
+        --text-muted: #6b7280;
+        --photo-btn: #a78bfa;
+        --photo-btn-hover: #7c3aed;
+        --pages-btn: #3b82f6;
+        --pages-btn-hover: #2563eb;
+        --action-icon: #db2777;
+    }
+}
+
 main{
     display: flex;
     padding-top: 60px;
     margin: 0 70px;
     margin-bottom: 50px;
     place-content: center;
+    background: var(--bg-main);
+    color: var(--text-main);
 }
-
 
 .postSpace{
     padding: 20px;
@@ -15,51 +46,78 @@ main{
     margin-left: 25%;
     margin-right: 25%;
 }
+
 .userProfilBox{
-    background-color: #1c1c1e;
+    background-color: var(--bg-panel);
     height: 100px;
     width: 600px;
     padding: 10px;
     border-radius: 20px;
     margin-bottom: 50px;
 }
+
 .user{
     display: flex;
     align-items: center;
     width: 800px;
 }
+
 .user img{
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 2px solid #1e40ff;
+    border: 2px solid var(--primary);
 }
+
 .user p{
     padding-left: 10px;
 }
+
 .actions{
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
 .articleBtn{
     display: flex;
     align-items: center;
 }
-.actions button{
-    background-color: #1e40ff;
+
+.actions button {
+    background-color: var(--primary);
     color: #fff;
-    padding: 10px 14px;
+    padding: 10px 16px;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    font-weight: 600px;
-    transition: 0.9s ease-in-out;
+    transition: all 0.3s ease;
 }
-.actions button:hover{
-    border: 1px solid #fff;
+
+.actions button:hover {
+    background-color: var(--primary-hover);
+    transform: scale(1.02);
 }
+
+.photoBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--photo-btn);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+}
+
+.photoBtn:hover {
+    background-color: var(--photo-btn-hover);
+}
+
 .actions input{
     border: none;
     outline: none;
@@ -69,8 +127,9 @@ main{
     border-radius: 50px;
     cursor: pointer;
 }
+
 .pagesBtn{
-    background-color: rgb(0, 140, 255);
+    background-color: var(--pages-btn);
     color: #fff;
     padding: 10px 20px;
     border: none;
@@ -80,21 +139,24 @@ main{
     font-size: 14px;
     transition: all 0.3s ease;
 }
+
 .pagesBtn:hover{
-    background-color: rgb(3, 112, 201);
+    background-color: var(--pages-btn-hover);
 }
+
 .postsContainer{
-    display: flex;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
 }
+
 .iconContainer{
     display: flex;
 }
+
 .actionIcon{
     margin: 5px;
-    background-color: #e1306c;
+    background-color: var(--action-icon);
     width: 28px;
     height: 28px;
     border-radius: 50%;
@@ -102,6 +164,7 @@ main{
     cursor: pointer;
     transition: all 0.4s ease-in-out;
 }
+
 .actionIcon:hover{
     transform: scale(1.07);
 }

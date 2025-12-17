@@ -115,3 +115,11 @@ a:hover {
   display: flex;
   flex-direction: column;
 }
+.flexColum p{
+  padding: 0;
+  margin: 0;
+}
+.flexColum h2{
+  padding: 0;
+  margin: 0;
+}

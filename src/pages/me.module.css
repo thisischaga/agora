@@ -1,0 +1,135 @@
+:root {
+  --bg-main: #1c1c1e;
+  --bg-card: #1c1c1e;
+  --bg-placeholder: #2a2a2a;
+  --primary: #2563eb;
+  --primary-hover: #1e40af;
+  --text-main: #fff;
+  --text-muted: #ccc;
+  --text-light: #888;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-main: #f4f6f8;
+    --bg-card: #ffffff;
+    --bg-placeholder: #e5e7eb;
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --text-light: #4b5563;
+  }
+}
+
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 50px;
+  gap: 40px;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+}
+
+.header {
+  text-align: center;
+  padding: 20px;
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  font-size: 24px;
+}
+
+.profileSection,
+.postsSection,
+.amisSection {
+  width: 80%;
+  max-width: 900px;
+}
+
+.profileCard {
+  display: flex;
+  background-color: var(--bg-card);
+  padding: 20px;
+  border-radius: 20px;
+  gap: 20px;
+  align-items: center;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary);
+}
+
+.profileInfo h2 {
+  color: var(--text-main);
+  margin: 0;
+}
+
+.profileInfo p {
+  color: var(--text-muted);
+  margin: 8px 0;
+}
+
+.stats {
+  display: flex;
+  gap: 15px;
+  color: var(--text-light);
+  margin-bottom: 10px;
+}
+
+.editBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  background-color: var(--primary);
+  color: var(--text-main);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.editBtn:hover {
+  background-color: var(--primary-hover);
+}
+
+.placeholderPosts,
+.placeholderFriends {
+  background-color: var(--bg-placeholder);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.friendCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.friendCard img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+}
+
+.editProfileModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--bg-card);
+  padding: 30px;
+  border-radius: 20px;
+  z-index: 100;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  color: var(--text-main);
+}

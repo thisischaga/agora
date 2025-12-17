@@ -49,7 +49,7 @@ const Messenger = ({setShowMessBox }) => {
       
 
       {fetchAmis &&(<div className={styles.usersList}>
-        {amis.length === 0 && <p className={styles.noUsers} style={{textAlign: 'center'}}>Aucun message</p>}
+        {amis.length === 0 && <p className={styles.noUsers} style={{textAlign: 'center'}}>Vous n'avez aucun ami</p>}
         {amis.map((user) => (
           <div key={user.userId} className={styles.userCard} onClick={()=>setShowMessBox(true)}>
             <img src={user.pp} alt={`${user.username} profil`} className={styles.avatar} />

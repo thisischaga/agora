@@ -1,181 +1,228 @@
 .forums {
     background-color: #1c1c1e;
     position: fixed;
-    scrollbar-color: #444 transparent;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    padding-bottom: 20px;
-    width: 22%;
-    border-radius: 15px;
-    margin-top: 80px;
-    position: fixed;
     right: 20px;
-    top: 0;
+    top: 80px;
+    width: 22%;
     height: 85vh;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
+
 .forums::-webkit-scrollbar {
     width: 6px;
 }
+
 .forums::-webkit-scrollbar-thumb {
-    background-color: #444;
-    border-radius: 3px;
+    background-color: #3a3a3a;
+    border-radius: 4px;
 }
 
-/* Titre */
 .forums h3 {
     text-align: center;
-    margin: 15px 0;
-    color: #fff;
+    margin: 18px 0 12px;
+    color: #f9fafb;
     font-size: 20px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 8px;
+    font-weight: 600;
+    border-bottom: 1px solid #2a2a2a;
+    padding-bottom: 10px;
 }
 
-/* Barre d'outils */
 .tools {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 12px;
-    margin-bottom: 10px;
-}
-.tools input {
-    width: 70%;
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: 1px solid #444;
-    background-color: #2a2a2a;
-    color: #fff;
-}
-.tools input::placeholder {
-    color: #888;
+    padding: 0 14px;
+    margin-bottom: 14px;
+    gap: 10px;
 }
 
-/* Bouton ajouter */
+.tools input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #2f2f2f;
+    background-color: #262626;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.tools input::placeholder {
+    color: #7b7b7b;
+}
+
 .add p {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 35px;
-    height: 35px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    background-color: #2563eb;
-    color: #fff;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: #ffffff;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
-}
-.add p:hover {
-    background-color: #1e40af;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Bouton retour */
-.backBtn {
-    background-color: transparent;
-    border: none;
-    margin-bottom: 20px;
-    color: #2563eb;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.3s ease;
+.add p:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(37,99,235,0.4);
 }
+
+.backBtn {
+    background: none;
+    border: none;
+    margin: 10px 14px 20px;
+    color: #2563eb;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
 .backBtn:hover {
     color: #1e40af;
 }
 
-/* Cartes de forums */
 .forumCard {
+    padding: 12px 14px;
+    margin: 8px 12px;
+    border-radius: 14px;
+    background-color: #262626;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.forumCard:hover {
+    background-color: #303030;
+}
+
+.roomInfo {
+    width: 100%;
+}
+
+.roomData {
     display: flex;
     align-items: center;
-    padding: 10px 12px;
-    margin: 8px 10px;
-    border-radius: 12px;
-    background-color: #2a2a2a;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-}
-.forumCard:hover {
-    background-color: #333;
-    transform: translateY(-2px);
+    gap: 12px;
+    width: 100%;
 }
 
 .avatar {
-    width: 50px;
-    height: 50px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     object-fit: cover;
-    margin-right: 12px;
     border: 2px solid #2563eb;
 }
 
-.roomInfo p {
+.roomData p {
     margin: 0;
-    font-size: 16px;
-    color: #fff;
+    font-size: 15px;
+    color: #f9fafb;
+    max-width: 30%;
+}
+.roomData .buttons{
+    position: absolute;
+    right: 0;
+    margin-right: 20px;
+    
+}
+.roomData span {
+    font-size: 13px;
+    color: #9ca3af;
 }
 
-.roomInfo span {
-    font-size: 13px;
-    color: #888;
+.roomData button {
+    border: none;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.15s ease;
 }
-.roomInfo{
-    width: 100%;
+
+.roomData button:active {
+    transform: scale(0.95);
 }
-.roomData{
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+
+.blueLight {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: #ffffff;
 }
+
+.blueLight:hover {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+}
+
+.whiteLight {
+    background: #1c1c1e;
+    color: #2563eb;
+    border: 1px solid #2563eb;
+}
+
+.whiteLight:hover {
+    background: rgba(37,99,235,0.15);
+}
+
 .form {
-    padding: 10px;
-    margin: 0 10px;
-    border-radius: 12px;
-    background-color: #2a2a2a;
+    padding: 14px;
+    margin: 0 12px;
+    border-radius: 14px;
+    background-color: #262626;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
+
 .form h4 {
     text-align: center;
-    color: #fff;
-    margin-bottom: 10px;
+    color: #f9fafb;
+    margin-bottom: 8px;
+    font-size: 17px;
 }
+
 .form input[type="text"],
 .form textarea {
     width: 100%;
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid #444;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #2f2f2f;
     background-color: #1c1c1e;
-    color: #fff;
+    color: #ffffff;
     font-size: 14px;
-    box-sizing: border-box;
-}
-.form textarea {
-    resize: none;
-    height: 80px;
-}
-.form button {
-    background-color: #2563eb;
-    color: #fff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-.form button:hover {
-    background-color: #1e40af;
 }
 
-/* Image forum */
+.form textarea {
+    resize: none;
+    height: 90px;
+}
+
+.form button {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: #ffffff;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.25s ease;
+}
+
+.form button:hover {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+}
+
 .profilContainer {
     position: relative;
     width: fit-content;
     margin: 0 auto;
 }
+
 .profilContainer img {
     width: 120px;
     height: 120px;
@@ -183,16 +230,18 @@
     object-fit: cover;
     border: 2px solid #2563eb;
 }
+
 .editBtn {
     position: absolute;
-    bottom: 0;
-    right: 0;
+    bottom: 4px;
+    right: 4px;
     background-color: #2563eb;
     border-radius: 50%;
-    padding: 5px;
+    padding: 6px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.2s ease;
 }
+
 .editBtn:hover {
     background-color: #1e40af;
 }
@@ -202,18 +251,16 @@
     justify-content: center;
     cursor: pointer;
 }
+
 .imgInput svg {
-    border: 2px dashed #444;
+    border: 2px dashed #3a3a3a;
     border-radius: 50%;
-    padding: 20px;
-    transition: all 0.3s ease;
+    padding: 22px;
+    color: #9ca3af;
+    transition: all 0.25s ease;
 }
+
 .imgInput:hover svg {
     border-color: #2563eb;
     color: #2563eb;
-}
-.roomData{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
 }

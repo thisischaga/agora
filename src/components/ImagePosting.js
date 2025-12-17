@@ -3,7 +3,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { FaImage } from "react-icons/fa";
 
-const ImagesPosting = ({ back }) => {
+const ImagePosting = ({ back }) => {
     const [postText, setPostText] = useState('');
     const [postImage, setPostImage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -104,4 +104,4 @@ const ImagesPosting = ({ back }) => {
     );
 };
 
-export default ImagesPosting;
+export default ImagePosting;

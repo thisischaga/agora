@@ -4,27 +4,26 @@ import Signup from './authentification/Signup';
 import Login from './authentification/Login';
 import { useEffect } from 'react';
 import PostPage from './pages/PostPage';
+import Room from './pages/Room';
+import Me from './pages/Me';
+import Settings from './pages/Settings';
 
 
 function App() {
-  //const token = localStorage.getItem('token');
-  useEffect(()=>{
-    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if(isMobile){
-      document.body.innerHTML = "<h2 style='text-align:center; margin-top:100px '>Ce site est uniquement accessible sur ordinateur.</h2>"
-    }
-  },[])
   
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/signup" element={<Signup/>} />
-        <Route path="/home" element={<Home/>} />
-        <Route path="/post/:id" element={<PostPage/>} />
-      </Routes>
-    </Router>
-  );
+    return (
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<Signup/>} />
+          <Route path="/home" element={<Home/>} />
+          <Route path="/me" element={<Me/>} />
+          <Route path="/settings" element={<Settings/>} />
+          <Route path="/post/:id" element={<PostPage/>} />
+          <Route path="/room/:id" element={<Room/>} />
+        </Routes>
+      </Router>
+    );
 }
 
 export default App;

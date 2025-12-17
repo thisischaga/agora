@@ -101,6 +101,7 @@
   line-height: 1.5;
   padding: 14px;
   transition: border-color 0.3s ease;
+  resize: none;
 }
 
 .inputs textarea:focus {

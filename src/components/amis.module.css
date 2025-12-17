@@ -1,173 +1,170 @@
-.amisCont{
-    background-color: #1c1c1e; 
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    width: 230px;
-    padding: 20px 20px;
-    border-radius: 15px;
-    margin-top: 20px;
+:root {
+  --bg-amis: #1c1c1e;
+  --bg-tabs: #262626;
+  --bg-userCard: #262626;
+  --bg-userCard-hover: #303030;
+  --text-main: #f9fafb;
+  --text-muted: #9ca3af;
+  --btn-blue-start: #2563eb;
+  --btn-blue-end: #1e40af;
+  --btn-blue-hover-start: #1e40af;
+  --btn-blue-hover-end: #1e3a8a;
+  --border-userCard: #3a3a3a;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-amis: #f4f6f8;
+    --bg-tabs: #e5e7eb;
+    --bg-userCard: #ffffff;
+    --bg-userCard-hover: #f1f3f5;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --btn-blue-start: #2563eb;
+    --btn-blue-end: #1d4ed8;
+    --btn-blue-hover-start: #1d4ed8;
+    --btn-blue-hover-end: #1e40af;
+    --border-userCard: #d1d5db;
+  }
+}
+
+.amisCont {
+    background-color: var(--bg-amis);
     position: fixed;
-    right: 0;
-    top: 0;
-    margin-top: 80px;
-    height: 78vh;
-    margin-right: 20px;
-    overflow-y: scroll;
+    right: 20px;
+    top: 80px;
+    width: 22%;
+    height: 85vh;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    background: linear-gradient(180deg, #ffffff 0%, #f8f9fb 100%);
-    border-right: 1px solid #e0e0e0;
-    height: 78vh;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    color: #555;
 }
-.following, .followers, .amis{
-    font-weight: 500;
-    user-select: none;
+
+.amisCont::-webkit-scrollbar {
+    width: 6px;
 }
-.user{
-    display: flex;
-    align-items: center;
-}
-.amisCont .content{
-    margin: 5px 2px;
-    padding: 5px;
-    border-radius: 20px;
-    transition: all 0.4s ease-in;
-}
-.amisCont .content:hover{
-    background-color: hsl(252, 30%, 95%);
-}
-.amisCont h3{
-    text-align: center;
-    margin-top: 10px;
-    margin-bottom: 20px;
-}
-.amisCont img{
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-.amisCont p{
-    text-align: justify;
+
+.amisCont::-webkit-scrollbar-thumb {
+    background-color: #3a3a3a;
+    border-radius: 4px;
 }
 
 .amisCont h3 {
-  margin-bottom: 15px;
-  font-size: 18px;
-  border-bottom: 1px solid #333;
-  padding-bottom: 8px;
+    text-align: center;
+    margin: 18px 0 12px;
+    color: var(--text-main);
+    font-size: 20px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--bg-tabs);
+    padding-bottom: 10px;
 }
 
-.usersList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-height: 400px;
-  overflow-y: auto;
+.tabs {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 14px 16px;
+    background: var(--bg-tabs);
+    border-radius: 999px;
+    padding: 4px;
+}
+
+.option {
+    flex: 1;
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-muted);
+    padding: 6px 0;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+.option:hover {
+    color: var(--text-main);
+}
+
+.active {
+    background: linear-gradient(135deg, var(--btn-blue-start), var(--btn-blue-end));
+    color: var(--text-main);
 }
 
 .noUsers {
-  color: #888;
-  font-style: italic;
-  text-align: center;
-  text-align: center;
+    text-align: center;
+    margin-top: 20px;
+    color: var(--text-muted);
+    font-size: 14px;
 }
+
 .userCard {
-  display: flex;
-  align-items: center;
-  padding: 8px 4px;
-  justify-content: space-between;
-  border-radius: 10px;
-  transition: background 0.2s;
-  margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 8px 14px;
+    padding: 10px 12px;
+    background: var(--bg-userCard);
+    border-radius: 14px;
+    transition: background 0.25s ease, transform 0.2s ease;
 }
+
 .userCard:hover {
-    background-color: #eef3ff;
-    color: #2a4dff;
-}
-.blueBtn {
-  background-color: #2563eb;
-  color: #fff;
-  border: 1px solid #2563eb;
-  padding: 6px 14px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
+    background: var(--bg-userCard-hover);
+    transform: translateY(-2px);
 }
 
-.blueBtn:hover {
-  background-color: #2563eb;
-  border: 1px solid #fff;
-  color: #fff;
-}
-
-.neutreBtn {
-  background-color: #2a2a2a;
-  color: #fff;
-  border: 1px solid #fff;
-  padding: 6px 14px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.neutreBtn:hover {
-  background-color: #2a2a2a;
-  border: 1px solid #2563eb;
-  color: #fff;
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 10px;
-  /*border: 2px solid #4caf50;*/
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--btn-blue-start);
 }
-.userInfo{
-    display: flex;
-    align-items: center;
-}
+
 .userInfo p {
-  margin: 0;
-  font-size: 14px;
+    margin: 0;
+    color: var(--text-main);
+    font-size: 15px;
 }
-.option{
+
+.blueBtn,
+.neutreBtn {
+    border: none;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
-    margin-left: 0;
-    padding: 3px;
-}
-.active{
-  border-bottom: 2px solid #2563eb;
-}
-@media (prefers-color-scheme: dark) {
-  .amisCont {
-    background: #1a1a1a;
-    border-color: #333;
-  }
-  .option{
-    color: #ccc;
-  }
-  .userCard {
-    color: #ccc;
-  }
-  .amisCont h3 {
-    margin-bottom: 15px;
-    font-size: 18px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 8px;
-    color: #fff;
-  }
-  .userCard:hover {
-    background-color: #2a2a2a;
-    color: #fff;
-  }
+    transition: background 0.25s ease, transform 0.15s ease;
 }
 
+.blueBtn {
+    background: linear-gradient(135deg, var(--btn-blue-start), var(--btn-blue-end));
+    color: #ffffff;
+}
 
+.blueBtn:hover {
+    background: linear-gradient(135deg, var(--btn-blue-hover-start), var(--btn-blue-hover-end));
+}
+
+.neutreBtn {
+    background: var(--bg-amis);
+    color: var(--text-muted);
+    border: 1px solid var(--border-userCard);
+}
+
+.neutreBtn:hover {
+    background: rgba(0,0,0,0.05);
+    color: var(--text-main);
+}
+
+.blueBtn:active,
+.neutreBtn:active {
+    transform: scale(0.95);
+}
