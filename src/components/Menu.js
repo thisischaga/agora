@@ -9,9 +9,16 @@ const Menu = ({ pp, userData, setActive, active }) => {
   const [notificationCount, setNotificationCount] = useState(5);
 
   // Sync active state with current route
+  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
+    navigator.userAgent
+  );
+
+  console.log(isMobile ? "Mobile" : "Desktop");
+
   useEffect(() => {
     const path = location.pathname;
-    if (path === "/home") setActive("students");
+    if (path === "/home" && !isMobile) setActive("students");
+    if (isMobile) setActive("");
     //else if (path === "/notifications") setActive("notifications");
     else if (path === "/saved") setActive("saved");
     else if (path === "/profile" || path === "/me") setActive("profile");

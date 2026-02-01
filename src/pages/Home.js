@@ -55,6 +55,8 @@ const Home = () => {
         setInImgPosting(false);
     };
 
+    
+
     // ── Fonction pour ouvrir le chat ──
     const handleOpenChat = (receiver) => {
         console.log('Ouverture du chat avec:', receiver);

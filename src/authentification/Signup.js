@@ -124,7 +124,7 @@ const Signup = () => {
             const data = response?.data;
             if (data && data.token) {
                 localStorage.setItem('token', data.token);
-                navigate('/home');
+                navigate('/home', { replace: true });
             } else {
                 setErrors({ submit: data?.message || 'Erreur lors de la création du compte' });
             }
