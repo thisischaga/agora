@@ -17,7 +17,7 @@ const Menu = ({ pp, userData, setActive, active }) => {
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === "/home" && !isMobile) setActive("students");
+    if (path === "/home" & !isMobile) setActive("students");
     if (isMobile) setActive("");
     //else if (path === "/notifications") setActive("notifications");
     else if (path === "/saved") setActive("saved");
@@ -67,6 +67,13 @@ const Menu = ({ pp, userData, setActive, active }) => {
       icon: <FaMap />, 
       //link: "/students",
       badge: null 
+    },
+    { mobile: true &&
+      {id: "me", 
+      label: "Profil", 
+      icon: <FaUser />, 
+      link: "/me",
+      badge: null }
     },
   ];
 
@@ -123,11 +130,7 @@ const Menu = ({ pp, userData, setActive, active }) => {
                 tabIndex={0}
                 aria-label={item.label}
               >
-                {item.img ? (
-                  <img src={item.img} alt="Profil" className={styles.profileImg} />
-                ) : (
-                  <span className={styles.icon}>{item.icon}</span>
-                )}
+                <span className={styles.icon}>{item.icon}</span>
                 <span className={styles.label}>{item.label}</span>
               </div>
             ))}
@@ -141,7 +144,7 @@ const Menu = ({ pp, userData, setActive, active }) => {
         {[
           menuItems[0], // Home
           { id: "explore", label: "Explorer", icon: <FaCompass />, link: "/explore" },
-          { id: "profile", label: "Profil", icon: null, img: pp || userData?.userPP, link: "/profile" },
+          { id: "profile", label: "Profil", icon: <FaUser />, link: "/me" },
         ].map((item) => (
           <button
             key={item.id}
@@ -149,11 +152,7 @@ const Menu = ({ pp, userData, setActive, active }) => {
             onClick={() => handleNavigate(item)}
             aria-label={item.label}
           >
-            {item.img ? (
-              <img src={item.img} alt="Profil" className={styles.mobileProfileImg} />
-            ) : (
-              <span className={styles.mobileIcon}>{item.icon}</span>
-            )}
+            <span className={styles.mobileIcon}>{item.icon}</span>
             {item.badge && item.badge > 0 && (
               <span className={styles.mobileBadge}>{item.badge > 9 ? '9+' : item.badge}</span>
             )}
