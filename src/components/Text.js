@@ -52,7 +52,7 @@ const Text = ({ back, onPublish }) => {
       const response = await axios.post(
         `${backendURL}/publication`,
         { postText: textContent, type: "text" },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer${token}` } }
       );
       setToast({ type: 'success', message: response.data.message || 'Publication créée avec succès !' });
       setTextContent('');

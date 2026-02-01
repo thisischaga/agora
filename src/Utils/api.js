@@ -1,1 +1,1 @@
-export const API_URL = "https://agora-server-5d2y.onrender.com";
+export const API_URL = "https://agora-server-2.onrender.com";
