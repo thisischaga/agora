@@ -11,7 +11,7 @@ const Menu = ({ pp, userData, setActive, active }) => {
   // Sync active state with current route
   useEffect(() => {
     const path = location.pathname;
-    if (path === "/home") setActive("home");
+    if (path === "/home") setActive("students");
     //else if (path === "/notifications") setActive("notifications");
     else if (path === "/saved") setActive("saved");
     else if (path === "/profile" || path === "/me") setActive("profile");
@@ -134,7 +134,6 @@ const Menu = ({ pp, userData, setActive, active }) => {
         {[
           menuItems[0], // Home
           { id: "explore", label: "Explorer", icon: <FaCompass />, link: "/explore" },
-          { id: "notifications", label: "Notifications", icon: <FaBell />, link: "/notifications", badge: notificationCount },
           { id: "profile", label: "Profil", icon: null, img: pp || userData?.userPP, link: "/profile" },
         ].map((item) => (
           <button

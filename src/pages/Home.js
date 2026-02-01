@@ -152,7 +152,7 @@ const Home = () => {
                     <Header pp={userData.userPP} 
                         active={active} setActive={setActive}
                         setInImgPosting={setInImgPosting}   setInText={setInText}/>
-                    <main>
+                    <main onClick={() => setActive('students')}>
                         <Menu pp={userData.userPP} active={active} setActive={setActive} setRefresh={setRefresh} refresh={refresh} />
 
                         <div className={styles.postSpace}>

@@ -78,8 +78,8 @@ const Messenger = ({ onOpenChat }) => {
         ),
         [conversations, searchQuery]
     );
-
-    const handleOpenChat = useCallback((user) => {
+    const openChat = (user) => {
+        // Préparer l'objet receiver avec les bonnes propriétés
         const receiver = {
             _id: user.id,
             username: user.username,
@@ -89,12 +89,12 @@ const Messenger = ({ onOpenChat }) => {
             distance: user.distance
         };
         
-        setSelectedConv(user.id);
-        
+        // Appeler la fonction onOpenChat passée en prop
         if (onOpenChat) {
             onOpenChat(receiver);
         }
-    }, [onOpenChat]);
+    };
+    
 
     const handleNewConversation = () => {
         // Logique pour créer une nouvelle conversation
@@ -193,7 +193,7 @@ const Messenger = ({ onOpenChat }) => {
                             <div 
                                 key={conv.conversationWith?.id || index} 
                                 className={`${styles.conversationCard} ${isSelected ? styles.selected : ''} ${isUnread ? styles.unread : ''}`}
-                                onClick={() => handleOpenChat(conv.conversationWith)}
+                                onClick={() => openChat(conv.conversationWith)}
                             >
                                 {/* Avatar */}
                                 <div className={styles.avatarContainer}>
