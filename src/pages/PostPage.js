@@ -1,5 +1,5 @@
 import styles from './postPage.module.css';
-import { FaRegThumbsUp, FaThumbsUp, FaEllipsisV, FaRegBookmark, FaRegCommentDots, FaShare } from "react-icons/fa";
+
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 //import { Friend } from '../components/Friend';

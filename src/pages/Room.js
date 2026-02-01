@@ -1,4 +1,12 @@
-import styles from './room.module.css'
+
+
+const API_BASE_URL = API_URL
+
+const Room = () => {
+
+    
+    /*
+    import styles from './room.module.css'
 import { FaImage, FaVideo } from "react-icons/fa"
 import { useEffect, useState, useRef, useCallback } from 'react'
 import axios from 'axios'
@@ -8,9 +16,6 @@ import socket from '../Utils/socket'
 import { encryptData, decryptData } from '../Utils/CryptData'
 import { API_URL } from '../Utils/api'
 
-const API_BASE_URL = API_URL
-
-const Room = () => {
     const { id } = useParams()
     const navigate = useNavigate()
     const token = localStorage.getItem('token')
@@ -38,7 +43,7 @@ const Room = () => {
 
     const scrollToBottom = useCallback(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }, [])
+    }, [token])
 
     useEffect(() => {
         scrollToBottom()
@@ -94,7 +99,7 @@ const Room = () => {
             forceUpdate(v => v + 1)
         }, 30000)
         return () => clearInterval(interval)
-    }, [])
+    }, [interval])
 
     useEffect(() => {
         if (!token || !id) return
@@ -368,6 +373,7 @@ const Room = () => {
             </div>
         </div>
     )
-}
 
+*/
+}
 export default Room

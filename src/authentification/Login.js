@@ -59,7 +59,7 @@ const Login = () => {
             }
         } catch (error) {
             console.error('Erreur connexion:', error.response?.data || error.message);
-            const errorMessage = error.response?.data?.message || 'E-mail ou mot de passe incorrect';
+            const errorMessage = error.response?.data?.message || 'Une erreur est survenue';
             setErrors({ submit: errorMessage });
         } finally {
             setIsLoading(false);
