@@ -14,9 +14,22 @@
 }
 .content img{
     width: 100%;
-    height: 300px;
+    height: auto;
+    max-height: 600px;
     object-fit: cover;
 }
 .content span{
     color: #9a9a9a;
+}
+
+@media (max-width: 768px) {
+    .postPage { padding: 20px; }
+    .content { width: 100%; padding: 16px; }
+    .content img { max-height: 400px; }
+}
+
+@media (max-width: 480px) {
+    .postPage { padding: 12px; }
+    .content { padding: 12px; }
+    .content img { max-height: 280px; }
 }

@@ -12,6 +12,7 @@
     "@tiptap/starter-kit": "^3.6.2",
     "axios": "^1.8.4",
     "cra-template": "1.2.0",
+    "crypto-js": "^4.2.0",
     "dexie": "^4.0.11",
     "framer-motion": "^12.5.0",
     "jsonwebtoken": "^9.0.2",

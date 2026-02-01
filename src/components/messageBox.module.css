@@ -84,3 +84,20 @@
     outline: none;
     margin: 5px;
 }
+
+/* Responsive fixes for message box */
+@media (max-width: 1024px) {
+    .messageBox { width: 280px; right: 10px; }
+    .messInput { width: 280px; }
+}
+
+@media (max-width: 768px) {
+    .messageBox { position: static; width: 100%; height: auto; margin: 12px 0; border-radius: 12px; }
+    .messInput { position: static; width: 100%; bottom: auto; height: 56px; }
+    .messages .destiBox, .messages .senderBox { max-width: 80%; float: none; }
+}
+
+@media (max-width: 480px) {
+    .messageBox img { width: 36px; height: 36px; }
+    .messages .destiBox, .messages .senderBox { max-width: 90%; }
+}

@@ -1,151 +1,295 @@
-.messenger{
-    background-color: #1c1c1e;
-    width: 22%;
-    border-radius: 15px;
-    margin-top: 20px;
-    position: fixed;
-    right: 0;
-    top: 0;
-    margin-top: 80px;
-    height: 85vh;
-    margin-right: 20px;
-    overflow-y: scroll;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+:root {
+  --bg-amis: #1c1c1e;
+  --bg-tabs: #262626;
+  --bg-userCard: #262626;
+  --bg-userCard-hover: #303030;
+  --text-main: #f9fafb;
+  --text-muted: #9ca3af;
+  --btn-blue-start: #2563eb;
+  --btn-blue-end: #1e40af;
+  --btn-blue-hover-start: #1e40af;
+  --btn-blue-hover-end: #1e3a8a;
+  --border-userCard: #3a3a3a;
 }
-/*.messenger{
-    background-color: #1c1c1e; 
-    border-radius: 12px;
-    color: #e0e0e0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    width: 230px;
-    padding: 20px 15px;
-    border-radius: 15px;
-    margin-top: 20px;
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-amis: #f4f6f8;
+    --bg-tabs: #e5e7eb;
+    --bg-userCard: #ffffff;
+    --bg-userCard-hover: #f1f3f5;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --btn-blue-start: #2563eb;
+    --btn-blue-end: #1d4ed8;
+    --btn-blue-hover-start: #1d4ed8;
+    --btn-blue-hover-end: #1e40af;
+    --border-userCard: #d1d5db;
+  }
+}
+
+.forums {
+    background-color: var(--bg-amis);
     position: fixed;
-    right: 0;
-    top: 0;
-    margin-top: 80px;
-    height: 80vh;
-    margin-right: 60px;
-    overflow-y: scroll;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    
-}*/
-.user{
+    right: 20px;
+    top: 80px;
+    width: 22%;
+    height: 85vh;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #3a3a3a transparent;
+}
+
+.forums::-webkit-scrollbar {
+    width: 6px;
+}
+
+.forums::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.forums::-webkit-scrollbar-thumb {
+    background-color: #3a3a3a;
+    border-radius: 4px;
+}
+
+.forums::-webkit-scrollbar-thumb:hover {
+    background-color: #4a4a4a;
+}
+
+.forums h3 {
+    text-align: center;
+    margin: 18px 0 12px;
+    color: var(--text-main);
+    font-size: 20px;
+    font-weight: 600;
+    border-bottom: 1px solid #2a2a2a;
+    padding-bottom: 10px;
+}
+
+.tools {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    margin-bottom: 14px;
+    gap: 10px;
 }
-.messenger .content{
-    margin: 5px;
-    padding: 5px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.4s ease-in;
+
+.tools input {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-userCard);
+    background-color: var(--bg-tabs);
+    color: var(--text-main);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
 }
-.messenger .content:hover{
-    background-color: hsl(252, 30%, 95%);
+
+.tools input:focus {
+    border-color: var(--btn-blue-start);
 }
-.messenger img{
-    width: 40px;
-    height: 40px;
+
+.tools input::placeholder {
+    color: var(--text-muted);
+}
+
+.add p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-}
-.messenger p{
-    text-align: justify;
-    margin-left: 10px;
-}
-
-.messenger h3 {
-  text-align: center;
-  margin-top: 10px;
-  margin-bottom: 20px;
-  margin-bottom: 15px;
-  color: #fff;
-  font-size: 18px;
-  border-bottom: 1px solid #333;
-  padding-bottom: 8px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: #ffffff;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 300;
 }
 
-.usersList {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  max-height: 400px;
-  overflow-y: auto;
+.add p:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(37,99,235,0.4);
 }
 
-.noUsers {
-  color: #888;
-  font-style: italic;
-  text-align: center;
+.forumCard {
+    padding: 12px 14px;
+    margin: 8px 12px;
+    border-radius: 14px;
+    background-color: var(--bg-userCard);
+    transition: background 0.25s ease, transform 0.2s ease, border-color 0.2s ease;
+    color: var(--text-main);
+    border: 1px solid var(--border-userCard);
+    cursor: pointer;
 }
 
-.userCard {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  border-radius: 10px;
-  background-color: #2a2a2a;
-  transition: background 0.2s;
-  cursor: pointer;
-  margin: 0 10px;
+.forumCard:hover {
+    background-color: var(--bg-userCard-hover);
+    border-color: var(--btn-blue-start);
 }
 
-.userCard:hover {
-  background-color: #333;
+.roomData {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    color: var(--text-main);
+    position: relative;
+}
+
+.avatarContainer {
+    position: relative;
+    flex-shrink: 0;
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 10px;
-  border: 2px solid #2563eb;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-userCard);
 }
 
-.userInfo p {
-  margin: 0;
-  font-size: 16px;
+.avatarPlaceholder {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    border: 2px solid var(--border-userCard);
 }
 
-.lastMess {
-  font-size: 12px;
+.onlineIndicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background: #31a24c;
+    border: 2px solid var(--bg-userCard);
+    border-radius: 50%;
 }
-.tools{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 10px;
-  margin-top: 0;
+
+.dataInColum {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
-.pen p{
-  text-align: center;
-  margin-left: 0;
-  padding: 10px;
-  border-radius: 10px;
-  background-color: #2563eb; 
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
+
+.topRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-.pen p:hover{
-  background: #1e40af;
+
+.roomData p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--text-main);
+    font-weight: 600;
 }
-.backBtn{
-  background-color: transparent;
-  border: none;
-  margin-bottom: 20px;
-  color: #2563eb;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.6s ease;
+
+.timestamp {
+    font-size: 12px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    margin-left: 8px;
 }
-.backBtn:hover{
-  color: #1e40af;
+
+.bottomRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.dataInColum span {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.unreadMessage {
+    color: var(--text-main) !important;
+    font-weight: 600 !important;
+}
+
+.unreadBadge {
+    width: 10px;
+    height: 10px;
+    background: var(--btn-blue-start);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.noUsers {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    padding: 20px;
+    margin: 20px 12px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .forums {
+        width: 28%;
+    }
+}
+
+@media (max-width: 992px) {
+    .forums {
+        width: 35%;
+    }
+}
+
+@media (max-width: 768px) {
+    .forums {
+        position: static;
+        width: 100%;
+        height: auto;
+        max-height: none;
+        margin: 12px 0;
+        border-radius: 12px;
+        right: auto;
+        top: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .forums { margin: 10px 8px; }
+}
+
+/* Further mobile friendly tweaks */
+@media (max-width: 480px) {
+    .forums { margin: 12px 8px; }
+    .avatar, .avatarPlaceholder { width: 40px; height: 40px; }
+    .roomData p { font-size: 14px; }
+    .timestamp { font-size: 11px; }
+}
+
+/* Animation réduite pour accessibilité */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

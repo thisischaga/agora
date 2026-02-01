@@ -8,16 +8,19 @@ import Posts from "../components/Posts";
 import ArticleEditor from "../components/ArticleEditor";
 import Text from "../components/Text";
 import Notifs from "../components/Notifs";
-import Messenger from "../components/Messenger";
+
 import Forums from "../components/Forums";
 import Amis from "../components/Amis";
 import Toast from "../components/Toast";
 import MessageBox from "../components/MessageBox";
+import Chat from "../components/Chat";
 
 import styles from './home.module.css';
 import socket from '../Utils/socket';
 import { FaCamera } from "react-icons/fa";
 import ImagePosting from "../components/ImagePosting";
+import Messenger from "../components/Messenger";
+import StudentMap from "../components/StudentMap";
 
 const Home = () => {
     const location = useLocation();
@@ -36,6 +39,10 @@ const Home = () => {
     const [inEditing, setInEditing] = useState(false);
     const [inImgPosting, setInImgPosting] = useState(false);
     const [showMessBox, setShowMessBox] = useState(false);
+    
+    // ── État pour le chat ──
+    const [selectedReceiver, setSelectedReceiver] = useState(null);
+    const [showChat, setShowChat] = useState(false);
 
     // ── Fonctions de navigation dans les modaux ──
     const goToEditor = () => setInEditing(true);
@@ -45,6 +52,19 @@ const Home = () => {
         setInText(false);
         setInEditing(false);
         setInImgPosting(false);
+    };
+
+    // ── Fonction pour ouvrir le chat ──
+    const handleOpenChat = (receiver) => {
+        console.log('Ouverture du chat avec:', receiver);
+        setSelectedReceiver(receiver);
+        setShowChat(true);
+    };
+
+    // ── Fonction pour fermer le chat ──
+    const handleCloseChat = () => {
+        setShowChat(false);
+        setSelectedReceiver(null);
     };
 
     // ── Socket et récupération des données utilisateur ──
@@ -68,8 +88,11 @@ const Home = () => {
                 setToast("Erreur lors de la récupération des données.");
             }
         });
-
+        socket.on('notif', (data) => {
+            setRefresh(prev => !prev);
+        });
         return () => {
+            socket.off('notif');
             socket.disconnect();
         };
     }, [location.pathname]);
@@ -79,11 +102,11 @@ const Home = () => {
         switch(active) {
             case 'home':
             case 'notifications':
-                return <Notifs pp={userData.userPP} notifications={notifications} setRefresh={setRefresh} refresh={refresh} />;
-            case 'messagerie':
-                return <Messenger pp={userData.userPP} setShowMessBox={setShowMessBox} setRefresh={setRefresh} refresh={refresh} />;
-            case 'forums':
-                return <Forums pp={userData.userPP} userId={userData.userId} username={userData.username} setRefresh={setRefresh} refresh={refresh} />;
+                return <Notifs pp={userData.userPP} userId={userData.userId} setRefresh={setRefresh} refresh={refresh} />;
+            case 'messenger':
+                return <Messenger pp={userData.userPP} setShowMessBox={setShowMessBox} setRefresh={setRefresh} refresh={refresh} onOpenChat={handleOpenChat} />;
+            case 'students':
+                return <StudentMap pp={userData.userPP} userId={userData.userId} username={userData.username} setRefresh={setRefresh} refresh={refresh} onOpenChat={handleOpenChat} />;
             case 'amis':
                 return <Amis pp={userData.userPP} connectedUsers={connectedUsers} setRefresh={setRefresh} refresh={refresh} />;
             default:
@@ -93,16 +116,41 @@ const Home = () => {
 
     return (
         <div>
-            {/* Modaux */}
-            {inEditing && <ArticleEditor back={() => setInEditing(false)} />}
-            {inText && <Text back={() => setInText(false)} />}
-            {inImgPosting && <ImagePosting back={() => setInImgPosting(false)} />}
+            {/* Modal Text */}
+            {inText && (
+                <div className={styles.modalOverlay} onClick={() => setInText(false)}>
+                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        <button className={styles.closeBtn} onClick={() => setInText(false)}>Fermer</button>
+                        <Text back={() => setInText(false)} />
+                    </div>
+                </div>
+            )}
 
+            {/* Modal Image Posting */}
+            {inImgPosting && (
+                <div className={styles.modalOverlay} onClick={() => setInImgPosting(false)}>
+                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        <button className={styles.closeBtn} onClick={() => setInImgPosting(false)}>Fermer</button>
+                        <ImagePosting back={() => setInImgPosting(false)} />
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Chat */}
+            {showChat && selectedReceiver && (
+                <div className={styles.chatOverlay} onClick={handleCloseChat}>
+                    <div className={styles.chatContainer} onClick={(e) => e.stopPropagation()}>
+                        <Chat receiver={selectedReceiver} onClose={handleCloseChat} />
+                    </div>
+                </div>
+            )}
 
             {/* Main UI */}
             {!(inEditing || inText || inImgPosting) && (
                 <>
-                    <Header />
+                    <Header pp={userData.userPP} 
+                        active={active} setActive={setActive}
+                        setInImgPosting={setInImgPosting}   setInText={setInText}/>
                     <main>
                         <Menu pp={userData.userPP} active={active} setActive={setActive} setRefresh={setRefresh} refresh={refresh} />
 
@@ -120,15 +168,13 @@ const Home = () => {
                                             onClick={goToText}
                                         />
                                         <div className={styles.iconContainer}>
-                                            <div className={styles.articleBtn}>
+                                            {/*<div className={styles.articleBtn}>
                                                 <button onClick={goToEditor}>Rédige ton article</button>
-                                            </div>
+                                            </div>*/}
                                             <div className={styles.photoBtn} onClick={goImagePosting}>
                                                 <FaCamera size={22} color="#fff" />
                                             </div>
                                         </div>
-
-
                                     </div>
                                 </div>
                             )}

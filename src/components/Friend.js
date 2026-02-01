@@ -1,6 +1,7 @@
 import axios from "axios";
 import styles from './friends.module.css';
 import { useEffect, useState } from "react";
+import { getNotif } from "../Utils/GetNotif";
 
 export const Friend = ({ userId, authorId, setRefresh, refresh }) => {
   const [followings, setFollowings] = useState([]);
@@ -46,6 +47,10 @@ export const Friend = ({ userId, authorId, setRefresh, refresh }) => {
         { authorId },
         { headers: { Authorization: `Bearer${token}` } }
       );
+
+      if (!isFollowing) {
+        getNotif({userId, authorId, message: "a commencé à vous suivre", token })
+      }
       setFollowings(response.data.userFollowings || []);
       setRefresh(prev => !prev);
     } catch (err) {
@@ -61,6 +66,10 @@ export const Friend = ({ userId, authorId, setRefresh, refresh }) => {
         { headers: { Authorization: `Bearer${token}` } }
       );
       setAmis(response.data.userFollowings || []);
+
+      if (!isFollowed) {
+        getNotif({userId, authorId, message: "a commencé à vous suivre", token })
+      }
       setRefresh(prev => !prev);
     } catch (err) {
       console.error('Erreur : ', err);

@@ -7,6 +7,7 @@ import PostPage from './pages/PostPage';
 import Room from './pages/Room';
 import Me from './pages/Me';
 import Settings from './pages/Settings';
+import Chat from './components/Chat';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/settings" element={<Settings/>} />
           <Route path="/post/:id" element={<PostPage/>} />
           <Route path="/room/:id" element={<Room/>} />
+          <Route path="/chat/:id" element={<Chat/>} />
         </Routes>
       </Router>
     );

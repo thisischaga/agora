@@ -1,170 +1,650 @@
 :root {
     --bg-main: #0b0b0b;
     --bg-panel: #1c1c1e;
+    --bg-search: #262626;
     --primary: #1e40ff;
     --primary-hover: #1a36d2;
     --text-main: #e5e7eb;
     --text-muted: #9ca3af;
+    --text-search: #e5e7eb;
+    --text-placeholder: #6b7280;
     --photo-btn: #8b5cf6;
     --photo-btn-hover: #7c3aed;
-    --pages-btn: rgb(0, 140, 255);
+    --pages-btn: rgb(0, 140, 255);/* Styles existants... */
+
+/* Modal Chat */
+.chatOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeIn 0.2s ease;
+}
+
+.chatContainer {
+    width: 90%;
+    max-width: 600px;
+    height: 80vh;
+    background-color: var(--bg-userCard);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive pour le chat */
+@media (max-width: 768px) {
+    .chatContainer {
+        width: 100%;
+        height: 100vh;
+        max-width: 100%;
+        border-radius: 0;
+    }
+}
+
+/* Animation réduite pour accessibilité */
+@media (prefers-reduced-motion: reduce) {
+    .chatOverlay,
+    .chatContainer {
+        animation: none !important;
+    }
+}
     --pages-btn-hover: rgb(3, 112, 201);
     --action-icon: #e1306c;
+    --action-icon-hover: #c71f5b;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5);
+    --border-color: #262626;
 }
 
 @media (prefers-color-scheme: light) {
     :root {
         --bg-main: #f4f6f8;
         --bg-panel: #ffffff;
+        --bg-search: #f1f3f5;
         --primary: #2563eb;
         --primary-hover: #1d4ed8;
         --text-main: #111827;
         --text-muted: #6b7280;
+        --text-search: #111827;
+        --text-placeholder: #9ca3af;
         --photo-btn: #a78bfa;
         --photo-btn-hover: #7c3aed;
         --pages-btn: #3b82f6;
         --pages-btn-hover: #2563eb;
         --action-icon: #db2777;
+        --action-icon-hover: #be185d;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.12);
+        --border-color: #e5e7eb;
     }
 }
 
-main{
+main {
     display: flex;
-    padding-top: 60px;
-    margin: 0 70px;
-    margin-bottom: 50px;
-    place-content: center;
+    padding-top: 70px;
+    padding-bottom: 60px;
+    justify-content: center;
     background: var(--bg-main);
     color: var(--text-main);
+    min-height: 100vh;
 }
 
-.postSpace{
+.postSpace {
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-left: 25%;
-    margin-right: 25%;
+    width: 100%;
+    max-width: 600px;
+    gap: 20px;
 }
 
-.userProfilBox{
+.userProfilBox {
     background-color: var(--bg-panel);
-    height: 100px;
-    width: 600px;
-    padding: 10px;
-    border-radius: 20px;
-    margin-bottom: 50px;
-}
-
-.user{
-    display: flex;
-    align-items: center;
-    width: 800px;
-}
-
-.user img{
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid var(--primary);
-}
-
-.user p{
-    padding-left: 10px;
-}
-
-.actions{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.articleBtn{
-    display: flex;
-    align-items: center;
-}
-
-.actions button {
-    background-color: var(--primary);
-    color: #fff;
-    padding: 10px 16px;
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
     transition: all 0.3s ease;
 }
 
+.userProfilBox:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 12px;
+}
+
+.user img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+    object-fit: cover;
+    flex-shrink: 0;
+    transition: border-color 0.3s ease;
+}
+
+.user img:hover {
+    border-color: var(--primary-hover);
+}
+
+.user p {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.articleBtn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.actions input {
+    border: 1px solid var(--border-color);
+    outline: none;
+    padding: 10px 16px;
+    flex: 1;
+    min-width: 200px;
+    height: 42px;
+    border-radius: 24px;
+    cursor: pointer;
+    background-color: var(--bg-search);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-search);
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.actions input:hover {
+    border-color: var(--primary);
+    transform: scale(1.01);
+}
+
+.actions input:focus {
+    cursor: text;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 64, 255, 0.1);
+}
+
+.actions input::placeholder {
+    color: var(--text-placeholder);
+}
+
+.actions button {
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+}
+
 .actions button:hover {
-    background-color: var(--primary-hover);
-    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.actions button:active {
+    transform: translateY(0);
+}
+
+.actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .photoBtn {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--photo-btn);
-    width: 40px;
-    height: 40px;
+    background: linear-gradient(135deg, var(--photo-btn), var(--photo-btn-hover));
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-left: 10px;
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
 }
 
 .photoBtn:hover {
-    background-color: var(--photo-btn-hover);
+    box-shadow: var(--shadow-md);
+    transform: scale(1.08);
 }
 
-.actions input{
-    border: none;
-    outline: none;
-    padding: 10px;
-    width: 300px;
-    height: 25px;
-    border-radius: 50px;
-    cursor: pointer;
+.photoBtn:active {
+    transform: scale(0.98);
 }
 
-.pagesBtn{
-    background-color: var(--pages-btn);
+.pagesBtn {
+    background: linear-gradient(135deg, var(--pages-btn), var(--pages-btn-hover));
     color: #fff;
     padding: 10px 20px;
     border: none;
-    border-radius: 20px;
+    border-radius: 24px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 14px;
     transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
 }
 
-.pagesBtn:hover{
-    background-color: var(--pages-btn-hover);
+.pagesBtn:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
 }
 
-.postsContainer{
+.pagesBtn:active {
+    transform: translateY(0);
+}
+
+.postsContainer {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    width: 100%;
+    padding: 20px 0;
 }
 
-.iconContainer{
+.iconContainer {
     display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
-.actionIcon{
-    margin: 5px;
+.actionIcon {
     background-color: var(--action-icon);
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    padding: 5px;
+    padding: 8px;
     cursor: pointer;
-    transition: all 0.4s ease-in-out;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+    color: white;
 }
 
-.actionIcon:hover{
-    transform: scale(1.07);
+.actionIcon:hover {
+    background-color: var(--action-icon-hover);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-md);
+}
+
+.actionIcon:active {
+    transform: scale(0.95);
+}
+
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+
+.noContent {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 15px;
+}
+
+.noContent::before {
+    content: "📭";
+    display: block;
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 1024px) {
+    .postSpace {
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+}
+
+@media (max-width: 768px) {
+    main {
+        padding-top: 60px;
+        padding-bottom: 80px;
+    }
+
+    .postSpace {
+        margin-left: 0;
+        margin-right: 0;
+        padding: 16px;
+        max-width: 100%;
+    }
+
+    .userProfilBox {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .user img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .user p {
+        font-size: 14px;
+    }
+
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .articleBtn {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .actions input {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .actions button {
+        width: 100%;
+    }
+
+    .pagesBtn {
+        width: 100%;
+    }
+
+    .postsContainer {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    main {
+        padding-top: 60px;
+    }
+
+    .postSpace {
+        padding: 12px;
+    }
+
+    .userProfilBox {
+        padding: 12px;
+    }
+
+    .user img {
+        width: 36px;
+        height: 36px;
+    }
+
+    .user p {
+        font-size: 13px;
+    }
+
+    .actions button,
+    .pagesBtn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .photoBtn {
+        width: 38px;
+        height: 38px;
+    }
+
+    .actionIcon {
+        width: 32px;
+        height: 32px;
+        padding: 6px;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.postSpace > * {
+    animation: fadeIn 0.4s ease backwards;
+}
+
+.postSpace > *:nth-child(1) { animation-delay: 0.05s; }
+.postSpace > *:nth-child(2) { animation-delay: 0.1s; }
+.postSpace > *:nth-child(3) { animation-delay: 0.15s; }
+
+.actions button:focus-visible,
+.photoBtn:focus-visible,
+.pagesBtn:focus-visible,
+.actionIcon:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.actions input:focus-visible {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 64, 255, 0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+.visuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.disableScroll {
+    overflow: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+button,
+input,
+textarea {
+    font-family: inherit;
+}
+
+::selection {
+    background-color: var(--primary);
+    color: white;
+}
+
+::-moz-selection {
+    background-color: var(--primary);
+    color: white;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-main); /* fond semi-transparent */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: var(--bg-card, #2a2a2a); /* fallback si variable CSS manquante */
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: var(--text-main, #fff);
+    position: relative;
+}
+
+.closeBtn {
+    background: transparent;
+    color: var(--text-main, #ddd);
+    border: 1px solid var(--border-color, #444);
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.closeBtn:hover {
+    color: var(--text-main, #fff);
+    border-color: var(--border-color, #888);
+    background: var(--bg-section, #1e1e1e);
+}
+/* Styles existants... */
+
+/* Modal Chat */
+.chatOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeIn 0.2s ease;
+}
+
+.chatContainer {
+    width: 90%;
+    max-width: 600px;
+    height: 80vh;
+    background-color: var(--bg-userCard);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive pour le chat */
+@media (max-width: 768px) {
+    .chatContainer {
+        width: 100%;
+        height: 100vh;
+        max-width: 100%;
+        border-radius: 0;
+    }
+}
+
+/* Animation réduite pour accessibilité */
+@media (prefers-reduced-motion: reduce) {
+    .chatOverlay,
+    .chatContainer {
+        animation: none !important;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 360px) {
+    .postSpace { padding: 8px; }
+    .actions input { min-width: 120px; }
+    .pagesBtn, .actions button { font-size: 13px; padding: 8px 12px; }
+    .postsContainer { gap: 12px; }
 }

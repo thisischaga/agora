@@ -1,19 +1,53 @@
+:root {
+  --bg-amis: #1c1c1e;
+  --bg-tabs: #262626;
+  --bg-userCard: #262626;
+  --bg-userCard-hover: #303030;
+  --text-main: #f9fafb;
+  --text-muted: #9ca3af;
+  --btn-blue-start: #2563eb;
+  --btn-blue-end: #1e40af;
+  --btn-blue-hover-start: #1e40af;
+  --btn-blue-hover-end: #1e3a8a;
+  --border-userCard: #3a3a3a;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-amis: #f4f6f8;
+    --bg-tabs: #e5e7eb;
+    --bg-userCard: #ffffff;
+    --bg-userCard-hover: #f1f3f5;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --btn-blue-start: #2563eb;
+    --btn-blue-end: #1d4ed8;
+    --btn-blue-hover-start: #1d4ed8;
+    --btn-blue-hover-end: #1e40af;
+    --border-userCard: #d1d5db;
+  }
+}
+
 .forums {
-    background-color: #1c1c1e;
+    background-color: var(--bg-amis);
     position: fixed;
     right: 20px;
     top: 80px;
     width: 22%;
     height: 85vh;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: #3a3a3a transparent;
 }
 
 .forums::-webkit-scrollbar {
     width: 6px;
+}
+
+.forums::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .forums::-webkit-scrollbar-thumb {
@@ -21,10 +55,14 @@
     border-radius: 4px;
 }
 
+.forums::-webkit-scrollbar-thumb:hover {
+    background-color: #4a4a4a;
+}
+
 .forums h3 {
     text-align: center;
     margin: 18px 0 12px;
-    color: #f9fafb;
+    color: var(--text-main);
     font-size: 20px;
     font-weight: 600;
     border-bottom: 1px solid #2a2a2a;
@@ -44,14 +82,20 @@
     flex: 1;
     padding: 8px 12px;
     border-radius: 10px;
-    border: 1px solid #2f2f2f;
-    background-color: #262626;
-    color: #ffffff;
+    border: 1px solid var(--border-userCard);
+    background-color: var(--bg-tabs);
+    color: var(--text-main);
     font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.tools input:focus {
+    border-color: var(--btn-blue-start);
 }
 
 .tools input::placeholder {
-    color: #7b7b7b;
+    color: var(--text-muted);
 }
 
 .add p {
@@ -65,6 +109,7 @@
     color: #ffffff;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin: 0;
 }
 
 .add p:hover {
@@ -83,25 +128,33 @@
     transition: color 0.2s ease;
 }
 
-.backBtn:hover {
+.backBtn:hover:not(:disabled) {
     color: #1e40af;
+}
+
+.backBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .forumCard {
     padding: 12px 14px;
     margin: 8px 12px;
     border-radius: 14px;
-    background-color: #262626;
-    cursor: pointer;
-    transition: background 0.25s ease, transform 0.2s ease;
+    background-color: var(--bg-userCard);
+    transition: background 0.25s ease, transform 0.2s ease, border-color 0.2s ease;
+    color: var(--text-main);
+    border: 1px solid var(--border-userCard);
 }
 
 .forumCard:hover {
-    background-color: #303030;
+    background-color: var(--bg-userCard-hover);
+    border-color: var(--btn-blue-start);
 }
 
 .roomInfo {
     width: 100%;
+    color: var(--text-main);
 }
 
 .roomData {
@@ -109,6 +162,8 @@
     align-items: center;
     gap: 12px;
     width: 100%;
+    color: var(--text-main);
+    position: relative;
 }
 
 .avatar {
@@ -116,64 +171,98 @@
     height: 46px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #2563eb;
+    border: 2px solid var(--border-userCard);
+    flex-shrink: 0;
+}
+
+.dataInColum {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .roomData p {
     margin: 0;
     font-size: 15px;
-    color: #f9fafb;
-    max-width: 30%;
+    color: var(--text-main);
+    font-weight: 600;
 }
-.roomData .buttons{
-    position: absolute;
-    right: 0;
-    margin-right: 20px;
-    
+
+.roomData .buttons {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
 }
+
 .roomData span {
-    font-size: 13px;
-    color: #9ca3af;
+    font-size: 12px;
+    color: var(--text-muted);
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .roomData button {
     border: none;
-    border-radius: 999px;
-    padding: 6px 14px;
-    font-size: 14px;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.25s ease, transform 0.15s ease;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
-.roomData button:active {
+.roomData button:active:not(:disabled) {
     transform: scale(0.95);
 }
 
+.roomData button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .blueLight {
-    background: linear-gradient(135deg, #2563eb, #1e40af);
+    background: var(--btn-blue-start);
     color: #ffffff;
 }
 
-.blueLight:hover {
-    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+.blueLight:hover:not(:disabled) {
+    background: var(--btn-blue-hover-start);
 }
 
 .whiteLight {
-    background: #1c1c1e;
-    color: #2563eb;
-    border: 1px solid #2563eb;
+    background: var(--btn-blue-end);
+    color: #fff;
 }
 
-.whiteLight:hover {
-    background: rgba(37,99,235,0.15);
+.whiteLight:hover:not(:disabled) {
+    background: var(--btn-blue-hover-end);
+}
+
+.formContainer {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .form {
     padding: 14px;
     margin: 0 12px;
     border-radius: 14px;
-    background-color: #262626;
+    background-color: var(--bg-tabs);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -181,8 +270,8 @@
 
 .form h4 {
     text-align: center;
-    color: #f9fafb;
-    margin-bottom: 8px;
+    color: var(--text-main);
+    margin: 0 0 8px 0;
     font-size: 17px;
 }
 
@@ -191,15 +280,36 @@
     width: 100%;
     padding: 10px 12px;
     border-radius: 10px;
-    border: 1px solid #2f2f2f;
-    background-color: #1c1c1e;
-    color: #ffffff;
+    border: 1px solid var(--border-userCard);
+    background-color: var(--bg-userCard);
+    color: var(--text-main);
     font-size: 14px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.form input[type="text"]:focus,
+.form textarea:focus {
+    border-color: var(--btn-blue-start);
+}
+
+.form input[type="text"]::placeholder,
+.form textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.form input[type="text"]:disabled,
+.form textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .form textarea {
-    resize: none;
-    height: 90px;
+    resize: vertical;
+    min-height: 90px;
+    font-family: inherit;
+    line-height: 1.5;
 }
 
 .form button {
@@ -210,22 +320,30 @@
     border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.25s ease;
+    transition: all 0.25s ease;
 }
 
-.form button:hover {
+.form button:hover:not(:disabled) {
     background: linear-gradient(135deg, #1e40af, #1e3a8a);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .profilContainer {
     position: relative;
-    width: fit-content;
+    width: 120px;
+    height: 120px;
     margin: 0 auto;
 }
 
 .profilContainer img {
-    width: 120px;
-    height: 120px;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #2563eb;
@@ -240,6 +358,7 @@
     padding: 6px;
     cursor: pointer;
     transition: background 0.2s ease;
+    color: white;
 }
 
 .editBtn:hover {
@@ -250,17 +369,78 @@
     display: flex;
     justify-content: center;
     cursor: pointer;
+    margin-bottom: 8px;
 }
 
 .imgInput svg {
-    border: 2px dashed #3a3a3a;
+    border: 2px dashed var(--border-userCard);
     border-radius: 50%;
     padding: 22px;
-    color: #9ca3af;
+    color: var(--text-muted);
     transition: all 0.25s ease;
 }
 
 .imgInput:hover svg {
     border-color: #2563eb;
     color: #2563eb;
+}
+
+.noUsers {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    padding: 20px;
+    margin: 20px 12px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .forums {
+        position: static;
+        width: 100%;
+        height: auto;
+        max-height: none;
+        margin: 12px 0;
+        border-radius: 12px;
+        right: auto;
+        top: auto;
+    
+    }
+}
+
+@media (max-width: 480px) {
+    .forums { margin: 10px 8px; }
+    .avatar, .avatarPlaceholder { width: 40px; height: 40px; }
+    .roomData p { font-size: 14px; }
+    .timestamp { font-size: 11px; }
+}
+
+@media (max-width: 768px) {
+    .forums {
+        position: static;
+        width: 100%;
+        height: auto;
+        max-height: 90vh;
+        margin: 20px;
+        border-radius: 12px;
+    }
+    
+    .roomData {
+        flex-wrap: wrap;
+    }
+    
+    .roomData .buttons {
+        width: 100%;
+        margin-top: 8px;
+        justify-content: flex-end;
+    }
+}
+
+/* Animation réduite pour accessibilité */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
