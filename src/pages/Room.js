@@ -94,7 +94,7 @@ const Room = () => {
             forceUpdate(v => v + 1)
         }, 30000)
         return () => clearInterval(interval)
-    }, [interval])
+    }, [])
 
     useEffect(() => {
         if (!token || !id) return
