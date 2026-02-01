@@ -12,6 +12,9 @@
   --badge-bg: #ef4444;
   --badge-text: #ffffff;
   --user-card-bg: #f9fafb;
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -32,24 +35,32 @@
   }
 }
 
-/* Desktop Sidebar */
+/* ========== BASE ========== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ========== DESKTOP SIDEBAR ========== */
 .menu {
   display: flex;
   flex-direction: column;
   position: fixed;
   left: 0;
-  top: 80px;
-  width: 260px;
-  height: calc(100vh - 60px);
+  top: 70px;
+  width: clamp(240px, 18vw, 280px);
+  height: calc(100vh - 70px);
   background-color: var(--menu-bg);
   border-right: 1px solid var(--menu-border);
-  padding: 16px 8px;
+  padding: clamp(12px, 2vw, 16px) clamp(6px, 1vw, 8px);
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--menu-border) transparent;
-  transition: all 0.3s ease;
+  transition: all var(--transition-slow);
   z-index: 900;
+  box-shadow: 2px 0 8px var(--menu-shadow);
 }
 
 .menu::-webkit-scrollbar {
@@ -63,6 +74,11 @@
 .menu::-webkit-scrollbar-thumb {
   background-color: var(--menu-border);
   border-radius: 3px;
+  transition: background-color var(--transition-base);
+}
+
+.menu::-webkit-scrollbar-thumb:hover {
+  background-color: var(--menu-text);
 }
 
 .menuContent {
@@ -74,40 +90,42 @@
 .mainNav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: clamp(2px, 0.5vw, 4px);
 }
 
 .bottomNav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-top: 8px;
+  gap: clamp(2px, 0.5vw, 4px);
+  margin-top: clamp(6px, 1vw, 8px);
 }
 
+/* ========== MENU ITEMS ========== */
 .menuItem {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 12px 16px;
-  border-radius: 12px;
+  gap: clamp(12px, 2vw, 16px);
+  padding: clamp(10px, 2vw, 12px) clamp(12px, 2.5vw, 16px);
+  border-radius: clamp(10px, 2vw, 12px);
   color: var(--menu-text);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
   font-weight: 500;
-  font-size: 15px;
+  font-size: clamp(14px, 1.5vw, 15px);
   user-select: none;
   position: relative;
   border: 2px solid transparent;
+  text-decoration: none;
 }
 
 .menuItem:hover {
   background-color: var(--menu-hover-bg);
   color: var(--menu-text-hover);
-  transform: translateX(2px);
+  transform: translateX(3px);
 }
 
 .menuItem:active {
-  transform: scale(0.98);
+  transform: translateX(3px) scale(0.98);
 }
 
 .active {
@@ -115,48 +133,69 @@
   color: var(--menu-active-color);
   font-weight: 600;
   border-left: 3px solid var(--menu-active-border);
-  padding-left: 13px;
+  padding-left: clamp(9px, 2vw, 13px);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15);
+}
+
+.active:hover {
+  transform: translateX(0);
 }
 
 .active .icon {
   transform: scale(1.1);
+  color: var(--menu-active-color);
 }
 
 .icon {
-  font-size: 20px;
+  font-size: clamp(18px, 2.5vw, 20px);
   color: inherit;
-  transition: all 0.2s;
+  transition: all var(--transition-base);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px;
+  min-width: clamp(18px, 2.5vw, 20px);
+  flex-shrink: 0;
 }
 
 .label {
-  font-size: 15px;
+  font-size: clamp(14px, 1.5vw, 15px);
   color: inherit;
   flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* ========== BADGE ========== */
 .badge {
   background-color: var(--badge-bg);
   color: var(--badge-text);
-  font-size: 11px;
+  font-size: clamp(10px, 1.2vw, 11px);
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 10px;
   min-width: 20px;
   text-align: center;
   margin-left: auto;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s ease-in-out infinite;
 }
 
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ========== PROFILE IMAGE ========== */
 .profileImg {
-  width: 32px;
-  height: 32px;
+  width: clamp(28px, 4vw, 32px);
+  height: clamp(28px, 4vw, 32px);
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--menu-active-border);
-  transition: transform 0.2s ease;
+  transition: all var(--transition-base);
+  flex-shrink: 0;
 }
 
 .menuItem:hover .profileImg {
@@ -164,35 +203,48 @@
   box-shadow: 0 0 0 3px var(--menu-active-bg);
 }
 
+/* ========== DIVIDER ========== */
 .divider {
   height: 1px;
   background-color: var(--divider-color);
-  margin: 12px 8px;
+  margin: clamp(8px, 1.5vw, 12px) clamp(6px, 1vw, 8px);
+  opacity: 0.5;
+  transition: opacity var(--transition-base);
 }
 
-/* User Card */
+/* ========== USER CARD ========== */
 .userCard {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: clamp(10px, 2vw, 12px);
+  padding: clamp(10px, 2vw, 12px);
   margin-top: auto;
   background-color: var(--user-card-bg);
-  border-radius: 12px;
+  border-radius: clamp(10px, 2vw, 12px);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-base);
+  border: 1px solid transparent;
 }
 
 .userCard:hover {
   background-color: var(--menu-hover-bg);
+  border-color: var(--menu-border);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px var(--menu-shadow);
 }
 
 .userAvatar {
-  width: 40px;
-  height: 40px;
+  width: clamp(36px, 5vw, 40px);
+  height: clamp(36px, 5vw, 40px);
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--menu-active-border);
+  flex-shrink: 0;
+  transition: transform var(--transition-base);
+}
+
+.userCard:hover .userAvatar {
+  transform: scale(1.05);
 }
 
 .userInfo {
@@ -201,17 +253,17 @@
 }
 
 .userName {
-  font-size: 14px;
+  font-size: clamp(13px, 1.5vw, 14px);
   font-weight: 600;
   color: var(--menu-text-hover);
-  margin: 0;
+  margin: 0 0 2px 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .userHandle {
-  font-size: 12px;
+  font-size: clamp(11px, 1.2vw, 12px);
   color: var(--menu-text);
   margin: 0;
   white-space: nowrap;
@@ -219,12 +271,21 @@
   text-overflow: ellipsis;
 }
 
-/* Mobile Bottom Navigation */
+/* ========== MOBILE NAVIGATION ========== */
 .mobileNav {
   display: none;
 }
 
-/* Responsive */
+/* ========== RESPONSIVE ========== */
+
+/* Tablettes et petits laptops */
+@media (max-width: 1200px) {
+  .menu {
+    width: 220px;
+  }
+}
+
+/* Tablettes moyennes */
 @media (max-width: 1024px) {
   .menu {
     width: 80px;
@@ -237,13 +298,21 @@
 
   .badge {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 6px;
+    right: 6px;
+    min-width: 18px;
+    font-size: 10px;
+    padding: 2px 5px;
   }
 
   .menuItem {
     justify-content: center;
     padding: 12px;
+    gap: 0;
+  }
+
+  .menuItem:hover {
+    transform: scale(1.05);
   }
 
   .active {
@@ -253,9 +322,14 @@
     padding-bottom: 9px;
   }
 
+  .active:hover {
+    transform: scale(1.05);
+  }
+
   .userCard {
     flex-direction: column;
     padding: 8px;
+    gap: 0;
   }
 
   .userInfo {
@@ -265,40 +339,34 @@
   .divider {
     margin: 12px 4px;
   }
+
+  .icon {
+    font-size: 22px;
+  }
 }
 
+/* Tablettes et mobile */
 @media (max-width: 768px) {
   .menu {
-    /* make sidebar flow into the document on small screens */
-    display: flex;
-    position: static;
-    left: auto;
-    top: auto;
-    width: 100%;
-    height: auto;
-    padding: 12px 8px;
-    border-right: none;
-    border-bottom: 1px solid var(--menu-border);
-    border-radius: 0;
-    z-index: auto;
-    margin: 0;
-    box-shadow: none;
+    display: none;
   }
 
   .mobileNav {
-    display: none;
+    display: flex;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 60px;
+    height: 70px;
     background-color: var(--menu-bg);
     border-top: 1px solid var(--menu-border);
     padding: 8px 0;
     justify-content: space-around;
     align-items: center;
     z-index: 999;
-    box-shadow: 0 -2px 10px var(--menu-shadow);
+    box-shadow: 0 -4px 12px var(--menu-shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
   .mobileNavItem {
@@ -307,23 +375,43 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
-    padding: 6px 12px;
+    padding: 8px 12px;
     background: none;
     border: none;
     cursor: pointer;
     color: var(--menu-text);
-    transition: all 0.2s;
+    transition: all var(--transition-base);
     position: relative;
     flex: 1;
-    max-width: 80px;
+    max-width: 100px;
+    border-radius: 12px;
+    min-height: 54px;
+  }
+
+  .mobileNavItem:hover {
+    background-color: var(--menu-hover-bg);
   }
 
   .mobileNavItem:active {
     transform: scale(0.95);
+    background-color: var(--menu-active-bg);
   }
 
   .mobileActive {
     color: var(--menu-active-color);
+    background-color: var(--menu-active-bg);
+  }
+
+  .mobileActive::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background-color: var(--menu-active-border);
+    border-radius: 0 0 3px 3px;
   }
 
   .mobileActive .mobileIcon {
@@ -331,32 +419,36 @@
   }
 
   .mobileIcon {
-    font-size: 22px;
-    transition: all 0.2s;
+    font-size: 24px;
+    transition: all var(--transition-base);
+    color: inherit;
   }
 
   .mobileLabel {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
+    color: inherit;
+    white-space: nowrap;
   }
 
   .mobileProfileImg {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--menu-border);
-    transition: all 0.2s;
+    transition: all var(--transition-base);
   }
 
   .mobileActive .mobileProfileImg {
     border-color: var(--menu-active-border);
     transform: scale(1.1);
+    box-shadow: 0 0 0 3px var(--menu-active-bg);
   }
 
   .mobileBadge {
     position: absolute;
-    top: 2px;
+    top: 4px;
     right: 8px;
     background-color: var(--badge-bg);
     color: var(--badge-text);
@@ -367,10 +459,88 @@
     min-width: 16px;
     text-align: center;
     border: 2px solid var(--menu-bg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 }
 
-/* Animations */
+/* Mobile petit écran */
+@media (max-width: 640px) {
+  .mobileNav {
+    height: 65px;
+    padding: 6px 0;
+  }
+
+  .mobileNavItem {
+    padding: 6px 8px;
+    gap: 3px;
+    max-width: 90px;
+  }
+
+  .mobileIcon {
+    font-size: 22px;
+  }
+
+  .mobileLabel {
+    font-size: 11px;
+  }
+
+  .mobileProfileImg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Mobile très petit écran */
+@media (max-width: 480px) {
+  .mobileNav {
+    height: 60px;
+    padding: 4px 0;
+  }
+
+  .mobileNavItem {
+    padding: 4px 6px;
+    gap: 2px;
+    min-height: 48px;
+  }
+
+  .mobileLabel {
+    display: none;
+  }
+
+  .mobileIcon {
+    font-size: 24px;
+  }
+
+  .mobileProfileImg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .mobileBadge {
+    top: 2px;
+    right: 6px;
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+}
+
+/* Mode paysage mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+  .menu {
+    top: 60px;
+    height: calc(100vh - 60px);
+  }
+
+  .mobileNav {
+    height: 55px;
+  }
+
+  .mobileNavItem {
+    min-height: 44px;
+  }
+}
+
+/* ========== ANIMATIONS ========== */
 @keyframes slideIn {
   from {
     transform: translateX(-100%);
@@ -382,18 +552,109 @@
   }
 }
 
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 .menu {
   animation: slideIn 0.3s ease-out;
 }
 
-/* Smooth transitions for theme changes */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+.mobileNav {
+  animation: slideUp 0.3s ease-out;
 }
 
-/* Ensure menu responsive spacing on small viewports */
-@media (max-width: 480px) {
-  .menu { display: none; }
-  .mobileNav { height: 64px; padding: 6px 4px; }
-  .mobileLabel { display: none; }
+/* ========== ACCESSIBILITY ========== */
+.menuItem:focus-visible,
+.mobileNavItem:focus-visible {
+  outline: 2px solid var(--menu-active-border);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .badge {
+    animation: none;
+  }
+}
+
+/* Support tactile */
+@media (hover: none) and (pointer: coarse) {
+  .menuItem,
+  .mobileNavItem,
+  .userCard {
+    min-height: 44px;
+  }
+
+  .mobileNavItem {
+    min-height: 48px;
+  }
+}
+
+/* Dark mode spécifique */
+@media (prefers-color-scheme: dark) {
+  .menu {
+    box-shadow: 2px 0 12px var(--menu-shadow);
+  }
+
+  .mobileNav {
+    box-shadow: 0 -4px 16px var(--menu-shadow);
+    background-color: rgba(31, 41, 55, 0.95);
+  }
+
+  .active {
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+  }
+}
+
+/* Écrans haute résolution */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .menu,
+  .mobileNav {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ========== UTILITIES ========== */
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Smooth scroll behavior */
+.menu {
+  scroll-behavior: smooth;
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--menu-active-color);
+  color: white;
+}
+
+::-moz-selection {
+  background-color: var(--menu-active-color);
+  color: white;
 }
