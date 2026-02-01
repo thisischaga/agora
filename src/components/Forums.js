@@ -4,8 +4,9 @@ import { FaEdit, FaPlus, FaUserCircle, FaSearch } from "react-icons/fa";
 import styles from "./forums.module.css";
 import Toast from "./Toast";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from '../Utils/api';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE_URL = API_URL;
 
 const Forums = ({ userId, setRefresh, refresh }) => {
     const [toCreate, setToCreate] = useState(false);

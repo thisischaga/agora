@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import Toast from './Toast';
 import styles from './imagePosting.module.css';
+import { API_URL } from '../Utils/api';
 
 const ImagePosting = ({ back, onPublish }) => {
     const [postText, setPostText] = useState('');
@@ -14,7 +15,7 @@ const ImagePosting = ({ back, onPublish }) => {
     const [toast, setToast] = useState(null);
     
     const fileInputRef = useRef(null);
-    const backendURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+    const backendURL = API_URL;
 
     const MAX_CHARS = 500;
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB

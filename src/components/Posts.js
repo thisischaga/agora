@@ -6,6 +6,7 @@ import { Friend } from './Friend';
 import { useNavigate } from 'react-router-dom';
 import Toast from './Toast';
 import { getNotif } from '../Utils/GetNotif';
+import { API_URL } from '../Utils/api';
 
 const Posts = ({ userId, setRefresh, refresh }) => {
     const [posts, setPosts] = useState([]);
@@ -19,7 +20,7 @@ const Posts = ({ userId, setRefresh, refresh }) => {
     const commentInputRef = useRef(null);
 
     const token = localStorage.getItem('token');
-    const backendURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+    const backendURL = API_URL;
 
     const manageTime = (postDate) => {
         const now = new Date();

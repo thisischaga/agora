@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import Toast from './Toast';
 import styles from './text.module.css';
+import { API_URL } from '../Utils/api';
 
 const Text = ({ back, onPublish }) => {
   const [textContent, setTextContent] = useState('');
@@ -11,7 +12,7 @@ const Text = ({ back, onPublish }) => {
   const textareaRef = useRef(null);
   
   const token = localStorage.getItem('token');
-  const backendURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+  const backendURL = API_URL;
   const MAX_CHARS = 5000;
 
   useEffect(() => {

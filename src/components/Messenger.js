@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './messenger.module.css';
+import { API_URL } from '../Utils/api';
 
 const Messenger = ({ onOpenChat }) => {
     const [conversations, setConversations] = useState([]);
@@ -14,7 +15,7 @@ const Messenger = ({ onOpenChat }) => {
     const fetchConversations = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/conversations_list', {
+            const response = await fetch(`${API_URL}/conversations_list`, {
                 headers: {
                     'Authorization': `Bearer${token}`
                 }

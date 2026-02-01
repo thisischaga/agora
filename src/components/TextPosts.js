@@ -8,6 +8,7 @@ import { FaShare } from "react-icons/fa";
 import { useEffect } from 'react';
 import axios from 'axios';
 import { useState } from 'react';
+import { API_URL } from '../Utils/api';
 
 
 const TextPosts = ()=>{
@@ -18,7 +19,7 @@ const TextPosts = ()=>{
 
     useEffect(() => {
         try {
-            axios.get('http://localhost:8000/posts', {
+            axios.get(`${API_URL}/posts`, {
                 headers: {Authorization: `Bearer${token}`}
             })
             .then(response => 

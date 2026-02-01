@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import styles from "./amis.module.css";
+import { API_URL } from '../Utils/api';
 
 const Amis = ({ setRefresh, refresh }) => {
     const [active, setActive] = useState("followers");
@@ -12,7 +13,7 @@ const Amis = ({ setRefresh, refresh }) => {
     const [processingIds, setProcessingIds] = useState(new Set());
 
     const token = localStorage.getItem("token");
-    const backendURL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+    const backendURL = API_URL;
 
     const headers = {
         headers: { Authorization: `Bearer${token}` },

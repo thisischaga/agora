@@ -1,6 +1,7 @@
 import styles from './text.module.css';
 import { useState } from 'react';
 import axios from 'axios';
+import { API_URL } from '../Utils/api';
 
 
 const Comment = ({userId})=>{
@@ -15,7 +16,7 @@ const Comment = ({userId})=>{
     const handleSubmit = async(e)=>{
         e.preventDefault();
         try {
-            const response = await axios.put('http://localhost:8000/comment', 
+            const response = await axios.put(`${API_URL}/comment`, 
                 {commentary: textContent, /*currentPostId,*/ userId},
                 {headers: {Authorization: `Bearer${token}`},
             })

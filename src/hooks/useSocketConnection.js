@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import socket from '../Utils/socket';
+import { API_URL } from '../Utils/api';
 
 export const useSocketConnection = (token, locationPath) => {
     const [refresh, setRefresh] = useState(false);
@@ -18,13 +19,13 @@ export const useSocketConnection = (token, locationPath) => {
             try {
                 // Register socket ID
                 await axios.post(
-                    "http://localhost:8000/socket/getSocketId",
+                    `${API_URL}/socket/getSocketId`,
                     { socketId: socket.id },
                     { headers: { Authorization: `Bearer${token}` } } // Fixed missing space in Bearer
                 );
                 
                 // Fetch initial data
-                const response = await axios.get("http://localhost:8000/user_data", {
+                const response = await axios.get(`${API_URL}/user_data`, {
                     headers: { Authorization: `Bearer${token}` }, // Fixed missing space in Bearer
                 });
                 setUserData(response.data);

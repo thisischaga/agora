@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import styles from "./StudentMap.module.css";
+import { API_URL } from '../Utils/api';
 
 const StudentMap = ({ onOpenChat }) => {  // Ajout de la prop onOpenChat
     const [users, setUsers] = useState([]);
@@ -10,7 +11,7 @@ const StudentMap = ({ onOpenChat }) => {  // Ajout de la prop onOpenChat
     const fetchUsers = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get(`http://localhost:8000/all-users`, {
+            const response = await axios.get(`${API_URL}/all-users`, {
                 headers: { Authorization: `Bearer${token}` },
             });
             setUsers(response.data);

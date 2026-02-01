@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './signup.module.css';
+import { API_URL } from '../Utils/api';
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ const Signup = () => {
     const [errors, setErrors] = useState({});
 
     const fileInputRef = useRef(null);
-    const backendURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+    const backendURL = API_URL;
 
     useEffect(() => {
         // Progress animation

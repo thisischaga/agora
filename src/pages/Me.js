@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import styles from './me.module.css';
+import { API_URL } from '../Utils/api';
 
 const Me = () => {
     const navigate = useNavigate();
@@ -10,7 +11,7 @@ const Me = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
 
-    const backendURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+    const backendURL = API_URL;
 
     const fetchData = useCallback(async () => {
         try {

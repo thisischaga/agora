@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './login.module.css';
+import { API_URL } from '../Utils/api';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Login = () => {
     const [errors, setErrors] = useState({});
     const [rememberMe, setRememberMe] = useState(false);
 
-    const backendURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
+    const backendURL = API_URL;
 
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

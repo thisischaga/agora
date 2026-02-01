@@ -6,8 +6,9 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Toast from '../components/Toast'
 import socket from '../Utils/socket'
 import { encryptData, decryptData } from '../Utils/CryptData'
+import { API_URL } from '../Utils/api'
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000'
+const API_BASE_URL = API_URL
 
 const Room = () => {
     const { id } = useParams()

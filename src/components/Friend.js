@@ -2,6 +2,7 @@ import axios from "axios";
 import styles from './friends.module.css';
 import { useEffect, useState } from "react";
 import { getNotif } from "../Utils/GetNotif";
+import { API_URL } from '../Utils/api';
 
 export const Friend = ({ userId, authorId, setRefresh, refresh }) => {
   const [followings, setFollowings] = useState([]);
@@ -13,7 +14,7 @@ export const Friend = ({ userId, authorId, setRefresh, refresh }) => {
   useEffect(() => {
     const fetchFollowings = async () => {
       try {
-        const followingResponse = await axios.get('http://localhost:8000/following', {
+        const followingResponse = await axios.get(`${API_URL}/following`, {
           headers: { Authorization: `Bearer${token}` }
         });
         setFollowings(followingResponse.data || []);
@@ -21,7 +22,7 @@ export const Friend = ({ userId, authorId, setRefresh, refresh }) => {
         console.error('Erreur fetch followings:', err);
       }
       try {
-        const folllowersResponse = await axios.get('http://localhost:8000/followers', {
+        const folllowersResponse = await axios.get(`${API_URL}/followers`, {
           headers: { Authorization: `Bearer${token}` }
         });
         setFollowers(folllowersResponse.data || []);
@@ -29,7 +30,7 @@ export const Friend = ({ userId, authorId, setRefresh, refresh }) => {
         console.error('Erreur fetch followings:', err);
       }
       try {
-        const folllowersResponse = await axios.get('http://localhost:8000/amis', {
+        const folllowersResponse = await axios.get(`${API_URL}/amis`, {
           headers: { Authorization: `Bearer${token}` }
         });
         setAmis(folllowersResponse.data || []);
@@ -43,7 +44,7 @@ export const Friend = ({ userId, authorId, setRefresh, refresh }) => {
   const handleFollow = async () => {
     try {
       const response = await axios.put(
-        'http://localhost:8000/follow',
+        `${API_URL}/follow`,
         { authorId },
         { headers: { Authorization: `Bearer${token}` } }
       );
@@ -61,7 +62,7 @@ export const Friend = ({ userId, authorId, setRefresh, refresh }) => {
   const handleBackFollow = async () => {
     try {
       const response = await axios.put(
-        'http://localhost:8000/back_follow',
+        `${API_URL}/back_follow`,
         { authorId },
         { headers: { Authorization: `Bearer${token}` } }
       );

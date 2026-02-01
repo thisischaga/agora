@@ -4,6 +4,7 @@ import { FaThumbsUp } from "react-icons/fa";
 import { useState } from 'react';
 import { useEffect } from 'react';
 import axios from 'axios';
+import { API_URL } from '../Utils/api';
 
 const Notifs = ({ refresh, setRefresh, userId }) => {
 
@@ -14,7 +15,7 @@ const Notifs = ({ refresh, setRefresh, userId }) => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/user/notifs/${userId}`, {
+                const response = await axios.get(`${API_URL}/user/notifs/${userId}`, {
                     headers: { Authorization: `Bearer${token}` }
                 });
                 setNotifications(response.data);

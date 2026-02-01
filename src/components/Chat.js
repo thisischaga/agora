@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import styles from "./chat.module.css";
+import { API_URL } from '../Utils/api';
 
 const AVATAR_SIZE = 32;
 
@@ -96,7 +97,7 @@ const Chat = ({ receiver, onClose }) => {
         try {
             const token = localStorage.getItem("token");
             if (!token) return;
-            const response = await axios.get(`http://localhost:8000/conversations/${receiver._id}`, {
+            const response = await axios.get(`${API_URL}/conversations/${receiver._id}`, {
                 headers: { Authorization: `Bearer${token}` }
             });
             const newMessages = response.data || [];
@@ -113,7 +114,7 @@ const Chat = ({ receiver, onClose }) => {
         const initialize = async () => {
             const token = localStorage.getItem("token");
             try {
-                const res = await axios.get(`http://localhost:8000/user_data`, {
+                const res = await axios.get(`${API_URL}/user_data`, {
                     headers: { Authorization: `Bearer${token}` }
                 });
                 setCurrentUser(res.data);
@@ -152,7 +153,7 @@ const Chat = ({ receiver, onClose }) => {
 
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.post(`http://localhost:8000/messages/send`, {
+            const response = await axios.post(`${API_URL}/messages/send`, {
                 participants: [currentUser.userId, receiver._id],
                 receiverId: receiver._id,
                 text: content

@@ -17,6 +17,7 @@ import Chat from "../components/Chat";
 
 import styles from './home.module.css';
 import socket from '../Utils/socket';
+import { API_URL } from '../Utils/api';
 import { FaCamera } from "react-icons/fa";
 import ImagePosting from "../components/ImagePosting";
 import Messenger from "../components/Messenger";
@@ -74,11 +75,11 @@ const Home = () => {
         socket.on("connect", async () => {
             try {
                 await axios.post(
-                    "http://localhost:8000/socket/getSocketId",
+                    `${API_URL}/socket/getSocketId`,
                     { socketId: socket.id },
                     { headers: { Authorization: `Bearer${token}` } }
                 );
-                const response = await axios.get("http://localhost:8000/user_data", {
+                const response = await axios.get(`${API_URL}/user_data`, {
                     headers: { Authorization: `Bearer${token}` },
                 });
                 setUserData(response.data);

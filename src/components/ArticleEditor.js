@@ -21,6 +21,7 @@ import {
     FaRedo
 } from "react-icons/fa";
 import Toast from './Toast';
+import { API_URL } from '../Utils/api';
 
 const ArticleEditor = ({ back }) => {
     const [titleImg, setTitleImg] = useState(null);
@@ -145,7 +146,7 @@ const ArticleEditor = ({ back }) => {
             const token = localStorage.getItem('token');
             
             const response = await axios.post(
-                'http://localhost:8000/publication',
+                `${API_URL}/publication`,
                 { 
                     post: contenu, 
                     title, 

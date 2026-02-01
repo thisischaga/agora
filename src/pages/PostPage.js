@@ -5,6 +5,7 @@ import axios from 'axios';
 //import { Friend } from '../components/Friend';
 import { useParams } from 'react-router-dom';
 import business from '../images/business.jpg';
+import { API_URL } from '../Utils/api';
 
 const PostPage = () => {
     const {id} = useParams();
@@ -16,7 +17,7 @@ const PostPage = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/post/${id}`, {
+                const response = await axios.get(`${API_URL}/post/${id}`, {
                     headers: { Authorization: `Bearer${token}` }
                 });
                 setPost(response.data);
