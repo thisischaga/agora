@@ -401,7 +401,7 @@ const Posts = ({ userId, setRefresh, refresh }) => {
                                     <div className={styles.commentContent}>
                                         <div className={styles.commentBubble}>
                                             <strong>{comment.username}</strong>
-                                            <p>{comment.text}</p>
+                                            <p>{comment.commentary}</p>
                                         </div>
                                         <span className={styles.commentTime}>{manageTime(comment.createdAt)}</span>
                                     </div>

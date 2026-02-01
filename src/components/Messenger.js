@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import styles from './messenger.module.css';
 import { API_URL } from '../Utils/api';
+import { FaSearch, FaPlus, FaCircle, FaInbox } from 'react-icons/fa';
 
 const Messenger = ({ onOpenChat }) => {
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedConv, setSelectedConv] = useState(null);
 
     useEffect(() => {
         fetchConversations();
@@ -14,6 +16,9 @@ const Messenger = ({ onOpenChat }) => {
 
     const fetchConversations = async () => {
         try {
+            setLoading(true);
+            setError(null);
+            
             const token = localStorage.getItem('token');
             const response = await fetch(`${API_URL}/conversations_list`, {
                 headers: {
@@ -24,19 +29,26 @@ const Messenger = ({ onOpenChat }) => {
             if (!response.ok) throw new Error('Erreur de chargement');
 
             const data = await response.json();
-            setConversations(data);
+            setConversations(data || []);
         } catch (err) {
+            console.error('Erreur lors du chargement des conversations:', err);
             setError(err.message);
+            setConversations([]);
         } finally {
             setLoading(false);
         }
     };
 
-    const getInitials = (username) => {
-        return username?.charAt(0).toUpperCase() || '?';
-    };
+    const getInitials = useCallback((username) => {
+        if (!username) return '?';
+        return username.split(' ')
+            .map(word => word.charAt(0))
+            .slice(0, 2)
+            .join('')
+            .toUpperCase();
+    }, []);
 
-    const formatTime = (date) => {
+    const formatTime = useCallback((date) => {
         const messageDate = new Date(date);
         const now = new Date();
         const diffMs = now - messageDate;
@@ -44,40 +56,30 @@ const Messenger = ({ onOpenChat }) => {
         const diffHours = Math.floor(diffMs / 3600000);
         const diffDays = Math.floor(diffMs / 86400000);
 
-        if (diffMins < 1) return 'À l\'instant';
-        if (diffMins < 60) return `${diffMins} min`;
-        if (diffHours < 24) return `${diffHours} h`;
-        if (diffDays < 7) return `${diffDays} j`;
+        if (diffMins < 1) return 'maintenant';
+        if (diffMins < 60) return `${diffMins}min`;
+        if (diffHours < 24) return `${diffHours}h`;
+        if (diffDays < 7) return `${diffDays}j`;
         
-        return messageDate.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-    };
+        return messageDate.toLocaleDateString('fr-FR', { 
+            day: 'numeric', 
+            month: 'short' 
+        });
+    }, []);
 
-    const truncateMessage = (text, maxLength = 50) => {
+    const truncateMessage = useCallback((text, maxLength = 50) => {
         if (!text) return '';
         return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-    };
+    }, []);
 
-    const filteredConversations = conversations.filter(conv =>
-        conv.conversationWith.username.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredConversations = useMemo(() => 
+        conversations.filter(conv =>
+            conv.conversationWith?.username?.toLowerCase().includes(searchQuery.toLowerCase())
+        ),
+        [conversations, searchQuery]
     );
 
-    if (loading) {
-        return (
-            <div className={styles.forums}>
-                <div className={styles.noUsers}>Chargement...</div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className={styles.forums}>
-                <div className={styles.noUsers}>Erreur: {error}</div>
-            </div>
-        );
-    }
-    const openChat = (user) => {
-        // Préparer l'objet receiver avec les bonnes propriétés
+    const handleOpenChat = useCallback((user) => {
         const receiver = {
             _id: user.id,
             username: user.username,
@@ -87,82 +89,158 @@ const Messenger = ({ onOpenChat }) => {
             distance: user.distance
         };
         
-        // Appeler la fonction onOpenChat passée en prop
+        setSelectedConv(user.id);
+        
         if (onOpenChat) {
             onOpenChat(receiver);
         }
+    }, [onOpenChat]);
+
+    const handleNewConversation = () => {
+        // Logique pour créer une nouvelle conversation
+        console.log('Nouvelle conversation');
     };
 
+    // Loading state
+    if (loading) {
+        return (
+            <div className={styles.messenger}>
+                <div className={styles.header}>
+                    <h3>Messages</h3>
+                </div>
+                <div className={styles.loading}>
+                    <div className={styles.spinner}></div>
+                    <p>Chargement...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <div className={styles.messenger}>
+                <div className={styles.header}>
+                    <h3>Messages</h3>
+                </div>
+                <div className={styles.error}>
+                    <FaInbox />
+                    <p>Erreur: {error}</p>
+                    <button onClick={fetchConversations} className={styles.retryBtn}>
+                        Réessayer
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className={styles.forums}>
+        <div className={styles.messenger}>
             {/* Header */}
-            <h3>Messages</h3>
+            <div className={styles.header}>
+                <h3>Messages</h3>
+                <button 
+                    className={styles.newChatBtn}
+                    onClick={handleNewConversation}
+                    aria-label="Nouvelle conversation"
+                >
+                    <FaPlus />
+                </button>
+            </div>
 
             {/* Search Bar */}
-            <div className={styles.tools}>
-                <input
-                    type="text"
-                    placeholder="Rechercher dans Messenger"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <div className={styles.add}>
-                    <p>+</p>
+            <div className={styles.searchContainer}>
+                <div className={styles.searchWrapper}>
+                    <FaSearch className={styles.searchIcon} />
+                    <input
+                        type="text"
+                        placeholder="Rechercher une conversation..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className={styles.searchInput}
+                    />
+                    {searchQuery && (
+                        <button 
+                            className={styles.clearSearchBtn}
+                            onClick={() => setSearchQuery('')}
+                            aria-label="Effacer la recherche"
+                        >
+                            ×
+                        </button>
+                    )}
                 </div>
             </div>
 
             {/* Conversations List */}
-            {filteredConversations.length === 0 ? (
-                <div className={styles.noUsers}>
-                    {searchQuery ? 'Aucune conversation trouvée' : 'Aucune conversation'}
-                </div>
-            ) : (
-                filteredConversations.map((conv, index) => (
-                    <div 
-                        key={conv.conversationWith.id || index} 
-                        className={styles.forumCard}
-                        onClick={() => openChat(conv.conversationWith)}
-                    >
-                        <div className={styles.roomData}>
-                            {/* Avatar */}
-                            <div className={styles.avatarContainer}>
-                                {conv.conversationWith.userPP ? (
-                                    <img 
-                                        src={conv.conversationWith.userPP} 
-                                        alt={conv.conversationWith.username}
-                                        className={styles.avatar}
-                                    />
-                                ) : (
-                                    <div className={styles.avatarPlaceholder}>
-                                        {getInitials(conv.conversationWith.username)}
-                                    </div>
-                                )}
-                                {conv.conversationWith.socketId && (
-                                    <span className={styles.onlineIndicator}></span>
-                                )}
-                            </div>
+            <div className={styles.conversationsList}>
+                {filteredConversations.length === 0 ? (
+                    <div className={styles.empty}>
+                        <FaInbox />
+                        <p>{searchQuery ? 'Aucune conversation trouvée' : 'Aucune conversation'}</p>
+                        {!searchQuery && (
+                            <button onClick={handleNewConversation} className={styles.startChatBtn}>
+                                Commencer une conversation
+                            </button>
+                        )}
+                    </div>
+                ) : (
+                    filteredConversations.map((conv, index) => {
+                        const isSelected = selectedConv === conv.conversationWith?.id;
+                        const isUnread = conv.lastMessage?.unread === 1;
+                        const isOnline = conv.conversationWith?.socketId;
 
-                            {/* Message Info */}
-                            <div className={styles.dataInColum}>
-                                <div className={styles.topRow}>
-                                    <p>{conv.conversationWith.username}</p>
-                                    <span className={styles.timestamp}>
-                                        {formatTime(conv.lastMessage.createdAt)}
-                                    </span>
-                                </div>
-                                <div className={styles.bottomRow}>
-                                    <span className={conv.lastMessage.unread ? styles.unreadMessage : ''}>
-                                        {truncateMessage(conv.lastMessage.text)}
-                                    </span>
-                                    {conv.lastMessage.unread === 1 && (
-                                        <span className={styles.unreadBadge}></span>
+                        return (
+                            <div 
+                                key={conv.conversationWith?.id || index} 
+                                className={`${styles.conversationCard} ${isSelected ? styles.selected : ''} ${isUnread ? styles.unread : ''}`}
+                                onClick={() => handleOpenChat(conv.conversationWith)}
+                            >
+                                {/* Avatar */}
+                                <div className={styles.avatarContainer}>
+                                    {conv.conversationWith?.userPP ? (
+                                        <img 
+                                            src={conv.conversationWith.userPP} 
+                                            alt={conv.conversationWith.username}
+                                            className={styles.avatar}
+                                            loading="lazy"
+                                        />
+                                    ) : (
+                                        <div className={styles.avatarPlaceholder}>
+                                            {getInitials(conv.conversationWith?.username)}
+                                        </div>
+                                    )}
+                                    {isOnline && (
+                                        <span className={styles.onlineIndicator}>
+                                            <FaCircle />
+                                        </span>
                                     )}
                                 </div>
+
+                                {/* Conversation Info */}
+                                <div className={styles.conversationInfo}>
+                                    <div className={styles.topRow}>
+                                        <p className={styles.username}>
+                                            {conv.conversationWith?.username || 'Utilisateur'}
+                                        </p>
+                                        <span className={styles.timestamp}>
+                                            {formatTime(conv.lastMessage?.createdAt)}
+                                        </span>
+                                    </div>
+                                    
+                                    <div className={styles.bottomRow}>
+                                        <span className={`${styles.lastMessage} ${isUnread ? styles.bold : ''}`}>
+                                            {truncateMessage(conv.lastMessage?.text)}
+                                        </span>
+                                        {isUnread && (
+                                            <span className={styles.unreadBadge}></span>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                ))
-            )}
+                        );
+                    })
+                )}
+            </div>
         </div>
     );
 };
