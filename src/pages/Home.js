@@ -108,6 +108,19 @@ const Home = () => {
 
     // ── Socket et récupération des données utilisateur ──
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        fetch(`${API_URL}/user_data`, {
+            headers: { Authorization: `Bearer${token}` },
+        })
+        .then(response => response.json())
+        .then(data => {
+            setUserData(data);
+            setNotifications(data.notifications || []);
+        })
+        .catch(error => {
+            console.error(error);
+            setToast("Erreur lors de la récupération des données.");
+        });
         socket.connect();
 
         socket.on("connect", async () => {
@@ -117,14 +130,10 @@ const Home = () => {
                     { socketId: socket.id },
                     { headers: { Authorization: `Bearer${token}` } }
                 );
-                const response = await axios.get(`${API_URL}/user_data`, {
-                    headers: { Authorization: `Bearer${token}` },
-                });
-                setUserData(response.data);
-                setNotifications(response.data.notifications || []);
+                
             } catch (err) {
                 console.error(err);
-                setToast("Erreur lors de la récupération des données.");
+                setToast("Socket connection error.");
             }
         });
         
