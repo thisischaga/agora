@@ -18,7 +18,7 @@ const CATEGORIES = [
     { id: 'other', label: 'Autre', icon: FaEllipsisH },
 ];
 
-const CreateEvent = () => {
+const CreateEvent = ({ back }) => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [toast, setToast] = useState(null);
@@ -106,9 +106,9 @@ const CreateEvent = () => {
 
     const handleCancel = () => {
         if (eventData.title.trim() || eventData.description.trim()) {
-            if (window.confirm('Abandonner la création ?')) navigate(-1);
+            if (window.confirm('Abandonner la création ?')) back();
         } else {
-            navigate(-1);
+            back();
         }
     };
 

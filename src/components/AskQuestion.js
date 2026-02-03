@@ -26,7 +26,7 @@ const TAGS_LIST = [
 const MAX_QUESTION_CHARS = 200;
 const MAX_DETAILS_CHARS = 1000;
 
-const AskQuestion = () => {
+const AskQuestion = ({ back }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         question: '',
@@ -92,10 +92,15 @@ const AskQuestion = () => {
     };
 
     const handleCancel = () => {
-        if (formData.question.trim() || formData.details.trim()) {
-            if (window.confirm('Abandonner la rédaction ?')) navigate(-1);
+        // Vérifie si l'utilisateur a écrit quelque chose
+        const hasContent = formData.question.trim().length > 0 || formData.details.trim().length > 0;
+
+        if (hasContent) {
+            if (window.confirm('Abandonner la rédaction ?')) {
+                back(); // Appelle la fonction du parent pour fermer le modal
+            }
         } else {
-            navigate(-1);
+            back(); // Ferme directement si c'est vide
         }
     };
 

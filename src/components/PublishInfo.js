@@ -2,13 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
-    FaTimes, FaPaperPlane, FaBullhorn, FaExclamationTriangle, 
+    FaTimes, FaPaperPlane, FaExclamationTriangle, 
     FaCalendar, FaBriefcase, FaNewspaper, FaLightbulb, FaImage, FaLink 
 } from 'react-icons/fa';
 import styles from './publish.module.css';
 import { API_URL } from '../Utils/api';
 
-const PublishInfo = () => {
+const PublishInfo = ({ back }) => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [toast, setToast] = useState(null);
@@ -139,10 +139,10 @@ const PublishInfo = () => {
     const handleCancel = () => {
         if (infoData.title.trim() !== '' || infoData.content.trim() !== '') {
             if (window.confirm('Êtes-vous sûr de vouloir abandonner cette publication ?')) {
-                navigate(-1);
+                back();
             }
         } else {
-            navigate(-1);
+            back();
         }
     };
 

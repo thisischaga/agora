@@ -8,7 +8,8 @@ import Room from './pages/Room';
 import Me from './pages/Me';
 import Settings from './pages/Settings';
 import Chat from './components/Chat';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoutes';
+
 
 
 function App() {
