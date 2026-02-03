@@ -175,6 +175,10 @@ const Home = () => {
     // Sur desktop, le feed principal est toujours visible
     const shouldShowMainFeed = isDesktop || active === '' || active === 'home';
 
+    const handleHomeClick = () => {
+        setActive('');
+    };
+
     return (
         <div>
             {/* Modal Text */}
@@ -251,6 +255,7 @@ const Home = () => {
                             setActive={setActive} 
                             setRefresh={setRefresh} 
                             refresh={refresh} 
+                            onClick={handleHomeClick}
                         />
 
                         {/* Afficher le feed principal seulement si aucun composant spécial n'est actif */}
@@ -284,7 +289,7 @@ const Home = () => {
                                                     className={styles.publishMenuItem}
                                                     onClick={goToAskQuestion}
                                                 >
-                                                    <div className={styles.publishMenuIcon} style={{ backgroundColor: '#8b5cf6' }}>
+                                                    <div className={styles.publishMenuIcon} style={{ backgroundColor: '#2563eb' }}>
                                                         <FaQuestionCircle />
                                                     </div>
                                                     <div className={styles.publishMenuText}>

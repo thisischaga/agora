@@ -32,7 +32,7 @@ const PublishInfo = () => {
         { id: 'announcement', label: 'Annonce', icon: FaBriefcase, color: '#3b82f6' },
         { id: 'alert', label: 'Alerte', icon: FaExclamationTriangle, color: '#ef4444' },
         { id: 'event', label: 'Événement', icon: FaCalendar, color: '#10b981' },
-        { id: 'opportunity', label: 'Opportunité', icon: FaBriefcase, color: '#8b5cf6' },
+        { id: 'opportunity', label: 'Opportunité', icon: FaBriefcase, color: '#2563eb' },
         { id: 'news', label: 'Actualité', icon: FaNewspaper, color: '#f59e0b' },
         { id: 'tip', label: 'Astuce', icon: FaLightbulb, color: '#06b6d4' },
     ];

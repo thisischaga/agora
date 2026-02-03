@@ -5,10 +5,10 @@
   --bg-userCard-hover: #3f3f46;
   --text-main: #fafafa;
   --text-muted: #a1a1aa;
-  --btn-blue-start: #6366f1;
-  --btn-blue-end: #4f46e5;
-  --btn-blue-hover-start: #4f46e5;
-  --btn-blue-hover-end: #4338ca;
+  --btn-blue-start: #2563eb;
+  --btn-blue-end: #1d4ed8;
+  --btn-blue-hover-start: #1d4ed8;
+  --btn-blue-hover-end: #1e40af;
   --border-userCard: #3f3f46;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
@@ -28,10 +28,10 @@
     --bg-userCard-hover: #f8fafc;
     --text-main: #0f172a;
     --text-muted: #64748b;
-    --btn-blue-start: #6366f1;
-    --btn-blue-end: #4f46e5;
-    --btn-blue-hover-start: #4f46e5;
-    --btn-blue-hover-end: #4338ca;
+    --btn-blue-start: #2563eb;
+    --btn-blue-end: #1d4ed8;
+    --btn-blue-hover-start: #1d4ed8;
+    --btn-blue-hover-end: #1e40af;
     --border-userCard: #e2e8f0;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -198,7 +198,7 @@
     background-color: var(--bg-userCard-hover);
     border-color: var(--btn-blue-start);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 .studentCard:active {
@@ -360,7 +360,7 @@
 
 .navigateBtn:hover {
     background: linear-gradient(135deg, var(--btn-blue-hover-start), var(--btn-blue-hover-end));
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 /* ========== LOADING & EMPTY STATES ========== */

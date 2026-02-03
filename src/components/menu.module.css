@@ -5,8 +5,8 @@
     --menu-text: #fafafa;
     --menu-text-muted: #a1a1aa;
     --menu-border: #27272a;
-    --primary: #6366f1;
-    --primary-light: rgba(99, 102, 241, 0.1);
+    --primary: #2563eb;
+    --primary-light: rgba(37, 99, 235, 0.1);
     --badge-bg: #ef4444;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
@@ -21,8 +21,8 @@
         --menu-text: #0f172a;
         --menu-text-muted: #64748b;
         --menu-border: #e2e8f0;
-        --primary: #6366f1;
-        --primary-light: rgba(99, 102, 241, 0.08);
+        --primary: #2563eb;
+        --primary-light: rgba(37, 99, 235, 0.08);
         --badge-bg: #ef4444;
         --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
         --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);

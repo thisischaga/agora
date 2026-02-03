@@ -222,7 +222,7 @@ const Posts = ({ userId, setRefresh, refresh }) => {
         announcement: { icon: FaCalendar, color: '#3b82f6', label: 'Annonce' },
         alert: { icon: FaExclamationTriangle, color: '#ef4444', label: 'Alerte' },
         event: { icon: FaCalendar, color: '#10b981', label: 'Événement' },
-        opportunity: { icon: FaBriefcase, color: '#8b5cf6', label: 'Opportunité' },
+        opportunity: { icon: FaBriefcase, color: '#2563eb', label: 'Opportunité' },
         news: { icon: FaNewspaper, color: '#f59e0b', label: 'Actualité' },
         tip: { icon: FaLightbulb, color: '#06b6d4', label: 'Astuce' },
     };
@@ -236,12 +236,12 @@ const Posts = ({ userId, setRefresh, refresh }) => {
 
     const categoryColors = {
         academic: '#3b82f6',
-        technical: '#8b5cf6',
+        technical: '#2563eb',
         career: '#10b981',
         life: '#f59e0b',
         other: '#6b7280',
         sport: '#10b981',
-        culture: '#8b5cf6',
+        culture: '#2563eb',
         education: '#3b82f6',
         social: '#f59e0b',
         technology: '#06b6d4',
