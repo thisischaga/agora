@@ -101,6 +101,7 @@ const CreateEvent = ({ back }) => {
             setToast(error.response?.data?.message || 'Erreur lors de la création');
         } finally {
             setIsLoading(false);
+            back();
         }
     };
 

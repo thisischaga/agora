@@ -88,6 +88,13 @@ const AskQuestion = ({ back }) => {
             setToast(error.response?.data?.message || 'Erreur lors de la publication');
         } finally {
             setIsLoading(false);
+            setFormData({
+                question: '',
+                details: '',
+                category: '',
+                tags: []
+            });
+            back();
         }
     };
 
@@ -220,7 +227,6 @@ const AskQuestion = ({ back }) => {
                     >
                         {isLoading ? <div className={styles.spinner} /> : (
                             <>
-                                <FaPaperPlane />
                                 <span>Publier</span>
                             </>
                         )}

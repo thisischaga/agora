@@ -133,6 +133,12 @@ const PublishInfo = ({ back }) => {
             setToast(error.response?.data?.message || 'Erreur lors de la publication');
         } finally {
             setIsLoading(false);
+            setImage(null);
+            setImagePreview(null);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+            back();
         }
     };
 
@@ -330,7 +336,6 @@ const PublishInfo = ({ back }) => {
                             <span className={styles.spinner}></span>
                         ) : (
                             <>
-                                <FaPaperPlane />
                                 <span>Publier l'information</span>
                             </>
                         )}
