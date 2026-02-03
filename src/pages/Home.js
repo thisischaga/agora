@@ -274,11 +274,7 @@ const Home = () => {
                                                 onClick={togglePublishMenu}
                                                 readOnly
                                             />
-                                            <div className={styles.iconContainer}>
-                                                <div className={styles.photoBtn} onClick={goImagePosting}>
-                                                    <FaCamera size={22} color="#fff" />
-                                                </div>
-                                            </div>
+
                                         </div>
 
                                         {/* Menu de publication étendu */}
