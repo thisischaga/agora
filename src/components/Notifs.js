@@ -36,6 +36,8 @@ const Notifs = ({ refresh, setRefresh, userId }) => {
     fetchNotifications();
   }, [userId, refresh, token]);
 
+  console.log(notifications);
+
   const formatTime = useCallback((date) => {
     const now = new Date();
     const givenDate = new Date(date);
@@ -66,9 +68,11 @@ const Notifs = ({ refresh, setRefresh, userId }) => {
 
   const handleNotificationClick = useCallback((notif) => {
     // Navigation selon le type de notification
-    if (notif.postId) {
+    if (notif.type === 'like') {
       navigate(`/post/${notif.postId}`);
-    } else if (notif.userId) {
+    } else if (notif.type === 'comment') {
+      navigate(`/post/${notif.postId}`);
+    } else if (notif.type === 'follow') {
       navigate(`/profile/${notif.userId}`);
     }
   }, [navigate]);

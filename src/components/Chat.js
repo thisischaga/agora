@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import styles from "./chat.module.css";
 import { API_URL } from '../Utils/api';
+import socket from "../Utils/socket";
+
 
 const AVATAR_SIZE = 32;
 
@@ -161,6 +163,9 @@ const Chat = ({ receiver, onClose }) => {
                 headers: { Authorization: `Bearer${token}` }
             });
             setMessages(prev => prev.map(m => m._id === optimisticId ? response.data : m));
+
+            socket.emit('newMsgAlert', {mess: 'Nouveau message'});
+
         } catch (error) {
             setMessages(prev => prev.filter(m => m._id !== optimisticId));
             setMessageText(content);

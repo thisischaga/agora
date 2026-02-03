@@ -1,0 +1,118 @@
+/* Conteneur principal utilisant tes variables de thème */
+.versionCont {
+    background-color: transparent;
+    color: var(--text-main);
+    
+    position: fixed;
+    right: 20px;
+    top: 80px;
+    width: 260px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.header {
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--text-main);
+}
+
+.content {
+    padding: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Style des cartes de version */
+.versionCard {
+    background-color: var(--bg-userCard);
+    border: 1px solid var(--border-userCard);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    transition: all 0.2s;
+}
+
+.versionCard:hover {
+    background-color: var(--bg-userCard-hover);
+}
+
+.latest {
+    border-color: var(--btn-blue-start);
+}
+
+.versionTop {
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.vNumber {
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.latestBadge {
+    background-color: var(--online-badge);
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 8px;
+}
+
+.vDate {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* Détails et Boutons */
+.versionDetails {
+    padding: 0 12px 12px 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.changeList {
+    list-style: disc;
+    padding-left: 20px;
+    margin: 10px 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.blueBtn {
+    background: linear-gradient(135deg, var(--btn-blue-start), var(--btn-blue-end));
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.blueBtn:hover {
+    background: linear-gradient(135deg, var(--btn-blue-hover-start), var(--btn-blue-hover-end));
+}
+
+/* Responsive (caché sur petit écran comme Amis) */
+@media (max-width: 1200px) {
+    .versionCont { display: none; }
+}

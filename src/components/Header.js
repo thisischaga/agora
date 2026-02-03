@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './header.module.css';
 import logo from '../images/logo.png';
+import { FaCog } from 'react-icons/fa';
 
 // Composant Icon SVG réutilisable
 const Icon = ({ name, size = 20 }) => {
@@ -99,25 +100,7 @@ const Header = ({ pp, active, setActive, setInImgPosting, setInText }) => {
 
           {/* Navigation */}
           <nav className={styles.navIcons}>
-            <button 
-              className={styles.iconBtn}
-              onClick={handleAddClick}
-              aria-label="Créer un post"
-            >
-              <Icon name="add" size={24} />
-              {showAddOptions && (
-                <div className={styles.addOptions}>
-                  <button onClick={() => handlePostType(setInText)}>
-                    <Icon name="text" size={24} />
-                    <span>Publier du texte</span>
-                  </button>
-                  <button onClick={() => handlePostType(setInImgPosting)}>
-                    <Icon name="image" size={24} />
-                    <span>Partager une photo</span>
-                  </button>
-                </div>
-              )}
-            </button>
+            
 
             <button 
               className={styles.iconBtn}
@@ -125,15 +108,7 @@ const Header = ({ pp, active, setActive, setInImgPosting, setInText }) => {
               aria-label="Notifications"
             >
               <Icon name="notification" size={24} />
-              <span className={styles.notificationBadge}>3</span>
-            </button>
-
-            <button 
-              className={styles.iconBtn}
-              onClick={() => handleLogoClick('messenger')}
-              aria-label="Messages"
-            >
-              <Icon name="message" size={24} />
+              {/**<span className={styles.notificationBadge}>3</span> */}
             </button>
 
             <button 
@@ -152,8 +127,7 @@ const Header = ({ pp, active, setActive, setInImgPosting, setInText }) => {
         <div className={styles.mobileLayout}>
           {/* Logo Mobile */}
           <div className={styles.logoMobile} onClick={() => handleLogoClick('home')}>
-            <img src={logo} alt='agora logo' />
-            <h1>agora</h1>
+            <h1 className={styles.logoText}>agora</h1>
           </div>
 
           {/* Mobile Navigation */}
@@ -168,50 +142,12 @@ const Header = ({ pp, active, setActive, setInImgPosting, setInText }) => {
 
             <button 
               className={styles.iconBtn}
-              onClick={handleAddClick}
-              aria-label="Créer un post"
+              onClick={() => navigate('/settings')}
+              aria-label="paramètres"
             >
-              <Icon name="add" size={22} />
-              {showAddOptions && (
-                <div className={styles.addOptions}>
-                  <button onClick={() => handlePostType(setInText)}>
-                    <Icon name="text" size={24} />
-                    <span>Publier du texte</span>
-                  </button>
-                  <button onClick={() => handlePostType(setInImgPosting)}>
-                    <Icon name="image" size={24} />
-                    <span>Partager une photo</span>
-                  </button>
-                </div>
-              )}
+              <FaCog size={22} />
             </button>
 
-            <button 
-              className={styles.iconBtn}
-              onClick={() => handleLogoClick('notifications')}
-              aria-label="Notifications"
-            >
-              <Icon name="notification" size={22} />
-              <span className={styles.notificationBadge}>3</span>
-            </button>
-
-            <button 
-              className={styles.iconBtn}
-              onClick={() => handleLogoClick('messenger')}
-              aria-label="Messages"
-            >
-              <Icon name="message" size={22} />
-            </button>
-
-            <button 
-              className={styles.iconBtn}
-              onClick={() => navigate('/me')}
-              aria-label="Profil"
-            >
-              <div className={styles.avatar}>
-                <img src={pp} alt="Profile" />
-              </div>
-            </button>
           </nav>
         </div>
       </header>

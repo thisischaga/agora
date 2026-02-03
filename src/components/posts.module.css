@@ -40,7 +40,7 @@
   padding: 16px;
 }
 
-/* Post Card */
+/* Post Cards */
 .post,
 .textPost {
   background-color: var(--bg-post);
@@ -53,6 +53,10 @@
 .post:hover,
 .textPost:hover {
   box-shadow: 0 4px 12px var(--shadow);
+}
+
+.urgentPost {
+  border-left: 4px solid #ef4444;
 }
 
 /* Header */
@@ -110,6 +114,17 @@
   color: var(--primary-blue);
 }
 
+/* Type Badge */
+.typeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .articleLabel {
   display: inline-flex;
   align-items: center;
@@ -146,7 +161,184 @@
   color: var(--text-main);
 }
 
-/* Content */
+/* Question Post */
+.questionContent {
+  padding: 0 16px 12px;
+}
+
+.questionTitle {
+  margin: 0 0 8px 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.4;
+}
+
+.questionDetails {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.categoryBadge {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.tagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.tag {
+  background-color: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Info Post */
+.infoContent {
+  padding: 0 16px 12px;
+}
+
+.infoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.infoTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  flex: 1;
+  line-height: 1.3;
+}
+
+.priorityBadge {
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
+}
+
+.infoBody {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background-color: #eff6ff;
+  border-radius: 10px;
+  color: #3b82f6;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+
+.linkButton:hover {
+  background-color: #dbeafe;
+}
+
+/* Event Post */
+.eventContent {
+  padding: 0 16px 12px;
+}
+
+.eventTitle {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.3;
+}
+
+.eventDescription {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.eventDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.eventDetailRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.eventDetailRow svg {
+  font-size: 16px;
+}
+
+.eventActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+  gap: 12px;
+}
+
+.participateBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background-color: #eff6ff;
+  color: #3b82f6;
+  border: none;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.participateBtn:hover {
+  background-color: #dbeafe;
+  transform: translateY(-1px);
+}
+
+.participateBtn.participating {
+  background-color: #dcfce7;
+  color: #10b981;
+}
+
+/* Regular Content */
 .content {
   padding: 0 16px 12px;
 }
@@ -511,13 +703,17 @@
   .postsContainer {
     padding: 8px;
     gap: 12px;
+    width: 100%;
   }
 
   .header {
     padding: 12px;
   }
 
-  .content {
+  .content,
+  .questionContent,
+  .infoContent,
+  .eventContent {
     padding: 0 12px 12px;
   }
 
@@ -564,6 +760,11 @@
 }
 
 @media (max-width: 480px) {
+  .typeBadge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
   .articleLabel {
     font-size: 10px;
     padding: 2px 6px;
@@ -583,13 +784,15 @@
   }
 }
 
-/* Ensure images and embeds scale */
-.imageWrapper img, .articleContent img {
-  max-width: 100%;
-  height: auto;
-}
-
 @media (max-width: 360px) {
-  .postsContainer { padding: 6px; }
-  .postText { font-size: 13px; }
+  .postsContainer { 
+    padding: 6px; 
+  }
+  
+  .postText,
+  .questionDetails,
+  .infoBody,
+  .eventDescription { 
+    font-size: 13px; 
+  }
 }

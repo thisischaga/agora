@@ -93,6 +93,14 @@
   letter-spacing: -0.5px;
 }
 
+.logoText {
+  color: #0084ff;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
 /* ========== SEARCH DESKTOP ========== */
 .searchContainer {
   display: flex;
@@ -428,7 +436,10 @@
   .header {
     height: 56px;
   }
-  
+  .logoText {
+    font-size: 20px;
+    color: #0084ff;
+  }
   .mobileLayout {
     padding: 0 10px;
   }
@@ -473,10 +484,6 @@
     padding: 0 8px;
   }
   
-  .logoMobile h1 {
-    display: none;
-  }
-  
   .logoMobile img {
     width: 34px;
     height: 34px;
@@ -485,7 +492,10 @@
   .mobileNav {
     gap: 2px;
   }
-  
+  .logoText {
+    font-size: 18px;
+    color: #0084ff;
+  }
   .iconBtn {
     width: 36px;
     height: 36px;
