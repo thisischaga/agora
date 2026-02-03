@@ -8,24 +8,40 @@ import Room from './pages/Room';
 import Me from './pages/Me';
 import Settings from './pages/Settings';
 import Chat from './components/Chat';
+import ProtectedRoute from './components/ProtectedRoute';
 
 
 function App() {
-  
     return (
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/signup" element={<Signup/>} />
-          <Route path="/home" element={<Home/>} />
-          <Route path="/me" element={<Me/>} />
-          <Route path="/settings" element={<Settings/>} />
-          <Route path="/post/:id" element={<PostPage/>} />
-          <Route path="/room/:id" element={<Room/>} />
-          <Route path="/chat/:id" element={<Chat/>} />
-        </Routes>
-      </Router>
+        <Router>
+            <Routes>
+                {/* Routes Publiques */}
+                <Route path="/" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+
+                {/* Routes Protégées (Nécessitent un token) */}
+                <Route path="/home" element={
+                    <ProtectedRoute> <Home /> </ProtectedRoute>
+                } />
+                <Route path="/me" element={
+                    <ProtectedRoute> <Me /> </ProtectedRoute>
+                } />
+                <Route path="/settings" element={
+                    <ProtectedRoute> <Settings /> </ProtectedRoute>
+                } />
+                <Route path="/post/:id" element={
+                    <ProtectedRoute> <PostPage /> </ProtectedRoute>
+                } />
+                <Route path="/room/:id" element={
+                    <ProtectedRoute> <Room /> </ProtectedRoute>
+                } />
+                <Route path="/chat/:id" element={
+                    <ProtectedRoute> <Chat /> </ProtectedRoute>
+                } />
+            </Routes>
+        </Router>
     );
 }
+
 
 export default App;
