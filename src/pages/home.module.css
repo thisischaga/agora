@@ -88,16 +88,18 @@ main {
     min-height: 100vh;
     width: 100%;
     position: relative;
+    margin: 0;
+    padding: 0;
 }
 
 .postSpace {
-    padding: clamp(16px, 3vw, 24px);
+    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
     max-width: 680px;
-    gap: clamp(20px, 3vw, 24px);
+    gap: 0;
 }
 
 /* ========== USER PROFILE BOX ========== */
@@ -105,10 +107,11 @@ main {
     background: var(--bg-panel);
     width: 100%;
     padding: clamp(16px, 3vw, 20px);
-    border-radius: var(--radius-xl);
-    margin-bottom: clamp(20px, 4vw, 24px);
-    box-shadow: var(--shadow-md);
-    border: 1px solid var(--border-color);
+    border-radius: 0;
+    margin-bottom: 0;
+    box-shadow: none;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
     transition: all var(--transition-slow);
     position: relative;
     overflow: hidden;
@@ -128,12 +131,6 @@ main {
 
 .userProfilBox:hover::before {
     opacity: 1;
-}
-
-.userProfilBox:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
-    border-color: var(--border-hover);
 }
 
 .user {
@@ -441,9 +438,9 @@ main {
 .postsContainer {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: clamp(20px, 3vw, 24px);
+    gap: 0;
     width: 100%;
-    padding: clamp(20px, 3vw, 24px) 0;
+    padding: 0;
 }
 
 /* ========== LOADING & EMPTY STATES ========== */
@@ -738,8 +735,8 @@ textarea {
 /* Tablets and small desktop */
 @media (max-width: 1024px) {
     .postSpace {
-        margin-left: 5%;
-        margin-right: 5%;
+        margin-left: 0;
+        margin-right: 0;
     }
 }
 
@@ -753,13 +750,14 @@ textarea {
     .postSpace {
         margin-left: 0;
         margin-right: 0;
-        padding: 16px;
+        padding: 0;
         max-width: 100%;
-        gap: 18px;
+        gap: 0;
     }
 
     .userProfilBox {
-        margin-bottom: 18px;
+        margin-bottom: 0;
+        border-radius: 0;
     }
 
     .actions {
@@ -778,8 +776,8 @@ textarea {
 
     .postsContainer {
         grid-template-columns: 1fr;
-        gap: 18px;
-        padding: 18px 0;
+        gap: 0;
+        padding: 0;
     }
 
     .chatContainer {
@@ -801,13 +799,13 @@ textarea {
 /* Mobile */
 @media (max-width: 640px) {
     .postSpace {
-        padding: 14px;
-        gap: 16px;
+        padding: 0;
+        gap: 0;
     }
 
     .userProfilBox {
         padding: 14px;
-        border-radius: var(--radius-lg);
+        border-radius: 0;
     }
 
     .actions {
@@ -845,13 +843,14 @@ textarea {
     }
 
     .postSpace {
-        padding: 12px;
-        gap: 14px;
+        padding: 0;
+        gap: 0;
     }
 
     .userProfilBox {
         padding: 12px;
-        margin-bottom: 16px;
+        margin-bottom: 0;
+        border-radius: 0;
     }
 
     .user {
@@ -864,8 +863,8 @@ textarea {
     }
 
     .postsContainer {
-        gap: 16px;
-        padding: 16px 0;
+        gap: 0;
+        padding: 0;
     }
 
     .modalContent,
@@ -877,13 +876,13 @@ textarea {
 /* Very small mobile */
 @media (max-width: 360px) {
     .postSpace {
-        padding: 10px;
-        gap: 12px;
+        padding: 0;
+        gap: 0;
     }
 
     .userProfilBox {
         padding: 10px;
-        margin-bottom: 12px;
+        margin-bottom: 0;
     }
 
     .actions input {
@@ -904,8 +903,8 @@ textarea {
     }
 
     .postsContainer {
-        gap: 14px;
-        padding: 14px 0;
+        gap: 0;
+        padding: 0;
     }
 
     .modalContent,
@@ -933,12 +932,12 @@ textarea {
     }
 
     .postSpace {
-        padding: 10px;
+        padding: 0;
     }
 
     .userProfilBox {
         padding: 12px;
-        margin-bottom: 12px;
+        margin-bottom: 0;
     }
 
     .user {
@@ -946,7 +945,7 @@ textarea {
     }
 
     .postsContainer {
-        gap: 14px;
+        gap: 0;
     }
 
     .chatContainer {

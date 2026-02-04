@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import styles from './me.module.css';
 import { API_URL } from '../Utils/api';
+import { 
+    FaCalendar, FaQuestionCircle, FaExclamationTriangle, 
+    FaBriefcase, FaNewspaper, FaLightbulb, FaHeart, 
+    FaRegCommentDots, FaClock
+} from 'react-icons/fa';
 
 const Me = () => {
     const navigate = useNavigate();
@@ -13,6 +18,18 @@ const Me = () => {
 
     const backendURL = API_URL;
 
+    // ========== TYPE CONFIGURATIONS ==========
+    const typeConfig = useMemo(() => ({
+        announcement: { icon: FaClock, color: '#3b82f6', label: 'Annonce' },
+        alert: { icon: FaExclamationTriangle, color: '#ef4444', label: 'Alerte' },
+        event: { icon: FaCalendar, color: '#10b981', label: 'Événement' },
+        opportunity: { icon: FaBriefcase, color: '#2563eb', label: 'Opportunité' },
+        news: { icon: FaNewspaper, color: '#f59e0b', label: 'Actualité' },
+        tip: { icon: FaLightbulb, color: '#06b6d4', label: 'Astuce' },
+        question: { icon: FaQuestionCircle, color: '#3b82f6', label: 'Question' },
+    }), []);
+
+    // ========== FETCH DATA ==========
     const fetchData = useCallback(async () => {
         try {
             const token = localStorage.getItem("token");
@@ -32,7 +49,7 @@ const Me = () => {
         fetchData();
     }, [fetchData]);
 
-    // LOGIQUE DE TRI : Plus récent en haut
+    // ========== DATA SORTING ==========
     const displayData = useMemo(() => {
         let source = [];
         if (activeTab === "posts") source = userData?.posts || [];
@@ -46,6 +63,153 @@ const Me = () => {
         fetchData();
     };
 
+    // ========== RENDER GRID ITEM ==========
+    const renderGridItem = useCallback((item) => {
+        const postType = item.post?.type || item.post?.postType;
+        const postData = item.post || {};
+        
+        // Question Post
+        if (postType === 'question') {
+            const config = typeConfig.question;
+            const IconComponent = config.icon;
+            
+            return (
+                <div 
+                    key={item._id} 
+                    className={`${styles.gridItem} ${styles.questionPost}`}
+                    onClick={() => navigate(`/post/${item._id}`)}
+                >
+                    <div className={styles.questionOverlay}>
+                        <div className={styles.typeIndicator} style={{ backgroundColor: config.color }}>
+                            <IconComponent />
+                        </div>
+                        <h3 className={styles.gridQuestionTitle}>{postData.question}</h3>
+                        {postData.category && (
+                            <span className={styles.gridCategory}>{postData.category}</span>
+                        )}
+                    </div>
+                    <div className={styles.gridStats}>
+                        <span><FaRegCommentDots /> {item.postComment?.length || 0}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        // Info Post
+        if (postData.postType === 'info') {
+            const config = typeConfig[postData.type] || typeConfig.announcement;
+            const IconComponent = config.icon;
+            
+            return (
+                <div 
+                    key={item._id} 
+                    className={`${styles.gridItem} ${styles.infoPost}`}
+                    onClick={() => navigate(`/post/${item._id}`)}
+                >
+                    {postData.imageUrl ? (
+                        <>
+                            <img src={postData.imageUrl} alt="Info" className={styles.gridImage} />
+                            <div className={styles.infoOverlay}>
+                                <div className={styles.typeIndicator} style={{ backgroundColor: config.color }}>
+                                    <IconComponent />
+                                </div>
+                                <h3 className={styles.gridInfoTitle}>{postData.title}</h3>
+                            </div>
+                        </>
+                    ) : (
+                        <div className={styles.infoTextOnly}>
+                            <div className={styles.typeIndicator} style={{ backgroundColor: config.color }}>
+                                <IconComponent />
+                            </div>
+                            <h3 className={styles.gridInfoTitle}>{postData.title}</h3>
+                            <p className={styles.gridInfoContent}>{postData.content?.substring(0, 80)}...</p>
+                        </div>
+                    )}
+                    <div className={styles.gridStats}>
+                        <span><FaHeart /> {item.postLike?.length || 0}</span>
+                        <span><FaRegCommentDots /> {item.postComment?.length || 0}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        // Event Post
+        if (postType === 'event') {
+            const config = typeConfig.event;
+            const IconComponent = config.icon;
+            
+            return (
+                <div 
+                    key={item._id} 
+                    className={`${styles.gridItem} ${styles.eventPost}`}
+                    onClick={() => navigate(`/post/${item._id}`)}
+                >
+                    <div className={styles.eventOverlay}>
+                        <div className={styles.typeIndicator} style={{ backgroundColor: config.color }}>
+                            <IconComponent />
+                        </div>
+                        <h3 className={styles.gridEventTitle}>{postData.title}</h3>
+                        {postData.startDate && (
+                            <span className={styles.gridEventDate}>
+                                <FaClock /> {new Date(postData.startDate).toLocaleDateString('fr-FR', { 
+                                    day: 'numeric', 
+                                    month: 'short' 
+                                })}
+                            </span>
+                        )}
+                    </div>
+                    <div className={styles.gridStats}>
+                        <span><FaHeart /> {item.postLike?.length || 0}</span>
+                        <span><FaRegCommentDots /> {item.postComment?.length || 0}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        // Regular Post with Image
+        if (item.postPicture) {
+            return (
+                <div 
+                    key={item._id} 
+                    className={styles.gridItem}
+                    onClick={() => navigate(`/post/${item._id}`)}
+                >
+                    <img src={item.postPicture} alt="Post" className={styles.gridImage} />
+                    {item.title && (
+                        <div className={styles.articleOverlay}>
+                            <h3 className={styles.gridArticleTitle}>{item.title}</h3>
+                        </div>
+                    )}
+                    <div className={styles.gridStats}>
+                        <span><FaHeart /> {item.postLike?.length || 0}</span>
+                        <span><FaRegCommentDots /> {item.postComment?.length || 0}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        // Text-only Post
+        return (
+            <div 
+                key={item._id} 
+                className={`${styles.gridItem} ${styles.textPost}`}
+                onClick={() => navigate(`/post/${item._id}`)}
+            >
+                <div className={styles.textPostContent}>
+                    <p className={styles.gridTextContent}>
+                        {item.postText?.substring(0, 120)}
+                        {item.postText?.length > 120 ? '...' : ''}
+                    </p>
+                </div>
+                <div className={styles.gridStats}>
+                    <span><FaHeart /> {item.postLike?.length || 0}</span>
+                    <span><FaRegCommentDots /> {item.postComment?.length || 0}</span>
+                </div>
+            </div>
+        );
+    }, [navigate, typeConfig]);
+
+    // ========== RENDER HEADER ==========
     const renderHeader = () => (
         <div className={styles.profileSection}>
             <div className={styles.profileHeader}>
@@ -100,6 +264,7 @@ const Me = () => {
         </div>
     );
 
+    // ========== LOADING STATE ==========
     if (isLoading) {
         return (
             <div className={styles.loadingContainer}>
@@ -108,6 +273,7 @@ const Me = () => {
         );
     }
 
+    // ========== MAIN RENDER ==========
     return (
         <div className={styles.container}>
             <div className={styles.topNav}>
@@ -126,21 +292,7 @@ const Me = () => {
 
                 <div className={styles.gridContainer}>
                     {displayData.length > 0 ? (
-                        displayData.map((item) => (
-                            <div 
-                                key={item._id} 
-                                className={styles.gridItem}
-                                onClick={() => navigate(`/post/${item._id}`)}
-                            >
-                                {item.postPicture ? (
-                                    <img src={item.postPicture} alt="Post" className={styles.gridImage} />
-                                ) : (
-                                    <div className={`${styles.gridImage} ${styles.textPostFallback}`}>
-                                        <p className={styles.textFallbackText}>{item.postText}</p>
-                                    </div>
-                                )}
-                            </div>
-                        ))
+                        displayData.map((item) => renderGridItem(item))
                     ) : (
                         <div className={styles.emptyState}>
                             <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2">
@@ -148,7 +300,14 @@ const Me = () => {
                                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                 <polyline points="21 15 16 10 5 21"></polyline>
                             </svg>
-                            <p className={styles.emptyTitle}>Aucun contenu</p>
+                            <p className={styles.emptyTitle}>
+                                {activeTab === "posts" ? "Aucune publication" : "Aucun contenu enregistré"}
+                            </p>
+                            <p className={styles.emptySubtitle}>
+                                {activeTab === "posts" 
+                                    ? "Créez votre première publication" 
+                                    : "Enregistrez des publications pour les retrouver ici"}
+                            </p>
                         </div>
                     )}
                 </div>
@@ -163,7 +322,7 @@ const Me = () => {
     );
 };
 
-// Sous-composants
+// ========== SUB-COMPONENTS ==========
 const StatItem = ({ number, label }) => (
     <div className={styles.statItem}>
         <span className={styles.statNumber}>{number}</span>

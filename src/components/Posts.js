@@ -1,12 +1,11 @@
 import styles from './posts.module.css';
 import { 
-    FaRegThumbsUp, FaThumbsUp, FaEllipsisV, FaRegBookmark, FaBookmark, 
-    FaRegCommentDots, FaShare, FaTimes, FaHeart, FaRegHeart,
-    FaQuestionCircle, FaExclamationTriangle, FaCalendar,
+    FaEllipsisV, FaQuestionCircle, FaExclamationTriangle, FaCalendar,
     FaBriefcase, FaNewspaper, FaLightbulb, FaMapMarkerAlt, FaUsers,
-    FaClock, FaCheckCircle, FaPlusCircle
+    FaClock, FaCheckCircle, FaPlusCircle, FaTimes, FaHeart, FaRegHeart,
+    FaRegCommentDots, FaPaperPlane, FaRegBookmark, FaBookmark
 } from "react-icons/fa";
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { Friend } from './Friend';
 import { useNavigate } from 'react-router-dom';
@@ -29,7 +28,9 @@ const Posts = ({ userId, setRefresh, refresh }) => {
     const backendURL = API_URL;
     const navigate = useNavigate();
 
-    const manageTime = (postDate) => {
+    // ========== UTILS ==========
+    const manageTime = useCallback((postDate) => {
+        if (!postDate) return '';
         const now = new Date();
         const givenDate = new Date(postDate);
         const diffMs = now - givenDate;
@@ -39,7 +40,7 @@ const Posts = ({ userId, setRefresh, refresh }) => {
         const hours = Math.floor(diffMs / (1000 * 60 * 60));
         const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-        if (seconds < 60) return `${seconds}s`;
+        if (seconds < 60) return "À l'instant";
         if (minutes < 60) return `${minutes}min`;
         if (hours < 24) return `${hours}h`;
         if (days < 7) return `${days}j`;
@@ -47,9 +48,9 @@ const Posts = ({ userId, setRefresh, refresh }) => {
         const months = Math.floor(days / 30);
         if (months < 12) return `${months} mois`;
         return `${Math.floor(days / 365)} an${Math.floor(days / 365) > 1 ? 's' : ''}`;
-    };
+    }, []);
 
-    const formatEventDate = (dateString) => {
+    const formatEventDate = useCallback((dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('fr-FR', { 
             day: 'numeric', 
@@ -57,22 +58,58 @@ const Posts = ({ userId, setRefresh, refresh }) => {
             hour: '2-digit',
             minute: '2-digit'
         });
+    }, []);
+
+    // ========== CONFIGURATIONS ==========
+    const typeConfig = useMemo(() => ({
+        announcement: { icon: FaCalendar, color: '#3b82f6', label: 'Annonce' },
+        alert: { icon: FaExclamationTriangle, color: '#ef4444', label: 'Alerte' },
+        event: { icon: FaCalendar, color: '#10b981', label: 'Événement' },
+        opportunity: { icon: FaBriefcase, color: '#2563eb', label: 'Opportunité' },
+        news: { icon: FaNewspaper, color: '#f59e0b', label: 'Actualité' },
+        tip: { icon: FaLightbulb, color: '#06b6d4', label: 'Astuce' },
+    }), []);
+
+    const priorityConfig = useMemo(() => ({
+        low: { color: '#6b7280', label: 'Basse' },
+        normal: { color: '#3b82f6', label: 'Normale' },
+        high: { color: '#f59e0b', label: 'Haute' },
+        urgent: { color: '#ef4444', label: 'Urgente' },
+    }), []);
+
+    const categoryColors = useMemo(() => ({
+        academic: '#3b82f6',
+        technical: '#2563eb',
+        career: '#10b981',
+        life: '#f59e0b',
+        other: '#6b7280',
+        sport: '#10b981',
+        culture: '#2563eb',
+        education: '#3b82f6',
+        social: '#f59e0b',
+        technology: '#06b6d4',
+    }), []);
+
+    // ========== API CALLS ==========
+    useEffect(() => {
+    const fetchPosts = async () => {
+        setIsLoading(true); 
+        try {
+            const response = await axios.get(`${backendURL}/posts`, {
+                headers: { Authorization: `Bearer${token}` }
+            });
+            setPosts(response.data || []);
+        } catch (error) {
+            console.error(error);
+            setToast('Erreur lors du chargement des publications');
+        } finally {
+            setIsLoading(false); 
+        }
     };
 
-    useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const response = await axios.get(`${backendURL}/posts`, {
-                    headers: { Authorization: `Bearer${token}` }
-                });
-                setPosts(response.data || []);
-            } catch (error) {
-                console.error('Erreur lors du chargement des posts :', error);
-                setToast('Erreur lors du chargement des publications');
-            }
-        };
-        fetchPosts();
-    }, [refresh, token, backendURL]);
+    fetchPosts();
+    }, []);
+
 
     useEffect(() => {
         if (selectedPostId && commentInputRef.current) {
@@ -80,7 +117,8 @@ const Posts = ({ userId, setRefresh, refresh }) => {
         }
     }, [selectedPostId]);
 
-    const handleLike = async (postId, authorId, like, post) => {
+
+    const handleLike = useCallback(async (postId, authorId, like, post) => {
         if (processingActions[`like-${postId}`]) return;
         
         setProcessingActions(prev => ({ ...prev, [`like-${postId}`]: true }));
@@ -91,10 +129,9 @@ const Posts = ({ userId, setRefresh, refresh }) => {
                 { postId, authorId },
                 { headers: { Authorization: `Bearer${token}` } }
             );
-            const updatedLikes = response.data.likes;
             setPosts((prev) =>
                 prev.map((p) =>
-                    p._id === postId ? { ...p, postLike: updatedLikes } : p
+                    p._id === postId ? { ...p, postLike: response.data.likes } : p
                 )
             );
             if (userId !== authorId && !like.includes(userId)) {
@@ -109,13 +146,12 @@ const Posts = ({ userId, setRefresh, refresh }) => {
             }
         } catch (error) {
             setToast(error.response?.data?.message || 'Erreur lors du like');
-            console.error('Erreur lors du like :', error);
         } finally {
             setProcessingActions(prev => ({ ...prev, [`like-${postId}`]: false }));
         }
-    };
+    }, [processingActions, backendURL, token, userId]);
 
-    const handleComment = async (postId, authorId) => {
+    const handleComment = useCallback(async (postId, authorId) => {
         if (!textContent.trim() || isLoading) return;
         
         setIsLoading(true);
@@ -125,11 +161,10 @@ const Posts = ({ userId, setRefresh, refresh }) => {
                 { commentary: textContent, currentPostId: postId, userId, authorId },
                 { headers: { Authorization: `Bearer${token}` } }
             );
-            const updatedComment = response.data.commentaires;
             setPosts((prev) =>
                 prev.map((post) =>
                     post._id === postId
-                        ? { ...post, postComment: updatedComment }
+                        ? { ...post, postComment: response.data.commentaires }
                         : post
                 )
             );
@@ -137,17 +172,16 @@ const Posts = ({ userId, setRefresh, refresh }) => {
             if (userId !== authorId) {
                 getNotif({ userId, authorId, message: "a commenté votre publication", token });
             }
+            setTextContent('');
+            setSelectedPostId(null);
         } catch (error) {
-            console.error('Erreur lors du commentaire :', error);
             setToast(error.response?.data?.message || 'Erreur lors du commentaire');
         } finally {
             setIsLoading(false);
-            setTextContent('');
-            setSelectedPostId(null);
         }
-    };
+    }, [textContent, isLoading, backendURL, token, userId]);
 
-    const handleShare = async (post) => {
+    const handleShare = useCallback(async (post) => {
         const shareData = {
             title: post.title || post.post?.title || 'Publication',
             text: post.postText || post.post?.content || '',
@@ -159,7 +193,8 @@ const Posts = ({ userId, setRefresh, refresh }) => {
                 await navigator.share(shareData);
             } catch (error) {
                 if (error.name !== 'AbortError') {
-                    console.error('Erreur de partage :', error);
+                    navigator.clipboard.writeText(shareData.url);
+                    setToast('Lien copié dans le presse-papiers !');
                 }
                 return;
             }
@@ -169,23 +204,22 @@ const Posts = ({ userId, setRefresh, refresh }) => {
         }
 
         try {
-            const response = await axios.put(
+            await axios.put(
                 `${backendURL}/post/sharing`,
                 { currentPostId: post._id, userId },
-                { headers: { Authorization: `Bearer${token}` } }
+                { headers: { Authorization: `Bearer ${token}` } }
             );
-            const updatedSharing = response.data.sharing;
             setPosts((prev) =>
                 prev.map((p) =>
-                    p._id === post._id ? { ...p, sharing: updatedSharing } : p
+                    p._id === post._id ? { ...p, sharing: [...(p.sharing || []), userId] } : p
                 )
             );
         } catch (error) {
             console.error('Erreur lors du partage :', error);
         }
-    };
+    }, [backendURL, token, userId]);
 
-    const handleSavePost = async (postId) => {
+    const handleSavePost = useCallback(async (postId) => {
         if (processingActions[`save-${postId}`]) return;
         
         setProcessingActions(prev => ({ ...prev, [`save-${postId}`]: true }));
@@ -199,529 +233,430 @@ const Posts = ({ userId, setRefresh, refresh }) => {
                 setSavedPosts(prev => [...prev, postId]);
                 setToast('Publication enregistrée');
             }
-        } catch (error) {
-            console.error('Erreur lors de la sauvegarde :', error);
         } finally {
             setProcessingActions(prev => ({ ...prev, [`save-${postId}`]: false }));
         }
-    };
+    }, [processingActions, savedPosts]);
 
-    const toggleComments = (postId) => {
+    const toggleComments = useCallback((postId) => {
         setShowComments(prev => ({
             ...prev,
             [postId]: !prev[postId]
         }));
-    };
+    }, []);
 
-    const toThePost = (id) => {
-        navigate(`/post/${id}`);
-    };
 
-    // Type configurations
-    const typeConfig = {
-        announcement: { icon: FaCalendar, color: '#3b82f6', label: 'Annonce' },
-        alert: { icon: FaExclamationTriangle, color: '#ef4444', label: 'Alerte' },
-        event: { icon: FaCalendar, color: '#10b981', label: 'Événement' },
-        opportunity: { icon: FaBriefcase, color: '#2563eb', label: 'Opportunité' },
-        news: { icon: FaNewspaper, color: '#f59e0b', label: 'Actualité' },
-        tip: { icon: FaLightbulb, color: '#06b6d4', label: 'Astuce' },
-    };
-
-    const priorityConfig = {
-        low: { color: '#6b7280', label: 'Basse' },
-        normal: { color: '#3b82f6', label: 'Normale' },
-        high: { color: '#f59e0b', label: 'Haute' },
-        urgent: { color: '#ef4444', label: 'Urgente' },
-    };
-
-    const categoryColors = {
-        academic: '#3b82f6',
-        technical: '#2563eb',
-        career: '#10b981',
-        life: '#f59e0b',
-        other: '#6b7280',
-        sport: '#10b981',
-        culture: '#2563eb',
-        education: '#3b82f6',
-        social: '#f59e0b',
-        technology: '#06b6d4',
-    };
-
-    const renderPost = (post) => {
-        const postData = post.post || {};
-        
-        // Question Post
-        if (post.post.type === 'question') {
-            return (
-                <article className={styles.post} key={post._id}>
-                    <div className={styles.header}>
-                        <div className={styles.author}>
-                            <img 
-                                src={post.userPP || 'https://via.placeholder.com/40'} 
-                                alt={post.username}
-                                onClick={() => navigate(`/profile/${post.userId}`)}
-                            />
-                            <div className={styles.authorInfo}>
-                                <div className={styles.authorName}>
-                                    <p onClick={() => navigate(`/profile/${post.userId}`)}>
-                                        {post.username}
-                                    </p>
-                                    <span className={styles.typeBadge} style={{ backgroundColor: '#eff6ff', color: '#3b82f6' }}>
-                                        <FaQuestionCircle /> Question
-                                    </span>
-                                </div>
-                                <span className={styles.postTime}>{manageTime(post.createdAt)}</span>
-                            </div>
-                        </div>
-                        <button className={styles.moreBtn} aria-label="Plus d'options">
-                            <FaEllipsisV />
-                        </button>
-                    </div>
-
-                    <div className={styles.questionContent}>
-                        <h3 className={styles.questionTitle}>{postData.question}</h3>
-                        {postData.details && (
-                            <p className={styles.questionDetails}>{postData.details}</p>
-                        )}
-                        
-                        {postData.category && (
-                            <span 
-                                className={styles.categoryBadge}
-                                style={{ 
-                                    backgroundColor: categoryColors[postData.category] + '20',
-                                    color: categoryColors[postData.category]
-                                }}
-                            >
-                                {postData.category}
-                            </span>
-                        )}
-                        
-                        {postData.tags && postData.tags.length > 0 && (
-                            <div className={styles.tagsRow}>
-                                {postData.tags.map((tag, index) => (
-                                    <span key={index} className={styles.tag}>{tag}</span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    {renderActions(post)}
-                    {renderCommentSection(post)}
-                </article>
-            );
-        }
-
-        // Info Post
-        if (post.post.postType === 'info') {
-            const config = typeConfig[postData.type] || typeConfig.announcement;
-            const priority = priorityConfig[postData.priority] || priorityConfig.normal;
-            const IconComponent = config.icon;
-
-            return (
-                <article 
-                    className={`${styles.post} ${postData.priority === 'urgent' ? styles.urgentPost : ''}`} 
-                    key={post._id}
+    // ========== RENDER COMPONENTS ==========
+    
+    // Actions mobiles style
+    const renderMobileActions = useCallback((post) => (
+        <div className={styles.mobileActions}>
+            <div className={styles.leftActions}>
+                <button 
+                    className={`${styles.mobileActionBtn} ${post.postLike?.includes(userId) ? styles.liked : ''}`}
+                    onClick={() => handleLike(post._id, post.userId, post.postLike, post)}
+                    disabled={processingActions[`like-${post._id}`]}
+                    aria-label="J'aime"
                 >
-                    <div className={styles.header}>
-                        <div className={styles.author}>
-                            <img 
-                                src={post.userPP || 'https://via.placeholder.com/40'} 
-                                alt={post.username}
-                                onClick={() => navigate(`/profile/${post.userId}`)}
-                            />
-                            <div className={styles.authorInfo}>
-                                <div className={styles.authorName}>
-                                    <p onClick={() => navigate(`/profile/${post.userId}`)}>
-                                        {post.username}
-                                    </p>
-                                    <span 
-                                        className={styles.typeBadge}
-                                        style={{ 
-                                            backgroundColor: config.color + '20',
-                                            color: config.color
-                                        }}
-                                    >
-                                        <IconComponent /> {config.label}
-                                    </span>
-                                </div>
-                                <span className={styles.postTime}>{manageTime(post.createdAt)}</span>
-                            </div>
-                        </div>
-                        <button className={styles.moreBtn} aria-label="Plus d'options">
-                            <FaEllipsisV />
-                        </button>
-                    </div>
+                    {post.postLike?.includes(userId) ? (
+                        <FaHeart className={styles.iconLiked} />
+                    ) : (
+                        <FaRegHeart />
+                    )}
+                    {post.postLike?.length > 0 && (
+                        <span className={styles.count}>{post.postLike.length}</span>
+                    )}
+                </button>
 
-                    <div className={styles.infoContent}>
-                        <div className={styles.infoHeader}>
-                            <h3 className={styles.infoTitle}>{postData.title}</h3>
-                            {postData.priority && postData.priority !== 'normal' && (
-                                <span 
-                                    className={styles.priorityBadge}
-                                    style={{ backgroundColor: priority.color }}
-                                >
-                                    {priority.label}
-                                </span>
-                            )}
-                        </div>
-                        <p className={styles.infoBody}>{postData.content}</p>
-                        
-                        {postData.imageUrl && (
-                            <div className={styles.imageWrapper}>
-                                <img src={postData.imageUrl} alt="Info" />
-                            </div>
-                        )}
-                        
-                        {postData.link && (
-                            <a 
-                                href={postData.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={styles.linkButton}
-                            >
-                                🔗 {postData.link}
-                            </a>
-                        )}
-                    </div>
+                <button 
+                    className={styles.mobileActionBtn}
+                    onClick={() => toggleComments(post._id)}
+                    aria-label="Commenter"
+                >
+                    <FaRegCommentDots />
+                    {post.postComment?.length > 0 && (
+                        <span className={styles.count}>{post.postComment.length}</span>
+                    )}
+                </button>
 
-                    {renderActions(post)}
-                    {renderCommentSection(post)}
-                </article>
-            );
-        }
+                <button 
+                    className={styles.mobileActionBtn}
+                    onClick={() => handleShare(post)}
+                    aria-label="Partager"
+                >
+                    <FaPaperPlane />
+                    {post.sharing?.length > 0 && (
+                        <span className={styles.count}>{post.sharing.length}</span>
+                    )}
+                </button>
+            </div>
 
-        // Event Post
-        if (post.post.type === 'event') {
-            return (
-                <article className={styles.post} key={post._id}>
-                    <div className={styles.header}>
-                        <div className={styles.author}>
-                            <img 
-                                src={post.userPP || 'https://via.placeholder.com/40'} 
-                                alt={post.username}
-                                onClick={() => navigate(`/profile/${post.userId}`)}
-                            />
-                            <div className={styles.authorInfo}>
-                                <div className={styles.authorName}>
-                                    <p onClick={() => navigate(`/profile/${post.userId}`)}>
-                                        {post.username}
-                                    </p>
-                                    <span 
-                                        className={styles.typeBadge}
-                                        style={{ backgroundColor: '#dcfce7', color: '#10b981' }}
-                                    >
-                                        <FaCalendar /> Événement
-                                    </span>
-                                </div>
-                                <span className={styles.postTime}>{manageTime(post.createdAt)}</span>
-                            </div>
-                        </div>
-                        <button className={styles.moreBtn} aria-label="Plus d'options">
-                            <FaEllipsisV />
-                        </button>
-                    </div>
+            <button 
+                className={`${styles.mobileActionBtn} ${savedPosts.includes(post._id) ? styles.saved : ''}`}
+                onClick={() => handleSavePost(post._id)}
+                disabled={processingActions[`save-${post._id}`]}
+                aria-label="Enregistrer"
+            >
+                {savedPosts.includes(post._id) ? (
+                    <FaBookmark />
+                ) : (
+                    <FaRegBookmark />
+                )}
+            </button>
+        </div>
+    ), [userId, handleLike, toggleComments, handleShare, handleSavePost, processingActions, savedPosts]);
 
-                    <div className={styles.eventContent}>
-                        <h3 className={styles.eventTitle}>{postData.title}</h3>
-                        <p className={styles.eventDescription}>{postData.description}</p>
-                        
-                        <div className={styles.eventDetails}>
-                            {postData.startDate && (
-                                <div className={styles.eventDetailRow}>
-                                    <FaClock />
-                                    <span>
-                                        {formatEventDate(postData.startDate)}
-                                        {postData.endDate && ` - ${formatEventDate(postData.endDate)}`}
-                                    </span>
-                                </div>
-                            )}
-                            
-                            {postData.location && (
-                                <div className={styles.eventDetailRow}>
-                                    <FaMapMarkerAlt />
-                                    <span>{postData.location}</span>
-                                </div>
-                            )}
-                            
-                            {postData.maxParticipants && (
-                                <div className={styles.eventDetailRow}>
-                                    <FaUsers />
-                                    <span>
-                                        {postData.participants?.length || 0}/{postData.maxParticipants} participants
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-                        
-                        {postData.category && (
-                            <span 
-                                className={styles.categoryBadge}
-                                style={{ 
-                                    backgroundColor: categoryColors[postData.category] + '20',
-                                    color: categoryColors[postData.category]
-                                }}
-                            >
-                                {postData.category}
-                            </span>
-                        )}
-                    </div>
-
-                    <div className={styles.eventActions}>
-                        <button 
-                            className={`${styles.participateBtn} ${postData.participants?.includes(userId) ? styles.participating : ''}`}
-                        >
-                            {postData.participants?.includes(userId) ? (
-                                <>
-                                    <FaCheckCircle /> Inscrit
-                                </>
-                            ) : (
-                                <>
-                                    <FaPlusCircle /> Participer
-                                </>
-                            )}
-                        </button>
-                        
-                        <button 
-                            className={`${styles.actionBtn} ${post.postLike?.includes(userId) ? styles.active : ''}`}
-                            onClick={() => handleLike(post._id, post.userId, post.postLike, post)}
-                            disabled={processingActions[`like-${post._id}`]}
-                        >
-                            {post.postLike?.includes(userId) ? (
-                                <FaHeart className={styles.iconActive} />
-                            ) : (
-                                <FaRegHeart className={styles.icon} />
-                            )}
-                            <span>{post.postLike?.length || 0}</span>
-                        </button>
-                    </div>
-
-                    {renderCommentSection(post)}
-                </article>
-            );
-        }
-
-        // Regular Post (default)
-        return (
-            <article className={post.postPicture ? styles.post : styles.textPost} key={post._id}>
-                <div className={styles.header}>
-                    <div className={styles.author}>
-                        <img 
-                            src={post.userPP || 'https://via.placeholder.com/40'} 
-                            alt={post.username}
-                            onClick={() => navigate(`/profile/${post.userId}`)}
-                        />
-                        <div className={styles.authorInfo}>
-                            <div className={styles.authorName}>
-                                <p onClick={() => navigate(`/profile/${post.userId}`)}>
-                                    {post.username}
-                                </p>
-                                <Friend
-                                    userId={userId}
-                                    authorId={post.userId}
-                                    authorFollowers={post.followers}
-                                    setRefresh={setRefresh}
-                                    refresh={refresh}
-                                />
-                                {post.title && <span className={styles.articleLabel}>Article</span>}
-                            </div>
-                            <span className={styles.postTime}>{manageTime(post.createdAt)}</span>
-                        </div>
-                    </div>
-                    <button className={styles.moreBtn} aria-label="Plus d'options">
-                        <FaEllipsisV />
-                    </button>
-                </div>
-
-                <div className={styles.content}>
-                    {post.postText && <p className={styles.postText}>{post.postText}</p>}
-                    {post.postPicture && (
-                        <div className={styles.imageWrapper}>
-                            <img 
-                                src={post.postPicture} 
-                                alt="post" 
-                                onClick={() => toThePost(post._id)}
-                                loading="lazy"
-                            />
-                            {post.title && (
-                                <div className={styles.articleContent}>
-                                    <h2>{post.title}</h2>
-                                    <div
-                                        dangerouslySetInnerHTML={{ 
-                                            __html: post.post?.substring(0, 80) + '...' 
-                                        }}
-                                        className={styles.htmlContent}
+    const renderCommentSection = useCallback((post) => (
+        <>
+            {showComments[post._id] && (
+                <div className={styles.commentsWrapper}>
+                    {post.postComment?.length > 0 ? (
+                        <>
+                            {post.postComment.slice(0, 3).map((comment, index) => (
+                                <div key={index} className={styles.comment}>
+                                    <img 
+                                        src={comment.userPP || 'https://via.placeholder.com/32'} 
+                                        alt={comment.username}
+                                        className={styles.commentAvatar}
                                     />
+                                    <div className={styles.commentBody}>
+                                        <div className={styles.commentBubble}>
+                                            <strong className={styles.commentUsername}>{comment.username}</strong>
+                                            <p className={styles.commentText}>{comment.commentary}</p>
+                                        </div>
+                                        <span className={styles.commentTime}>{manageTime(comment.createdAt)}</span>
+                                    </div>
                                 </div>
+                            ))}
+                            {post.postComment.length > 3 && (
+                                <button 
+                                    className={styles.viewAllComments}
+                                    onClick={() => navigate(`/post/${post._id}`)}
+                                >
+                                    Voir les {post.postComment.length} commentaires
+                                </button>
                             )}
+                        </>
+                    ) : (
+                        <div className={styles.noComments}>
+                            <FaRegCommentDots />
+                            <span>Aucun commentaire</span>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            <div className={styles.commentInputWrapper}>
+                <img 
+                    src={post.userPP || 'https://via.placeholder.com/32'} 
+                    alt="Votre profil"
+                    className={styles.commentInputAvatar}
+                />
+                <input
+                    ref={selectedPostId === post._id ? commentInputRef : null}
+                    type="text"
+                    placeholder="Ajouter un commentaire..."
+                    value={selectedPostId === post._id ? textContent : ''}
+                    onChange={(e) => setTextContent(e.target.value)}
+                    onFocus={() => setSelectedPostId(post._id)}
+                    onKeyPress={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleComment(post._id, post.userId);
+                        }
+                    }}
+                    className={styles.commentInput}
+                />
+                {selectedPostId === post._id && textContent.trim() && (
+                    <button 
+                        className={styles.sendCommentBtn}
+                        onClick={() => handleComment(post._id, post.userId)} 
+                        disabled={isLoading}
+                    >
+                        {isLoading ? '...' : 'Publier'}
+                    </button>
+                )}
+            </div>
+        </>
+    ), [showComments, selectedPostId, textContent, isLoading, manageTime, handleComment, navigate]);
+
+    const renderPostHeader = useCallback((post) => (
+        <div className={styles.header}>
+            <div className={styles.author}>
+                <img 
+                    src={post.userPP || 'https://via.placeholder.com/40'} 
+                    alt={post.username}
+                    onClick={() => navigate(`/profile/${post.userId}`)}
+                    className={styles.avatar}
+                />
+                <div className={styles.authorInfo}>
+                    <div className={styles.authorName}>
+                        <p onClick={() => navigate(`/profile/${post.userId}`)}>
+                            {post.username}
+                        </p>
+                        <Friend
+                            userId={userId}
+                            authorId={post.userId}
+                            authorFollowers={post.followers}
+                            setRefresh={setRefresh}
+                            refresh={refresh}
+                        />
+                    </div>
+                    <span className={styles.postTime}>{manageTime(post.createdAt)}</span>
+                </div>
+            </div>
+            <button className={styles.moreBtn} aria-label="Plus d'options">
+                <FaEllipsisV />
+            </button>
+        </div>
+    ), [navigate, userId, setRefresh, refresh, manageTime]);
+
+    // ========== POST TYPES RENDERERS ==========
+    
+    const renderQuestionPost = useCallback((post) => {
+        const postData = post.post || {};
+        return (
+            <article className={styles.post} key={post._id}>
+                {renderPostHeader(post)}
+                
+                <div className={styles.questionContent}>
+                    <span className={styles.typeBadge} style={{ backgroundColor: '#eff6ff', color: '#3b82f6' }}>
+                        <FaQuestionCircle /> Question
+                    </span>
+                    <h3 className={styles.questionTitle}>{postData.question}</h3>
+                    {postData.details && (
+                        <p className={styles.questionDetails}>{postData.details}</p>
+                    )}
+                    
+                    {postData.category && (
+                        <span 
+                            className={styles.categoryBadge}
+                            style={{ 
+                                backgroundColor: categoryColors[postData.category] + '20',
+                                color: categoryColors[postData.category]
+                            }}
+                        >
+                            {postData.category}
+                        </span>
+                    )}
+                    
+                    {postData.tags && postData.tags.length > 0 && (
+                        <div className={styles.tagsRow}>
+                            {postData.tags.map((tag, index) => (
+                                <span key={index} className={styles.tag}>#{tag}</span>
+                            ))}
                         </div>
                     )}
                 </div>
 
-                {renderActions(post)}
+                {renderMobileActions(post)}
                 {renderCommentSection(post)}
             </article>
         );
-    };
+    }, [renderPostHeader, categoryColors, renderMobileActions, renderCommentSection]);
 
-    const renderActions = (post) => (
-        <>
-            <div className={styles.stats}>
-                {post.postLike?.length > 0 && (
-                    <span className={styles.likesCount}>
-                        <FaRegThumbsUp className={styles.miniIcon} />
-                        {post.postLike.length} {post.postLike.length === 1 ? 'mention J\'aime' : 'mentions J\'aime'}
-                    </span>
-                )}
-                {post.postComment?.length > 0 && (
-                    <span 
-                        className={styles.commentsCount}
-                        onClick={() => toggleComments(post._id)}
-                    >
-                        {post.postComment.length} {post.postComment.length === 1 ? 'commentaire' : 'commentaires'}
-                    </span>
-                )}
-            </div>
+    const renderInfoPost = useCallback((post) => {
+        const postData = post.post || {};
+        const config = typeConfig[postData.type] || typeConfig.announcement;
+        const priority = priorityConfig[postData.priority] || priorityConfig.normal;
+        const IconComponent = config.icon;
 
-            <div className={styles.actions}>
-                <button 
-                    className={`${styles.actionBtn} ${post.postLike?.includes(userId) ? styles.active : ''}`}
-                    onClick={() => handleLike(post._id, post.userId, post.postLike, post)}
-                    disabled={processingActions[`like-${post._id}`]}
-                >
-                    {post.postLike?.includes(userId) ? (
-                        <FaThumbsUp className={styles.iconActive} />
-                    ) : (
-                        <FaRegThumbsUp className={styles.icon} />
-                    )}
-                    <span>J'aime</span>
-                </button>
+        return (
+            <article 
+                className={`${styles.post} ${postData.priority === 'urgent' ? styles.urgentPost : ''}`} 
+                key={post._id}
+            >
+                {renderPostHeader(post)}
 
-                <button 
-                    className={styles.actionBtn}
-                    onClick={() => setSelectedPostId(selectedPostId === post._id ? null : post._id)}
-                >
-                    <FaRegCommentDots className={styles.icon} />
-                    <span>Commenter</span>
-                </button>
-
-                <button 
-                    className={styles.actionBtn}
-                    onClick={() => handleShare(post)}
-                >
-                    <FaShare className={styles.icon} />
-                    <span>Partager</span>
-                </button>
-
-                <button 
-                    className={`${styles.actionBtn} ${savedPosts.includes(post._id) ? styles.active : ''}`}
-                    onClick={() => handleSavePost(post._id)}
-                    disabled={processingActions[`save-${post._id}`]}
-                >
-                    {savedPosts.includes(post._id) ? (
-                        <FaBookmark className={styles.iconActive} />
-                    ) : (
-                        <FaRegBookmark className={styles.icon} />
-                    )}
-                    <span>Enregistrer</span>
-                </button>
-            </div>
-        </>
-    );
-
-    const renderCommentSection = (post) => (
-        <>
-            {selectedPostId === post._id && (
-                <div className={styles.commentBox}>
-                    <img 
-                        src={post.userPP || 'https://via.placeholder.com/32'} 
-                        alt="Votre profil"
-                        className={styles.commentAvatar}
-                    />
-                    <div className={styles.commentInputWrapper}>
-                        <input
-                            ref={commentInputRef}
-                            type="text"
-                            placeholder="Écrivez un commentaire..."
-                            value={textContent}
-                            onChange={(e) => setTextContent(e.target.value)}
-                            onKeyPress={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleComment(post._id, post.userId);
-                                }
+                <div className={styles.infoContent}>
+                    <div className={styles.infoHeader}>
+                        <span 
+                            className={styles.typeBadge}
+                            style={{ 
+                                backgroundColor: config.color + '20',
+                                color: config.color
                             }}
-                        />
-                        <div className={styles.commentActions}>
-                            <button 
-                                className={styles.cancelBtn}
-                                onClick={() => {
-                                    setSelectedPostId(null);
-                                    setTextContent('');
-                                }}
-                            >
-                                <FaTimes />
-                            </button>
-                            <button 
-                                className={styles.submitBtn}
-                                onClick={() => handleComment(post._id, post.userId)} 
-                                disabled={isLoading || !textContent.trim()}
-                            >
-                                {isLoading ? (
-                                    <span className={styles.btnSpinner}></span>
-                                ) : (
-                                    'Publier'
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {showComments[post._id] && post.postComment?.length > 0 && (
-                <div className={styles.commentsSection}>
-                    {post.postComment.slice(0, 3).map((comment, index) => (
-                        <div key={index} className={styles.comment}>
-                            <img 
-                                src={comment.userPP || 'https://via.placeholder.com/32'} 
-                                alt={comment.username}
-                            />
-                            <div className={styles.commentContent}>
-                                <div className={styles.commentBubble}>
-                                    <strong>{comment.username}</strong>
-                                    <p>{comment.commentary}</p>
-                                </div>
-                                <span className={styles.commentTime}>{manageTime(comment.createdAt)}</span>
-                            </div>
-                        </div>
-                    ))}
-                    {post.postComment.length > 3 && (
-                        <button 
-                            className={styles.viewAllComments}
-                            onClick={() => toThePost(post._id)}
                         >
-                            Voir les {post.postComment.length} commentaires
-                        </button>
+                            <IconComponent /> {config.label}
+                        </span>
+                        {postData.priority && postData.priority !== 'normal' && (
+                            <span 
+                                className={styles.priorityBadge}
+                                style={{ backgroundColor: priority.color }}
+                            >
+                                {priority.label}
+                            </span>
+                        )}
+                    </div>
+                    <h3 className={styles.infoTitle}>{postData.title}</h3>
+                    <p className={styles.infoBody}>{postData.content}</p>
+                    
+                    {postData.imageUrl && (
+                        <div className={styles.imageWrapper}>
+                            <img src={postData.imageUrl} alt="Info" />
+                        </div>
+                    )}
+                    
+                    {postData.link && (
+                        <a 
+                            href={postData.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.linkButton}
+                        >
+                            🔗 En savoir plus
+                        </a>
                     )}
                 </div>
-            )}
-        </>
-    );
 
-    if (posts.length === 0) {
+                {renderMobileActions(post)}
+                {renderCommentSection(post)}
+            </article>
+        );
+    }, [renderPostHeader, typeConfig, priorityConfig, renderMobileActions, renderCommentSection]);
+
+    const renderEventPost = useCallback((post) => {
+        const postData = post.post || {};
+        return (
+            <article className={styles.post} key={post._id}>
+                {renderPostHeader(post)}
+
+                <div className={styles.eventContent}>
+                    <span 
+                        className={styles.typeBadge}
+                        style={{ backgroundColor: '#dcfce7', color: '#10b981' }}
+                    >
+                        <FaCalendar /> Événement
+                    </span>
+                    <h3 className={styles.eventTitle}>{postData.title}</h3>
+                    <p className={styles.eventDescription}>{postData.description}</p>
+                    
+                    <div className={styles.eventDetails}>
+                        {postData.startDate && (
+                            <div className={styles.eventDetailRow}>
+                                <FaClock />
+                                <span>
+                                    {formatEventDate(postData.startDate)}
+                                    {postData.endDate && ` - ${formatEventDate(postData.endDate)}`}
+                                </span>
+                            </div>
+                        )}
+                        
+                        {postData.location && (
+                            <div className={styles.eventDetailRow}>
+                                <FaMapMarkerAlt />
+                                <span>{postData.location}</span>
+                            </div>
+                        )}
+                        
+                        {postData.maxParticipants && (
+                            <div className={styles.eventDetailRow}>
+                                <FaUsers />
+                                <span>
+                                    {postData.participants?.length || 0}/{postData.maxParticipants} participants
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                    
+                    {postData.category && (
+                        <span 
+                            className={styles.categoryBadge}
+                            style={{ 
+                                backgroundColor: categoryColors[postData.category] + '20',
+                                color: categoryColors[postData.category]
+                            }}
+                        >
+                            {postData.category}
+                        </span>
+                    )}
+
+                    <button 
+                        className={`${styles.participateBtn} ${postData.participants?.includes(userId) ? styles.participating : ''}`}
+                    >
+                        {postData.participants?.includes(userId) ? (
+                            <>
+                                <FaCheckCircle /> Inscrit
+                            </>
+                        ) : (
+                            <>
+                                <FaPlusCircle /> Participer
+                            </>
+                        )}
+                    </button>
+                </div>
+
+                {renderMobileActions(post)}
+                {renderCommentSection(post)}
+            </article>
+        );
+    }, [renderPostHeader, formatEventDate, categoryColors, userId, renderMobileActions, renderCommentSection]);
+
+    const renderRegularPost = useCallback((post) => (
+        <article className={post.postPicture ? styles.post : styles.textPost} key={post._id}>
+            {renderPostHeader(post)}
+
+            <div className={styles.content}>
+                {post.postText && <p className={styles.postText}>{post.postText}</p>}
+                {post.postPicture && (
+                    <div className={styles.imageWrapper}>
+                        <img 
+                            src={post.postPicture} 
+                            alt="post" 
+                            onClick={() => navigate(`/post/${post._id}`)}
+                            loading="lazy"
+                        />
+                        {post.title && (
+                            <div className={styles.articleOverlay}>
+                                <h2>{post.title}</h2>
+                                <div
+                                    dangerouslySetInnerHTML={{ 
+                                        __html: post.post?.substring(0, 80) + '...' 
+                                    }}
+                                    className={styles.htmlContent}
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            {renderMobileActions(post)}
+            {renderCommentSection(post)}
+        </article>
+    ), [renderPostHeader, navigate, renderMobileActions, renderCommentSection]);
+
+    const renderPost = useCallback((post) => {
+        const postType = post.post?.type || post.post?.postType;
+        
+        if (postType === 'question') return renderQuestionPost(post);
+        if (post.post?.postType === 'info') return renderInfoPost(post);
+        if (postType === 'event') return renderEventPost(post);
+        return renderRegularPost(post);
+    }, [renderQuestionPost, renderInfoPost, renderEventPost, renderRegularPost]);
+
+    // ========== MAIN RENDER ==========
+
+    if (isLoading) {
         return (
             <div className={styles.postsContainer}>
-                <div className={styles.emptyState}>
-                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path>
-                        <polyline points="9 11 12 14 22 4"></polyline>
-                        <path d="M22 4L12 14.01l-3-3L2 18.01"></path>
-                    </svg>
-                    <h3>Aucune publication</h3>
-                    <p>Les publications de vos amis apparaîtront ici</p>
-                </div>
+                <p style={{ textAlign: 'center' }}>Chargement...</p>
             </div>
         );
     }
+    if (posts.length === 0 && isLoading === false) {
+        return (
+            <div className={styles.postsContainer}>
+                <div className={styles.emptyState}>
+                    <FaRegCommentDots size={64} />
+                    <h3>Aucune publication</h3>
+                    <p>Les publications de vos amis apparaîtront ici</p>
+                </div>
+                
+            </div>
+        );
+    }
+    
 
     return (
         <div className={styles.postsContainer}>

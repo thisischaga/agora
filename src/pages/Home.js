@@ -41,6 +41,7 @@ const Home = () => {
     const [active, setActive] = useState(''); // État vide par défaut
     const [toast, setToast] = useState(null);
     const [refresh, setRefresh] = useState(false);
+    const [isLoading, setIsLoading]= useState(false)
 
     // ── États UI modaux ──
     const [inText, setInText] = useState(false);
@@ -108,19 +109,27 @@ const Home = () => {
 
     // ── Socket et récupération des données utilisateur ──
     useEffect(() => {
+        setIsLoading(true);
         const token = localStorage.getItem('token');
-        fetch(`${API_URL}/user_data`, {
-            headers: { Authorization: `Bearer${token}` },
-        })
-        .then(response => response.json())
-        .then(data => {
-            setUserData(data);
-            setNotifications(data.notifications || []);
-        })
-        .catch(error => {
+        try {
+            fetch(`${API_URL}/user_data`, {
+                headers: { Authorization: `Bearer${token}` },
+            })
+            .then(response => response.json())
+            .then(data => {
+                setUserData(data);
+                localStorage.setItem('userId', data.userId);
+                setNotifications(data.notifications || []);
+            })
+            .catch(error => {
+                console.error(error);
+                setToast("Erreur lors de la récupération des données.");
+            });
+        } catch (error) {
             console.error(error);
-            setToast("Erreur lors de la récupération des données.");
-        });
+        }finally{
+            setIsLoading(false)
+        }
         socket.connect();
 
         socket.on("connect", async () => {
