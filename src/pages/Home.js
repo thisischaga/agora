@@ -38,7 +38,7 @@ const Home = () => {
     const [userData, setUserData] = useState({});
     const [notifications, setNotifications] = useState([]);
     const [connectedUsers, setConnectedUsers] = useState([]);
-    const [active, setActive] = useState(''); // État vide par défaut
+    const [active, setActive] = useState('home'); // État 'home' par défaut
     const [toast, setToast] = useState(null);
     const [refresh, setRefresh] = useState(false);
     const [isLoading, setIsLoading]= useState(false)
@@ -154,7 +154,7 @@ const Home = () => {
             socket.off('notif');
             socket.disconnect();
         };
-    }, [location.pathname, token]);
+    }, [token]); // Enlevé location.pathname
 
     // ── États pour le responsive ──
     const [isDesktop, setIsDesktop] = useState(window.innerWidth > 1024);
@@ -171,30 +171,58 @@ const Home = () => {
     const renderActiveComponent = () => {
         switch(active) {
             case 'notifications':
-                return <Notifs pp={userData.userPP} userId={userData.userId} setRefresh={setRefresh} refresh={refresh} />;
+                return (
+                    <Notifs 
+                        setActive={setActive}
+                        active={active}
+                        pp={userData.userPP}
+                        userId={userData.userId} 
+                        setRefresh={setRefresh} 
+                        refresh={refresh} 
+                    />
+                );
             case 'messenger':
-                return <Messenger pp={userData.userPP} setShowMessBox={setShowMessBox} setRefresh={setRefresh} refresh={refresh} onOpenChat={handleOpenChat} />;
+                return (
+                    <Messenger 
+                        setActive={setActive}
+                        active={active}
+                        pp={userData.userPP} 
+                        setShowMessBox={setShowMessBox} 
+                        setRefresh={setRefresh} 
+                        refresh={refresh} 
+                        onOpenChat={handleOpenChat}
+                    />
+                );
             case 'students':
-                return <StudentMap pp={userData.userPP} userId={userData.userId} username={userData.username} setRefresh={setRefresh} refresh={refresh} onOpenChat={handleOpenChat} />;
+                return (
+                    <StudentMap 
+                        setActive={setActive}
+                        active={active}
+                        pp={userData.userPP} 
+                        userId={userData.userId} 
+                        username={userData.username} 
+                        setRefresh={setRefresh} 
+                        refresh={refresh} 
+                        onOpenChat={handleOpenChat}
+                    />
+                );
             case 'amis':
                 return <Amis pp={userData.userPP} connectedUsers={connectedUsers} setRefresh={setRefresh} refresh={refresh} />;
             case 'appVersions':
                 return <AppVersions />;
             case 'home':
-            case '':
+            default:
                 // Sur desktop, on affiche AppVersions quand on est sur l'accueil
                 return isDesktop ? <AppVersions /> : null;
-            default:
-                return null;
         }
     };
 
     // Vérifier si on doit afficher le feed principal (home ou aucun actif)
     // Sur desktop, le feed principal est toujours visible
-    const shouldShowMainFeed = isDesktop || active === '' || active === 'home';
+    const shouldShowMainFeed = isDesktop || active === 'home';
 
     const handleHomeClick = () => {
-        setActive('');
+        setActive('home');
     };
 
     return (

@@ -306,9 +306,9 @@
         min-width: 16px;
     }
 
-    .profilePic {
-        width: 22px;
-        height: 22px;
+    .profilePic{
+        width: 28px;
+        height: 28px;
     }
 }
 
@@ -324,6 +324,10 @@
 
     .mobileLabel {
         font-size: 9px;
+    }
+    .profilePic{
+        width: 28px;
+        height: 28px;
     }
 }
 
@@ -349,6 +353,10 @@
 
     .mobileNavItem.mobileActive::before {
         display: none;
+    }
+    .profilePic{
+        width: 28px;
+        height: 28px;
     }
 }
 

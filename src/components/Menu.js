@@ -25,23 +25,8 @@ const Menu = ({ pp, userData, setActive, active }) => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Synchroniser l'état actif avec la route actuelle
-  useEffect(() => {
-    const path = location.pathname;
-    
-    // Ne pas activer automatiquement d'élément pour /home
-    if (path === "/home") {
-      setActive('home')
-    } else if (path === "/notifications") {
-      setActive("notifications");
-    } else if (path === "/saved") {
-      setActive("saved");
-    } else if (path === "/profile" || path === "/me") {
-      setActive("profile");
-    } else if (path === "/settings") {
-      setActive("settings");
-    }
-  }, [location.pathname, setActive]);
+  // SUPPRIMÉ le useEffect qui synchronisait avec location.pathname
+  // La synchronisation est maintenant gérée uniquement par les clics
 
   // Menu items pour desktop
   const desktopMenuItems = [
@@ -57,7 +42,6 @@ const Menu = ({ pp, userData, setActive, active }) => {
       label: "Étudiants", 
       icon: <FaMap />, 
       badge: null,
-      // Pas de link pour que ça ne navigue pas
     },
     { 
       id: "messenger", 
@@ -81,7 +65,6 @@ const Menu = ({ pp, userData, setActive, active }) => {
       label: "Carte", 
       icon: <FaMap />, 
       badge: null,
-      // Pas de link pour que ça ne navigue pas
     },
     { 
       id: "messenger", 
@@ -121,15 +104,39 @@ const Menu = ({ pp, userData, setActive, active }) => {
   ];
 
   const handleNavigate = (item) => {
-    // Pour les éléments qui changent de vue sans navigation (students, amis, messenger)
-    if (!item.link) {
+    if (!setActive) return;
+    
+    console.log('Clicked on:', item.id, 'Current active:', active);
+    
+    // Sur desktop ET mobile : students, messenger et notifications changent juste l'état
+    if (item.id === "students" || item.id === "messenger" || item.id === "notifications") {
+      setActive(item.id);
+      console.log('Set active to:', item.id);
+      return;
+    }
+    
+    // Pour appVersions
+    if (item.id === "appVersions") {
       setActive(item.id);
       return;
     }
     
-    // Pour les éléments avec navigation
-    setActive(item.id);
-    navigate(item.link);
+    // Pour home : réinitialiser active
+    if (item.id === "home") {
+      setActive('home');
+      if (item.link) {
+        navigate(item.link);
+      }
+      return;
+    }
+    
+    // Pour tous les autres avec link : naviguer normalement
+    if (item.link) {
+      setActive(item.id);
+      navigate(item.link);
+    } else {
+      setActive(item.id);
+    }
   };
 
   return (

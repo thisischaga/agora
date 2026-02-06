@@ -2,11 +2,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import styles from "./StudentMap.module.css";
 import { API_URL } from '../Utils/api';
+import Menu from "./Menu";
 
-const StudentMap = ({ onOpenChat }) => {  // Ajout de la prop onOpenChat
+const StudentMap = ({ onOpenChat, setActive, pp, active }) => {  // Ajout de la prop onOpenChat
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     const fetchUsers = useCallback(async () => {
         try {
@@ -22,6 +24,21 @@ const StudentMap = ({ onOpenChat }) => {  // Ajout de la prop onOpenChat
             setRefreshing(false);
         }
     }, []);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            const userAgent = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
+                navigator.userAgent
+            );
+            const screenWidth = window.innerWidth <= 768;
+            setIsMobile(userAgent || screenWidth);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []); 
 
     useEffect(() => {
         fetchUsers();
@@ -97,6 +114,9 @@ const StudentMap = ({ onOpenChat }) => {  // Ajout de la prop onOpenChat
                         />
                     ))}
                 </div>
+            )}
+            {isMobile && (
+                <Menu pp={pp} setActive={setActive} active={active} />
             )}
         </div>
     );

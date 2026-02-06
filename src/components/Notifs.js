@@ -3,14 +3,31 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import styles from './notifs.module.css';
 import { API_URL } from '../Utils/api';
+import Menu from './Menu';
 
-const Notifs = ({ refresh, setRefresh, userId }) => {
+const Notifs = ({ refresh, setRefresh, userId, pp, active, setActive }) => {  // ← Ajouter pp, active, setActive
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);  // ← Ajouter état mobile
 
   const token = useMemo(() => localStorage.getItem('token'), []);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
+        navigator.userAgent
+      );
+      const screenWidth = window.innerWidth <= 768;
+      setIsMobile(userAgent || screenWidth);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -35,8 +52,6 @@ const Notifs = ({ refresh, setRefresh, userId }) => {
 
     fetchNotifications();
   }, [userId, refresh, token]);
-
-  console.log(notifications);
 
   const formatTime = useCallback((date) => {
     const now = new Date();
@@ -67,12 +82,9 @@ const Notifs = ({ refresh, setRefresh, userId }) => {
   );
 
   const handleNotificationClick = useCallback((notif) => {
-    // Navigation selon le type de notification
-    if (notif.type === 'like') {
+    if (notif.postId) {
       navigate(`/post/${notif.postId}`);
-    } else if (notif.type === 'comment') {
-      navigate(`/post/${notif.postId}`);
-    } else if (notif.type === 'follow') {
+    } else if (notif.userId) {
       navigate(`/profile/${notif.userId}`);
     }
   }, [navigate]);
@@ -80,77 +92,91 @@ const Notifs = ({ refresh, setRefresh, userId }) => {
   // États de chargement et d'erreur
   if (loading) {
     return (
-      <div className={styles.notifs}>
-        <div className={styles.loading}>
-          <div className={styles.spinner}></div>
-          <p>Chargement...</p>
+      <>
+        <div className={styles.notifs}>
+          <div className={styles.loading}>
+            <div className={styles.spinner}></div>
+            <p>Chargement...</p>
+          </div>
         </div>
-      </div>
+        {isMobile && <Menu pp={pp} active={active} setActive={setActive}/>}
+      </>
     );
   }
 
   if (error) {
     return (
-      <div className={styles.notifs}>
-        <div className={styles.error}>
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
-          <p>{error}</p>
+      <>
+        <div className={styles.notifs}>
+          <div className={styles.error}>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <p>{error}</p>
+          </div>
         </div>
-      </div>
+        {isMobile && <Menu pp={pp} active={active} setActive={setActive}/>}
+      </>
     );
   }
 
   if (sortedNotifications.length === 0) {
     return (
-      <div className={styles.notifs}>
-        <div className={styles.empty}>
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-          </svg>
-          <p>Aucune notification</p>
+      <>
+        <div className={styles.notifs}>
+          <div className={styles.empty}>
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            <p>Aucune notification</p>
+          </div>
         </div>
-      </div>
+        {isMobile && <Menu pp={pp} active={active} setActive={setActive}/>}
+      </>
     );
   }
 
   return (
-    <div className={styles.notifs}>
-      <div className={styles.header}>
-        <h2>Notifications</h2>
-        <span className={styles.badge}>{sortedNotifications.length}</span>
-      </div>
+    <>
+      <div className={styles.notifs}>
+        <div className={styles.header}>
+          <h2>Notifications</h2>
+          <span className={styles.badge}>{sortedNotifications.length}</span>
+        </div>
 
-      <div className={styles.notificationsList}>
-        {sortedNotifications.map((notif, index) => (
-          <div
-            key={notif.id || notif.createdAt || index}
-            className={`${styles.notificationItem} ${!notif.read ? styles.unread : ''}`}
-            onClick={() => handleNotificationClick(notif)}
-          >
-            <img
-              src={notif.userPP || '/default-avatar.png'}
-              alt={`${notif.username} profile`}
-              className={styles.pp}
-              loading="lazy"
-            />
+        <div className={styles.notificationsList}>
+          {sortedNotifications.map((notif, index) => (
+            <div
+              key={notif.id || notif.createdAt || index}
+              className={`${styles.notificationItem} ${!notif.read ? styles.unread : ''}`}
+              onClick={() => handleNotificationClick(notif)}
+            >
+              <img
+                src={notif.userPP || '/default-avatar.png'}
+                alt={`${notif.username} profile`}
+                className={styles.pp}
+                loading="lazy"
+              />
 
-            <div className={styles.content}>
-              <p className={styles.message}>
-                <strong>{notif.username}</strong> {notif.message}
-              </p>
-              <span className={styles.time}>{formatTime(notif.createdAt)}</span>
+              <div className={styles.content}>
+                <p className={styles.message}>
+                  <strong>{notif.username}</strong> {notif.message}
+                </p>
+                <span className={styles.time}>{formatTime(notif.createdAt)}</span>
+              </div>
+
+              {!notif.read && <span className={styles.unreadDot}></span>}
             </div>
-
-            {!notif.read && <span className={styles.unreadDot}></span>}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+      
+      {/* Menu mobile */}
+      {isMobile && <Menu pp={pp} active={active} setActive={setActive}/>}
+    </>
   );
 };
 
