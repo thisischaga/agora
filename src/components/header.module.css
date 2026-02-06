@@ -93,14 +93,6 @@
   letter-spacing: -0.5px;
 }
 
-.logoText {
-  color: #0084ff;
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0;
-  letter-spacing: -0.5px;
-}
-
 /* ========== SEARCH DESKTOP ========== */
 .searchContainer {
   display: flex;
@@ -200,8 +192,8 @@
 
 .iconBtn {
   position: relative;
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   border: none;
   background-color: var(--bg-search);
@@ -248,7 +240,16 @@
   height: 35px;
   object-fit: cover;
   border-radius: 50%;
-  border: 1px solid var(--border-color);
+  transition: 0.4s ease-in;
+}
+.avatarIcon{
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  
+} 
+.avatar img:hover{
+  border: 3px solid var(--border-color);
 }
 
 /* ========== ADD OPTIONS DROPDOWN ========== */
@@ -448,10 +449,7 @@
     width: 36px;
     height: 36px;
   }
-  
-  .logoMobile h1 {
-    font-size: 18px;
-  }
+
   
   .mobileNav {
     gap: 4px;
@@ -472,6 +470,9 @@
   .mobileSearchOverlay {
     height: 56px;
   }
+  .logoMobile h1{
+    font-size: 30px;
+  }
 }
 
 /* Petit mobile */
@@ -491,10 +492,6 @@
   
   .mobileNav {
     gap: 2px;
-  }
-  .logoText {
-    font-size: 18px;
-    color: #0084ff;
   }
   .iconBtn {
     width: 36px;
@@ -520,6 +517,9 @@
   .mobileSearchOverlay {
     height: 54px;
     padding: 0 8px;
+  }
+  .logoMobile h1{
+    font-size: 30px;
   }
 }
 
@@ -554,6 +554,9 @@
   
   .addOptions {
     width: 95vw;
+  }
+  .logoMobile h1{
+    font-size: 25px;
   }
 }
 

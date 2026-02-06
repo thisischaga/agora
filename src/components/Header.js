@@ -112,7 +112,7 @@ const Header = ({ pp, active, setActive, setInImgPosting, setInText }) => {
             </button>
 
             <button 
-              className={styles.iconBtn}
+              className={styles.avatarIcon}
               onClick={() => navigate('/me')}
               aria-label="Profil"
             >
@@ -137,7 +137,7 @@ const Header = ({ pp, active, setActive, setInImgPosting, setInText }) => {
               onClick={toggleMobileSearch}
               aria-label="Rechercher"
             >
-              <Icon name={isMobileSearchOpen ? "close" : "search"} size={22} />
+              <Icon name={isMobileSearchOpen ? "close" : "search"} size={28} />
             </button>
 
             <button 
@@ -145,7 +145,7 @@ const Header = ({ pp, active, setActive, setInImgPosting, setInText }) => {
               onClick={() => navigate('/settings')}
               aria-label="paramètres"
             >
-              <FaCog size={22} />
+              <FaCog size={28} />
             </button>
 
           </nav>
