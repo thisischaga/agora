@@ -108,7 +108,7 @@ const Posts = ({ userId, setRefresh, refresh }) => {
     };
 
     fetchPosts();
-    }, [token]);
+    }, []);
 
 
     useEffect(() => {

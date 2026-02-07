@@ -133,19 +133,32 @@ const Header = ({ pp, active, setActive, setShowPublishMenu, showPublishMenu }) 
           {/* Mobile Navigation */}
           <nav className={styles.mobileNav}>
             <button 
-              className={styles.iconBtn}
-              aria-label="publier"
+              className={styles.addIconBtn}
+              aria-label="Publier"
               onClick={() => setShowPublishMenu(!showPublishMenu)}
             >
-              <Icon name="add" size={32} color="black"/>
+              {/* SVG Direct sans composant */}
+              <svg 
+                width="28" 
+                height="28" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2.5" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
             </button>
-            <button 
+            {/**<button 
               className={`${styles.iconBtn} ${isMobileSearchOpen ? styles.active : ''}`}
               onClick={toggleMobileSearch}
               aria-label="Rechercher"
             >
               <Icon name={isMobileSearchOpen ? "close" : "search"} size={32} />
-            </button>
+            </button> */}
 
             
 
