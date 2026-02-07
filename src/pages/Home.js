@@ -119,6 +119,8 @@ const Home = () => {
             .then(data => {
                 setUserData(data);
                 localStorage.setItem('userId', data.userId);
+                localStorage.setItem('pp', data.userPP);
+                localStorage.setItem('username', data.username);
                 setNotifications(data.notifications || []);
             })
             .catch(error => {
@@ -293,6 +295,8 @@ const Home = () => {
                         setActive={setActive}
                         setInImgPosting={setInImgPosting}   
                         setInText={setInText}
+                        setShowPublishMenu={setShowPublishMenu}
+                        showPublishMenu={showPublishMenu}
                     />
                     <main>
                         <Menu 

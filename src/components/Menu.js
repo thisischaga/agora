@@ -1,4 +1,4 @@
-import { FaHome, FaUserFriends, FaMap, FaCog, FaCompass, FaBookmark, FaBell, FaUser, FaCommentDots, FaHistory } from "react-icons/fa";
+import { FaHome, FaUserFriends, FaMap, FaCog, FaCompass, FaBookmark, FaBell, FaUser, FaCommentDots, FaHistory, FaEnvelope } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import styles from "./menu.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -45,8 +45,8 @@ const Menu = ({ pp, userData, setActive, active }) => {
     },
     { 
       id: "messenger", 
-      label: "Messenger", 
-      icon: <FaCommentDots />, 
+      label: "Messages", 
+      icon: <FaEnvelope />, 
       badge: null 
     },
   ];
@@ -63,18 +63,21 @@ const Menu = ({ pp, userData, setActive, active }) => {
     { 
       id: "students", 
       label: "Carte", 
+      link: "/students",
       icon: <FaMap />, 
       badge: null,
     },
     { 
       id: "messenger", 
       label: "Messages", 
-      icon: <FaCommentDots />, 
+      link: "/messenger",
+      icon: <FaEnvelope />, 
       badge: null
     },
     { 
       id: "notifications", 
       label: "Notifs", 
+      link: "/notifications",
       icon: <FaBell />, 
       badge: notificationCount 
     },
@@ -104,39 +107,48 @@ const Menu = ({ pp, userData, setActive, active }) => {
   ];
 
   const handleNavigate = (item) => {
-    if (!setActive) return;
-    
-    console.log('Clicked on:', item.id, 'Current active:', active);
-    
-    // Sur desktop ET mobile : students, messenger et notifications changent juste l'état
-    if (item.id === "students" || item.id === "messenger" || item.id === "notifications") {
-      setActive(item.id);
-      console.log('Set active to:', item.id);
-      return;
-    }
-    
-    // Pour appVersions
-    if (item.id === "appVersions") {
-      setActive(item.id);
-      return;
-    }
-    
-    // Pour home : réinitialiser active
-    if (item.id === "home") {
-      setActive('home');
-      if (item.link) {
-        navigate(item.link);
+      if (!setActive) return;
+      
+      console.log('Clicked on:', item.id, 'Current active:', active, 'Is Mobile:', isMobile);
+      
+      // Sur MOBILE : students, messenger et notifications naviguent vers leurs routes
+      if (isMobile && (item.id === "students" || item.id === "messenger" || item.id === "notifications")) {
+          if (item.link) {
+              navigate(item.link);
+          }
+          setActive(item.id);
+          return;
       }
-      return;
-    }
-    
-    // Pour tous les autres avec link : naviguer normalement
-    if (item.link) {
-      setActive(item.id);
-      navigate(item.link);
-    } else {
-      setActive(item.id);
-    }
+      
+      // Sur DESKTOP : students, messenger et notifications changent juste l'état
+      if (!isMobile && (item.id === "students" || item.id === "messenger" || item.id === "notifications")) {
+          setActive(item.id);
+          console.log('Set active to:', item.id);
+          return;
+      }
+      
+      // Pour appVersions
+      if (item.id === "appVersions") {
+          setActive(item.id);
+          return;
+      }
+      
+      // Pour home : réinitialiser active
+      if (item.id === "home") {
+          setActive('home');
+          if (item.link) {
+              navigate(item.link);
+          }
+          return;
+      }
+      
+      // Pour tous les autres avec link : naviguer normalement
+      if (item.link) {
+          setActive(item.id);
+          navigate(item.link);
+      } else {
+          setActive(item.id);
+      }
   };
 
   return (

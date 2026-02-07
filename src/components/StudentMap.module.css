@@ -424,23 +424,24 @@
 /* Tablet - Transition vers mobile */
 @media (max-width: 768px) {
     .container {
-        position: static;
+        position: relative;
         right: auto;
         top: auto;
         width: 100%;
         max-width: 100%;
-        height: auto;
-        max-height: none;
+        height: 100vh;
+        max-height: 100vh;
         margin: 0;
         border-radius: 0;
         border: none;
-        border-top: 1px solid var(--border-userCard);
-        border-bottom: 1px solid var(--border-userCard);
         box-shadow: none;
+        padding-bottom: 80px; /* Espace pour le menu mobile */
     }
 
     .listContainer {
-        max-height: calc(100vh - 250px);
+        max-height: none;
+        height: auto;
+        padding-bottom: 20px;
     }
 
     .studentCard {
@@ -635,34 +636,6 @@
     .actionBtn svg {
         width: 14px;
         height: 14px;
-    }
-}
-
-/* Landscape Mobile */
-@media (max-height: 600px) and (orientation: landscape) {
-    .container {
-        height: auto;
-        max-height: calc(100vh - 120px);
-    }
-
-    .listContainer {
-        max-height: calc(100vh - 200px);
-    }
-
-    .studentCard {
-        margin-bottom: 8px;
-        padding: 10px;
-    }
-
-    .studentHeader {
-        gap: 10px;
-        margin-bottom: 8px;
-    }
-
-    .avatar,
-    .avatarPlaceholder {
-        width: 44px;
-        height: 44px;
     }
 }
 

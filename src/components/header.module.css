@@ -456,8 +456,8 @@
   }
   
   .iconBtn {
-    width: 38px;
-    height: 38px;
+    width: 43px;
+    height: 43px;
   }
   
   .addOptions {
@@ -471,7 +471,7 @@
     height: 56px;
   }
   .logoMobile h1{
-    font-size: 30px;
+    font-size: 35px;
   }
 }
 
@@ -519,7 +519,7 @@
     padding: 0 8px;
   }
   .logoMobile h1{
-    font-size: 30px;
+    font-size: 35px;
   }
 }
 
@@ -556,7 +556,7 @@
     width: 95vw;
   }
   .logoMobile h1{
-    font-size: 25px;
+    font-size: 35px;
   }
 }
 

@@ -14,6 +14,7 @@ const Notifs = ({ refresh, setRefresh, userId, pp, active, setActive }) => {  //
 
   const token = useMemo(() => localStorage.getItem('token'), []);
 
+
   useEffect(() => {
     const checkMobile = () => {
       const userAgent = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(

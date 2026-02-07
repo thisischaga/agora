@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './header.module.css';
 import logo from '../images/logo.png';
-import { FaCog } from 'react-icons/fa';
+import { FaCog, FaPlus } from 'react-icons/fa';
 
 // Composant Icon SVG réutilisable
 const Icon = ({ name, size = 20 }) => {
@@ -24,7 +24,7 @@ const Icon = ({ name, size = 20 }) => {
   );
 };
 
-const Header = ({ pp, active, setActive, setInImgPosting, setInText }) => {
+const Header = ({ pp, active, setActive, setShowPublishMenu, showPublishMenu }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
@@ -133,20 +133,21 @@ const Header = ({ pp, active, setActive, setInImgPosting, setInText }) => {
           {/* Mobile Navigation */}
           <nav className={styles.mobileNav}>
             <button 
+              className={styles.iconBtn}
+              aria-label="publier"
+              onClick={() => setShowPublishMenu(!showPublishMenu)}
+            >
+              <Icon name="add" size={32} color="black"/>
+            </button>
+            <button 
               className={`${styles.iconBtn} ${isMobileSearchOpen ? styles.active : ''}`}
               onClick={toggleMobileSearch}
               aria-label="Rechercher"
             >
-              <Icon name={isMobileSearchOpen ? "close" : "search"} size={28} />
+              <Icon name={isMobileSearchOpen ? "close" : "search"} size={32} />
             </button>
 
-            <button 
-              className={styles.iconBtn}
-              onClick={() => navigate('/settings')}
-              aria-label="paramètres"
-            >
-              <FaCog size={28} />
-            </button>
+            
 
           </nav>
         </div>

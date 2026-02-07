@@ -63,7 +63,6 @@ const Me = () => {
         fetchData();
     };
 
-    // ========== RENDER GRID ITEM ==========
     const renderGridItem = useCallback((item) => {
         const postType = item.post?.type || item.post?.postType;
         const postData = item.post || {};

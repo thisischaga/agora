@@ -392,7 +392,6 @@
     transform: rotate(360deg);
   }
 }
-
 /* ========== RESPONSIVE ========== */
 
 /* Tablettes */
@@ -406,19 +405,19 @@
 /* Mobile et tablettes */
 @media (max-width: 768px) {
   .messenger {
-    position: fixed;
-    top: 60px;
+    position: relative;
+    top: 0;
     right: 0;
     left: 0;
     bottom: 0;
     max-width: 100%;
     width: 100%;
-    height: calc(100vh - 60px);
-    max-height: 100%;
+    height: 100vh;
+    max-height: 100vh;
     border-radius: 0;
     box-shadow: none;
     border: none;
-    border-top: 1px solid var(--border-color);
+    padding-bottom: 80px; /* Espace pour le menu mobile */
   }
 
   .header {
@@ -541,31 +540,6 @@
   }
 }
 
-/* Mode paysage mobile */
-@media (max-height: 600px) and (orientation: landscape) {
-  .messenger {
-    top: 56px;
-    height: calc(100vh - 56px);
-  }
-
-  .header {
-    padding: 10px 16px;
-  }
-
-  .searchContainer {
-    padding: 8px 16px;
-  }
-
-  .conversationCard {
-    padding: 10px 16px;
-  }
-
-  .avatar,
-  .avatarPlaceholder {
-    width: 44px;
-    height: 44px;
-  }
-}
 /* Animation réduite pour accessibilité */
 @media (prefers-reduced-motion: reduce) {
   *,
