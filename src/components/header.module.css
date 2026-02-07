@@ -39,7 +39,7 @@
   height: 60px;
   box-shadow: 0 1px 2px var(--shadow-header);
   border-bottom: 1px solid var(--border-color);
-  z-index: 1000;
+  z-index: 100;
   display: flex;
   align-items: center;
 }
@@ -425,7 +425,7 @@
   }
   
   .logoMobile h1 {
-    font-size: 20px;
+    font-size: 30px;
   }
   
   .mobileNav {
@@ -439,7 +439,7 @@
     height: 56px;
   }
   .logoText {
-    font-size: 20px;
+    font-size: 26px;
     color: #0084ff;
   }
   .mobileLayout {
@@ -557,7 +557,7 @@
     width: 95vw;
   }
   .logoMobile h1{
-    font-size: 25px;
+    font-size: 30px;
   }
 }
 
@@ -591,8 +591,8 @@
     color: white; /* Le plus reste blanc */
     border: none;
     border-radius: 10px;
-    width: 42px;
-    height: 42px;
+    width: 35px;
+    height: 35px;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
   }
