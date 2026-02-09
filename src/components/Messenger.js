@@ -3,40 +3,26 @@ import styles from './messenger.module.css';
 import { API_URL } from '../Utils/api';
 import { FaSearch, FaPlus, FaCircle, FaInbox } from 'react-icons/fa';
 import Menu from './Menu';
+import socket from '../Utils/socket';
+import { useNavigate } from 'react-router-dom';
 
-const Messenger = ({ onOpenChat, setActive, active, pp }) => {  // ← Ajouter pp
+const Messenger = ({ onOpenChat, setActive, active, pp, showChat }) => { 
     const [conversations, setConversations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedConv, setSelectedConv] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-        fetchConversations();
-    }, []);
-
-    useEffect(() => {
-        const checkMobile = () => {
-            const userAgent = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
-                navigator.userAgent
-            );
-            const screenWidth = window.innerWidth <= 768;
-            setIsMobile(userAgent || screenWidth);
-        };
     
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+    const token = useMemo(() => localStorage.getItem('token'), []);
+    const navigate = useNavigate();
 
-    const fetchConversations = async () => {
+    // Fonction de chargement des conversations optimisée avec useCallback
+    const fetchConversations = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
             
-            const token = localStorage.getItem('token');
             const response = await fetch(`${API_URL}/conversations_list`, {
                 headers: {
                     'Authorization': `Bearer${token}`
@@ -54,8 +40,41 @@ const Messenger = ({ onOpenChat, setActive, active, pp }) => {  // ← Ajouter p
         } finally {
             setLoading(false);
         }
-    };
+    }, [token]); // Dépend uniquement du token
 
+    // Effet pour charger les conversations - optimisé
+    useEffect(() => {
+        fetchConversations();
+        
+        // Écouter les nouveaux messages pour rafraîchir la liste
+        const handleNewMessage = () => {
+            fetchConversations();
+        };
+
+        socket.on('message', handleNewMessage);
+
+        return () => {
+            socket.off('message', handleNewMessage);
+        };
+    }, [fetchConversations]); // Dépend de fetchConversations qui est stable grâce à useCallback
+
+    // Effet pour détecter le mode mobile
+    useEffect(() => {
+        const checkMobile = () => {
+            const userAgent = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
+                navigator.userAgent
+            );
+            const screenWidth = window.innerWidth <= 768;
+            setIsMobile(userAgent || screenWidth);
+        };
+    
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Fonctions utilitaires optimisées avec useCallback
     const getInitials = useCallback((username) => {
         if (!username) return '?';
         return username.split(' ')
@@ -66,6 +85,8 @@ const Messenger = ({ onOpenChat, setActive, active, pp }) => {  // ← Ajouter p
     }, []);
 
     const formatTime = useCallback((date) => {
+        if (!date) return '';
+        
         const messageDate = new Date(date);
         const now = new Date();
         const diffMs = now - messageDate;
@@ -89,14 +110,25 @@ const Messenger = ({ onOpenChat, setActive, active, pp }) => {  // ← Ajouter p
         return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
     }, []);
 
+    // Conversations triées - optimisé avec useMemo
+    const sortedConversations = useMemo(() => {
+        return [...conversations].sort((a, b) => {
+            const dateA = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt) : new Date(0);
+            const dateB = b.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt) : new Date(0);
+            return dateB - dateA;
+        });
+    }, [conversations]);
+
+    // Conversations filtrées - optimisé avec useMemo
     const filteredConversations = useMemo(() => 
-        conversations.filter(conv =>
+        sortedConversations.filter(conv =>
             conv.conversationWith?.username?.toLowerCase().includes(searchQuery.toLowerCase())
         ),
-        [conversations, searchQuery]
+        [sortedConversations, searchQuery]
     );
 
-    const openChat = (user) => {
+    // Gestionnaires d'événements optimisés avec useCallback
+    const openChat = useCallback((user) => {
         const receiver = {
             _id: user.id,
             username: user.username,
@@ -109,11 +141,80 @@ const Messenger = ({ onOpenChat, setActive, active, pp }) => {  // ← Ajouter p
         if (onOpenChat) {
             onOpenChat(receiver);
         }
-    };
+    }, [onOpenChat]);
 
-    const handleNewConversation = () => {
-        console.log('Nouvelle conversation');
-    };
+    const handleNewConversation = useCallback(() => {
+        if (isMobile) {
+            navigate('/students');
+        } else {
+            setActive('students');
+        }
+    }, [isMobile, navigate, setActive]);
+
+    const handleSearchChange = useCallback((e) => {
+        setSearchQuery(e.target.value);
+    }, []);
+
+    const clearSearch = useCallback(() => {
+        setSearchQuery('');
+    }, []);
+
+    // Rendu du composant de conversation optimisé avec useCallback
+    const renderConversationCard = useCallback((conv, index) => {
+        const isSelected = selectedConv === conv.conversationWith?.id;
+        const isUnread = conv.lastMessage?.unread === 1;
+        const isOnline = conv.conversationWith?.socketId;
+
+        return (
+            <div 
+                key={conv.conversationWith?.id || index} 
+                className={`${styles.conversationCard} ${isSelected ? styles.selected : ''} ${isUnread ? styles.unread : ''}`}
+                onClick={() => openChat(conv.conversationWith)}
+            >
+                {/* Avatar */}
+                <div className={styles.avatarContainer}>
+                    {conv.conversationWith?.userPP ? (
+                        <img 
+                            src={conv.conversationWith.userPP} 
+                            alt={conv.conversationWith.username}
+                            className={styles.avatar}
+                            loading="lazy"
+                        />
+                    ) : (
+                        <div className={styles.avatarPlaceholder}>
+                            {getInitials(conv.conversationWith?.username)}
+                        </div>
+                    )}
+                    {isOnline && (
+                        <span className={styles.onlineIndicator}>
+                            <FaCircle />
+                        </span>
+                    )}
+                </div>
+
+                {/* Conversation Info */}
+                <div className={styles.conversationInfo}>
+                    <div className={styles.topRow}>
+                        <p className={styles.username}>
+                            {conv.conversationWith?.username || 'Utilisateur'}
+                        </p>
+                        <span className={styles.timestamp}>
+                            {formatTime(conv.lastMessage?.createdAt)}
+                        </span>
+                    </div>
+                    
+                    <div className={styles.bottomRow}>
+                        <span className={`${styles.lastMessage} ${isUnread ? styles.bold : ''}`}>
+                            {truncateMessage(conv.lastMessage?.text)}
+                        </span>
+                        {isUnread && (
+                            <span className={styles.unreadBadge}></span>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    }, [selectedConv, openChat, getInitials, formatTime, truncateMessage]);
 
     // Loading state
     if (loading) {
@@ -159,7 +260,7 @@ const Messenger = ({ onOpenChat, setActive, active, pp }) => {  // ← Ajouter p
             <div className={styles.messenger}>
                 {/* Header */}
                 <div className={styles.header}>
-                    <h3>Messages</h3>
+                    <h2>Messages</h2>
                     <button 
                         className={styles.newChatBtn}
                         onClick={handleNewConversation}
@@ -177,13 +278,13 @@ const Messenger = ({ onOpenChat, setActive, active, pp }) => {  // ← Ajouter p
                             type="text"
                             placeholder="Rechercher une conversation..."
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={handleSearchChange}
                             className={styles.searchInput}
                         />
                         {searchQuery && (
                             <button 
                                 className={styles.clearSearchBtn}
-                                onClick={() => setSearchQuery('')}
+                                onClick={clearSearch}
                                 aria-label="Effacer la recherche"
                             >
                                 ×
@@ -205,61 +306,7 @@ const Messenger = ({ onOpenChat, setActive, active, pp }) => {  // ← Ajouter p
                             )}
                         </div>
                     ) : (
-                        filteredConversations.map((conv, index) => {
-                            const isSelected = selectedConv === conv.conversationWith?.id;
-                            const isUnread = conv.lastMessage?.unread === 1;
-                            const isOnline = conv.conversationWith?.socketId;
-
-                            return (
-                                <div 
-                                    key={conv.conversationWith?.id || index} 
-                                    className={`${styles.conversationCard} ${isSelected ? styles.selected : ''} ${isUnread ? styles.unread : ''}`}
-                                    onClick={() => openChat(conv.conversationWith)}
-                                >
-                                    {/* Avatar */}
-                                    <div className={styles.avatarContainer}>
-                                        {conv.conversationWith?.userPP ? (
-                                            <img 
-                                                src={conv.conversationWith.userPP} 
-                                                alt={conv.conversationWith.username}
-                                                className={styles.avatar}
-                                                loading="lazy"
-                                            />
-                                        ) : (
-                                            <div className={styles.avatarPlaceholder}>
-                                                {getInitials(conv.conversationWith?.username)}
-                                            </div>
-                                        )}
-                                        {isOnline && (
-                                            <span className={styles.onlineIndicator}>
-                                                <FaCircle />
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Conversation Info */}
-                                    <div className={styles.conversationInfo}>
-                                        <div className={styles.topRow}>
-                                            <p className={styles.username}>
-                                                {conv.conversationWith?.username || 'Utilisateur'}
-                                            </p>
-                                            <span className={styles.timestamp}>
-                                                {formatTime(conv.lastMessage?.createdAt)}
-                                            </span>
-                                        </div>
-                                        
-                                        <div className={styles.bottomRow}>
-                                            <span className={`${styles.lastMessage} ${isUnread ? styles.bold : ''}`}>
-                                                {truncateMessage(conv.lastMessage?.text)}
-                                            </span>
-                                            {isUnread && (
-                                                <span className={styles.unreadBadge}></span>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })
+                        filteredConversations.map((conv, index) => renderConversationCard(conv, index))
                     )}
                 </div>
             </div>

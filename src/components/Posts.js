@@ -92,23 +92,23 @@ const Posts = ({ userId, setRefresh, refresh }) => {
 
     // ========== API CALLS ==========
     useEffect(() => {
-    const fetchPosts = async () => {
-        setIsLoading(true); 
-        try {
-            const response = await axios.get(`${backendURL}/posts`, {
-                headers: { Authorization: `Bearer${token}` }
-            });
-            setPosts(response.data || []);
-        } catch (error) {
-            console.error(error);
-            setToast('Erreur lors du chargement des publications');
-        } finally {
-            setIsLoading(false); 
-        }
-    };
+        const fetchPosts = async () => {
+            setIsLoading(true); 
+            try {
+                const response = await axios.get(`${backendURL}/posts`, {
+                    headers: { Authorization: `Bearer${token}` }
+                });
+                setPosts(response.data || []);
+            } catch (error) {
+                console.error(error);
+                setToast('Erreur lors du chargement des publications');
+            } finally {
+                setIsLoading(false); 
+            }
+        };
 
-    fetchPosts();
-    }, []);
+        fetchPosts();
+    }, [backendURL, token, refresh]); // Ajout des dépendances appropriées
 
 
     useEffect(() => {

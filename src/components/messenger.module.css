@@ -467,7 +467,7 @@
   }
 
   .searchInput {
-    font-size: 13px;
+    font-size: 16px;
     padding: 8px 32px 8px 32px;
   }
 
@@ -492,15 +492,15 @@
   }
 
   .username {
-    font-size: 14px;
+    font-size: 18px;
   }
 
   .timestamp {
-    font-size: 11px;
+    font-size: 13px;
   }
 
   .lastMessage {
-    font-size: 12px;
+    font-size: 16px;
   }
 
   .unreadBadge {
@@ -512,7 +512,7 @@
 /* Très petits écrans */
 @media (max-width: 360px) {
   .header h3 {
-    font-size: 15px;
+    font-size: 20px;
   }
 
   .avatar,
@@ -536,7 +536,7 @@
 
   .empty p,
   .error p {
-    font-size: 14px;
+    font-size: 16px;
   }
 }
 

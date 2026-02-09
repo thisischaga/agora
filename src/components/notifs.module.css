@@ -262,7 +262,7 @@
   }
 
   .header h2 {
-    font-size: 18px;
+    font-size: 21px;
   }
 
   .notificationsList {
@@ -275,16 +275,16 @@
   }
 
   .pp {
-    width: 44px;
-    height: 44px;
+    width: 47px;
+    height: 74px;
   }
 
   .message {
-    font-size: 15px;
+    font-size: 18px;
   }
 
   .time {
-    font-size: 13px;
+    font-size: 16px;
   }
 }
 
@@ -295,11 +295,11 @@
   }
 
   .header h2 {
-    font-size: 16px;
+    font-size: 19px;
   }
 
   .badge {
-    font-size: 11px;
+    font-size: 14px;
     padding: 3px 8px;
   }
 
@@ -314,12 +314,12 @@
   }
 
   .pp {
-    width: 40px;
-    height: 40px;
+    width: 43px;
+    height: 43px;
   }
 
   .message {
-    font-size: 14px;
+    font-size: 17px;
   }
 
   .time {
@@ -342,12 +342,12 @@
   }
 
   .pp {
-    width: 36px;
-    height: 36px;
+    width: 39px;
+    height: 39px;
   }
 
   .message {
-    font-size: 13px;
+    font-size: 16px;
   }
 
   .empty svg,

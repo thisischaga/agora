@@ -893,13 +893,13 @@ textarea {
 
     .photoBtn,
     .actionIcon {
-        width: 40px;
-        height: 40px;
+        width: 43px;
+        height: 43px;
     }
 
     .pagesBtn,
     .actions button {
-        font-size: 13px;
+        font-size: 16px;
         padding: 8px 14px;
     }
 
@@ -967,8 +967,8 @@ textarea {
     }
 
     .user img {
-        min-width: 44px;
-        min-height: 44px;
+        min-width: 47px;
+        min-height: 47px;
     }
 }
 

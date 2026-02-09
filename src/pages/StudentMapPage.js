@@ -6,7 +6,7 @@ const StudentMapPage = () => {
     const [refresh, setRefresh] = useState(false);
     
     const userData = {
-        userPP: localStorage.getItem('userPP'),
+        userPP: localStorage.getItem('pp'),
         userId: localStorage.getItem('userId'),
         username: localStorage.getItem('username')
     };

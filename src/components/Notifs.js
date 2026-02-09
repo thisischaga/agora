@@ -10,7 +10,7 @@ const Notifs = ({ refresh, setRefresh, userId, pp, active, setActive }) => {  //
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);  // ← Ajouter état mobile
+  const [isMobile, setIsMobile] = useState(false);  
 
   const token = useMemo(() => localStorage.getItem('token'), []);
 

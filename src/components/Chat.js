@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import axios from "axios";
 import styles from "./chat.module.css";
 import { API_URL } from '../Utils/api';
 import socket from "../Utils/socket";
-
+import { FaCheck, FaCheckDouble, FaClock, FaTimes, FaEllipsisV, FaPaperclip, FaSmile } from "react-icons/fa";
 
 const AVATAR_SIZE = 32;
 
-// --- COMPOSANT BULLE DE MESSAGE ---
+// --- COMPOSANT BULLE DE MESSAGE OPTIMISÉ ---
 const MessageBubble = React.memo(({ item, isMyMessage, showAvatar, showDate, receiver, formatTime, dateText }) => (
     <div className={styles.messageWrapper}>
         {showDate && (
@@ -43,25 +43,23 @@ const MessageBubble = React.memo(({ item, isMyMessage, showAvatar, showDate, rec
                     <span className={`${styles.messageTime} ${isMyMessage ? styles.myMessageTime : styles.otherMessageTime}`}>
                         {formatTime(item.createdAt)}
                     </span>
-                    {isMyMessage && (
-                        <svg 
-                            width="14" 
-                            height="14" 
-                            viewBox="0 0 20 20" 
-                            fill="currentColor"
-                            className={`${styles.checkIcon} ${item.isRead ? styles.checkIconRead : ''}`}
-                        >
-                            {item.pending ? (
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                            ) : item.isRead ? (
-                                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" />
-                            ) : (
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            )}
-                        </svg>
-                    )}
                 </div>
             </div>
+            {isMyMessage && (
+                <div className={styles.checkIcon}>
+                    {item.pending ? (
+                        <FaClock className={styles.iconPending} />
+                    ) : item.isRead ? (
+                        <img 
+                            src={receiver.userPP} 
+                            alt={receiver.username}
+                            className={styles.readMsg} 
+                        />
+                    ) : (
+                        <FaCheck className={styles.iconSent} />
+                    )}
+                </div>
+            )}
         </div>
     </div>
 ));
@@ -71,11 +69,31 @@ const Chat = ({ receiver, onClose }) => {
     const [messageText, setMessageText] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState(null);
+    const [isMobile, setIsMobile] = useState(false);
 
     const messagesEndRef = useRef(null);
     const pollIntervalRef = useRef(null);
+    const textareaRef = useRef(null);
+    
+    const token = useMemo(() => localStorage.getItem('token'), []);
 
-    // --- FORMATAGE ---
+    // --- DÉTECTION MOBILE/DESKTOP ---
+    useEffect(() => {
+        const checkMobile = () => {
+            const userAgent = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
+                navigator.userAgent
+            );
+            const screenWidth = window.innerWidth <= 768;
+            setIsMobile(userAgent || screenWidth);
+        };
+    
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // --- FORMATAGE OPTIMISÉ ---
     const formatMessageTime = useCallback((date) => {
         const d = new Date(date);
         return isNaN(d.getTime()) ? "" : d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
@@ -92,29 +110,35 @@ const Chat = ({ receiver, onClose }) => {
         return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
     }, []);
 
-    console.log("Rendering Chat with receiver:", receiver);
-
-    // --- LOGIQUE API ---
+    // --- LOGIQUE API OPTIMISÉE ---
     const fetchMessages = useCallback(async (isFirstLoad = false) => {
         try {
-            const token = localStorage.getItem("token");
             if (!token) return;
             const response = await axios.get(`${API_URL}/conversations/${receiver._id}`, {
                 headers: { Authorization: `Bearer${token}` }
             });
             const newMessages = response.data || [];
-            setMessages(response.data);
-            setMessages(prev => JSON.stringify(prev) !== JSON.stringify(newMessages) ? newMessages : prev);
+            
+            setMessages(prev => {
+                if (JSON.stringify(prev) !== JSON.stringify(newMessages)) {
+                    return newMessages;
+                }
+                return prev;
+            });
+
+            if (newMessages.length > 0) {
+                socket.emit('message:read', { ortherId: receiver._id, API_URL, token });
+            }
         } catch (error) {
             console.error("❌ fetchMessages:", error);
         } finally {
             if (isFirstLoad) setIsLoading(false);
         }
-    }, [receiver?._id]);
+    }, [receiver._id, token]);
 
+    // --- INITIALISATION ---
     useEffect(() => {
         const initialize = async () => {
-            const token = localStorage.getItem("token");
             try {
                 const res = await axios.get(`${API_URL}/user_data`, {
                     headers: { Authorization: `Bearer${token}` }
@@ -123,82 +147,140 @@ const Chat = ({ receiver, onClose }) => {
                 await fetchMessages(true);
             } catch (e) {
                 console.error("Error initializing chat:", e);
+                setIsLoading(false);
             }
         };
+        
         initialize();
+        
+        // Polling pour les nouveaux messages
         pollIntervalRef.current = setInterval(() => fetchMessages(false), 4000);
-        return () => clearInterval(pollIntervalRef.current);
-    }, [fetchMessages]);
+        
+        return () => {
+            if (pollIntervalRef.current) {
+                clearInterval(pollIntervalRef.current);
+            }
+        };
+    }, [fetchMessages, token]);
 
+    // --- AUTO-SCROLL ---
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+    // --- ÉCOUTE DES NOUVEAUX MESSAGES VIA SOCKET ---
+    useEffect(() => {
+        const handleNewMessage = (data) => {
+            console.log('Nouveau message reçu:', data);
+            setMessages(prev => {
+                // Éviter les doublons
+                const exists = prev.some(msg => msg._id === data._id);
+                if (exists) return prev;
+                return [...prev, data];
+            });
+        };
+
+        socket.on('newMsg', handleNewMessage);
+
+        return () => {
+            socket.off('newMsg', handleNewMessage);
+        };
+    }, []);
+
+    // --- ENVOI DE MESSAGE OPTIMISÉ ---
     const sendMessage = useCallback(async (e) => {
         e?.preventDefault();
         if (!messageText.trim() || !currentUser) return;
 
         const content = messageText.trim();
-        const now = new Date().toISOString();
         setMessageText("");
 
-        const optimisticId = `temp-${Date.now()}`;
-        const optimisticMsg = {
-            _id: optimisticId,
-            message: content,
-            senderId: currentUser.userId,
-            createdAt: now,
-            pending: true
-        };
-
-        setMessages(prev => [...prev, optimisticMsg]);
-
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.post(`${API_URL}/messages/send`, {
-                participants: [currentUser.userId, receiver._id],
-                receiverId: receiver._id,
-                text: content
-            }, {
-                headers: { Authorization: `Bearer${token}` }
-            });
-            setMessages(prev => prev.map(m => m._id === optimisticId ? response.data : m));
-
-            socket.emit('newMsgAlert', {mess: 'Nouveau message'});
-
-        } catch (error) {
-            setMessages(prev => prev.filter(m => m._id !== optimisticId));
-            setMessageText(content);
-            alert("Erreur lors de l'envoi du message");
+        // Réinitialiser la hauteur du textarea
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
         }
-    }, [messageText, currentUser, receiver?._id]);
 
-    const handleKeyPress = (e) => {
+        const backendData = {
+            participants: [currentUser.userId, receiver._id],
+            receiverId: receiver._id,
+            text: content
+        };
+        
+        const metaData = {
+            backendUrl: API_URL, 
+            token,
+        };
+        
+        socket.emit('sendMessage', { backendData, metaData });
+    }, [messageText, currentUser, receiver._id, token]);
+
+    // --- GESTION CLAVIER ---
+    const handleKeyPress = useCallback((e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessage(e);
         }
-    };
+    }, [sendMessage]);
 
+    // --- AUTO-RESIZE TEXTAREA ---
+    const handleTextareaChange = useCallback((e) => {
+        setMessageText(e.target.value);
+        
+        // Auto-resize
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+        }
+    }, []);
+
+    // --- RENDU MESSAGES ---
+    const renderedMessages = useMemo(() => {
+        if (messages.length === 0) return null;
+
+        return messages.map((item, index) => {
+            const isMyMessage = item.senderId === currentUser?.userId;
+            const prevMsg = messages[index - 1];
+            const nextMsg = messages[index + 1];
+            const showDate = !prevMsg || new Date(item.createdAt).toDateString() !== new Date(prevMsg.createdAt).toDateString();
+            const showAvatar = !nextMsg || nextMsg.senderId !== item.senderId;
+
+            return (
+                <MessageBubble 
+                    key={item._id || index}
+                    item={item} 
+                    isMyMessage={isMyMessage} 
+                    showAvatar={showAvatar}
+                    showDate={showDate} 
+                    receiver={receiver} 
+                    formatTime={formatMessageTime}
+                    dateText={getDateSeparatorText(item.createdAt)}
+                />
+            );
+        });
+    }, [messages, currentUser?.userId, receiver, formatMessageTime, getDateSeparatorText]);
+
+    // --- LOADING STATE ---
     if (isLoading) {
         return (
-            <div className={styles.container}>
+            <div className={`${styles.container} ${isMobile ? styles.mobile : styles.desktop}`}>
                 <div className={styles.loadingContainer}>
                     <div className={styles.spinner}></div>
+                    <p className={styles.loadingText}>Chargement...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className={styles.container}>
+        <div className={`${styles.container} ${isMobile ? styles.mobile : styles.desktop}`}>
             {/* Header */}
             <div className={styles.header}>
-                <button onClick={onClose} className={styles.headerButton}>
-                    <svg width="28" height="28" viewBox="0 0 20 20" fill="currentColor">
+                <button onClick={onClose} className={styles.headerBackButton} aria-label="Retour">
+                    <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
                     </svg>
                 </button>
+                
                 <div className={styles.headerInfo}>
                     {receiver?.userPP ? (
                         <img src={receiver.userPP} alt={receiver.username} className={styles.headerAvatar} />
@@ -207,80 +289,89 @@ const Chat = ({ receiver, onClose }) => {
                             {receiver?.username?.charAt(0).toUpperCase() || '?'}
                         </div>
                     )}
-                    <div>
+                    <div className={styles.headerText}>
                         <p className={styles.headerName}>{receiver?.username || 'Utilisateur'}</p>
                         <p className={styles.headerStatus}>
-                            {receiver?.socketId ? "En ligne" : "Hors ligne"}
+                            {receiver?.socketId ? (
+                                <>
+                                    <span className={styles.onlineDot}></span>
+                                    En ligne
+                                </>
+                            ) : (
+                                "Hors ligne"
+                            )}
                         </p>
                     </div>
                 </div>
-                <button className={styles.headerButton}>
-                    <svg width="22" height="22" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                    </svg>
-                </button>
+                
+                {!isMobile && (
+                    <button className={styles.headerMenuButton} aria-label="Menu">
+                        <FaEllipsisV />
+                    </button>
+                )}
             </div>
 
-            {/* Messages */}
+            {/* Messages Container */}
             <div className={styles.messagesContainer}>
                 <div className={styles.messagesList}>
                     {messages.length === 0 ? (
                         <div className={styles.emptyMessages}>
-                            <p>Aucun message pour le moment</p>
-                            <span>Commencez la conversation !</span>
+                            <div className={styles.emptyIcon}>💬</div>
+                            <p className={styles.emptyTitle}>Aucun message pour le moment</p>
+                            <span className={styles.emptySubtitle}>Commencez la conversation !</span>
                         </div>
                     ) : (
-                        messages.map((item, index) => {
-                            const isMyMessage = item.senderId === currentUser?.userId;
-                            const prevMsg = messages[index - 1];
-                            const nextMsg = messages[index + 1];
-                            const showDate = !prevMsg || new Date(item.createdAt).toDateString() !== new Date(prevMsg.createdAt).toDateString();
-                            const showAvatar = !nextMsg || nextMsg.senderId !== item.senderId;
-
-                            return (
-                                <MessageBubble 
-                                    key={item._id}
-                                    item={item} 
-                                    isMyMessage={isMyMessage} 
-                                    showAvatar={showAvatar}
-                                    showDate={showDate} 
-                                    receiver={receiver} 
-                                    formatTime={formatMessageTime}
-                                    dateText={getDateSeparatorText(item.createdAt)}
-                                />
-                            );
-                        })
+                        renderedMessages
                     )}
                     <div ref={messagesEndRef} />
                 </div>
             </div>
 
-            {/* Input */}
+            {/* Input Zone */}
             <div className={styles.inputWrapper}>
-                <div className={styles.inputInner}>
-                    <button className={styles.attachButton}>
-                        <svg width="24" height="24" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
-                        </svg>
-                    </button>
-                    <textarea
-                        className={styles.textInput}
-                        placeholder="Message..."
-                        value={messageText}
-                        onChange={(e) => setMessageText(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        rows={1}
-                    />
+                <div className={styles.inputContainer}>
+                    {!isMobile && (
+                        <button className={styles.attachButton} aria-label="Joindre un fichier">
+                            <FaPaperclip />
+                        </button>
+                    )}
+                    
+                    <div className={styles.textInputWrapper}>
+                        <textarea
+                            ref={textareaRef}
+                            className={styles.textInput}
+                            placeholder={isMobile ? "Message..." : "Écrivez votre message..."}
+                            value={messageText}
+                            onChange={handleTextareaChange}
+                            onKeyPress={handleKeyPress}
+                            rows={1}
+                            maxLength={5000}
+                        />
+                    </div>
+
+                    {!isMobile && !messageText.trim() && (
+                        <button className={styles.emojiButton} aria-label="Émojis">
+                            <FaSmile />
+                        </button>
+                    )}
+                    
                     <button 
                         onClick={sendMessage} 
                         disabled={!messageText.trim()}
                         className={`${styles.sendButton} ${!messageText.trim() ? styles.sendButtonDisabled : ''}`}
+                        aria-label="Envoyer"
                     >
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
                         </svg>
                     </button>
                 </div>
+                
+                {messageText.length > 4500 && (
+                    <div className={styles.characterCount}>
+                        {messageText.length}/5000
+                    </div>
+                )}
             </div>
         </div>
     );
