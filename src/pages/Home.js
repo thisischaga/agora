@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -22,8 +22,9 @@ import styles from './home.module.css';
 import socket from '../Utils/socket';
 import { API_URL } from '../Utils/api';
 import { 
-    FaCamera, FaQuestionCircle, FaBullhorn, 
-    FaCalendar, FaTimes 
+    FaImage, FaQuestionCircle, FaBullhorn, 
+    FaCalendar, FaTimes, FaVideo, FaSmile, FaMapMarkerAlt, 
+    FaInfo
 } from "react-icons/fa";
 import ImagePosting from "../components/ImagePosting";
 import Messenger from "../components/Messenger";
@@ -32,16 +33,15 @@ import AppVersions from "../components/App.versions";
 
 const Home = () => {
     const location = useLocation();
-    const token = localStorage.getItem('token');
-
+    
     // ── États principaux ──
     const [userData, setUserData] = useState({});
     const [notifications, setNotifications] = useState([]);
     const [connectedUsers, setConnectedUsers] = useState([]);
-    const [active, setActive] = useState('home'); // État 'home' par défaut
+    const [active, setActive] = useState('home');
     const [toast, setToast] = useState(null);
     const [refresh, setRefresh] = useState(false);
-    const [isLoading, setIsLoading]= useState(false)
+    const [isLoading, setIsLoading] = useState(false);
 
     // ── États UI modaux ──
     const [inText, setInText] = useState(false);
@@ -57,30 +57,38 @@ const Home = () => {
     const [selectedReceiver, setSelectedReceiver] = useState(null);
     const [showChat, setShowChat] = useState(false);
 
-    // ── Fonctions de navigation dans les modaux ──
-    const goToEditor = () => setInEditing(true);
-    const goToText = () => {
+    // Token mémorisé
+    const token = useMemo(() => localStorage.getItem('token'), []);
+
+    // ── Fonctions de navigation dans les modaux - optimisées ──
+    const goToEditor = useCallback(() => setInEditing(true), []);
+    
+    const goToText = useCallback(() => {
         setInText(true);
         setShowPublishMenu(false);
-    };
-    const goImagePosting = () => {
+    }, []);
+    
+    const goImagePosting = useCallback(() => {
         setInImgPosting(true);
         setShowPublishMenu(false);
-    };
-    const goToPublishInfo = () => {
+    }, []);
+    
+    const goToPublishInfo = useCallback(() => {
         setInPublishInfo(true);
         setShowPublishMenu(false);
-    };
-    const goToCreateEvent = () => {
+    }, []);
+    
+    const goToCreateEvent = useCallback(() => {
         setInCreateEvent(true);
         setShowPublishMenu(false);
-    };
-    const goToAskQuestion = () => {
+    }, []);
+    
+    const goToAskQuestion = useCallback(() => {
         setInAskQuestion(true);
         setShowPublishMenu(false);
-    };
+    }, []);
 
-    const back = () => {
+    const back = useCallback(() => {
         setInText(false);
         setInEditing(false);
         setInImgPosting(false);
@@ -88,50 +96,48 @@ const Home = () => {
         setInCreateEvent(false);
         setInAskQuestion(false);
         setRefresh(prev => !prev);
-    };
+    }, []);
 
-    const togglePublishMenu = () => {
-        setShowPublishMenu(!showPublishMenu);
-    };
+    const togglePublishMenu = useCallback(() => {
+        setShowPublishMenu(prev => !prev);
+    }, []);
 
     // ── Fonction pour ouvrir le chat ──
-    const handleOpenChat = (receiver) => {
+    const handleOpenChat = useCallback((receiver) => {
         console.log('Ouverture du chat avec:', receiver);
         setSelectedReceiver(receiver);
         setShowChat(true);
-    };
+    }, []);
 
     // ── Fonction pour fermer le chat ──
-    const handleCloseChat = () => {
+    const handleCloseChat = useCallback(() => {
         setShowChat(false);
         setSelectedReceiver(null);
-    };
+    }, []);
 
     // ── Socket et récupération des données utilisateur ──
     useEffect(() => {
         setIsLoading(true);
-        const token = localStorage.getItem('token');
-        try {
-            fetch(`${API_URL}/user_data`, {
-                headers: { Authorization: `Bearer${token}` },
-            })
-            .then(response => response.json())
-            .then(data => {
-                setUserData(data);
-                localStorage.setItem('userId', data.userId);
-                localStorage.setItem('pp', data.userPP);
-                localStorage.setItem('username', data.username);
-                setNotifications(data.notifications || []);
-            })
-            .catch(error => {
-                console.error(error);
-                setToast("Erreur lors de la récupération des données.");
-            });
-        } catch (error) {
+        
+        fetch(`${API_URL}/user_data`, {
+            headers: { Authorization: `Bearer${token}` },
+        })
+        .then(response => response.json())
+        .then(data => {
+            setUserData(data);
+            localStorage.setItem('userId', data.userId);
+            localStorage.setItem('pp', data.userPP);
+            localStorage.setItem('username', data.username);
+            setNotifications(data.notifications || []);
+        })
+        .catch(error => {
             console.error(error);
-        }finally{
-            setIsLoading(false)
-        }
+            setToast("Erreur lors de la récupération des données.");
+        })
+        .finally(() => {
+            setIsLoading(false);
+        });
+
         socket.connect();
 
         socket.on("connect", async () => {
@@ -141,14 +147,13 @@ const Home = () => {
                     { socketId: socket.id },
                     { headers: { Authorization: `Bearer${token}` } }
                 );
-                
             } catch (err) {
                 console.error(err);
                 setToast("Socket connection error.");
             }
         });
         
-        socket.on('notif', (data) => {
+        socket.on('notif', () => {
             setRefresh(prev => !prev);
         });
         
@@ -156,7 +161,7 @@ const Home = () => {
             socket.off('notif');
             socket.disconnect();
         };
-    }, [token]); // Enlevé location.pathname
+    }, [token]);
 
     // ── États pour le responsive ──
     const [isDesktop, setIsDesktop] = useState(window.innerWidth > 1024);
@@ -169,8 +174,8 @@ const Home = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // ── Choix du composant actif ──
-    const renderActiveComponent = () => {
+    // ── Choix du composant actif - mémorisé ──
+    const renderActiveComponent = useMemo(() => {
         switch(active) {
             case 'notifications':
                 return (
@@ -215,18 +220,16 @@ const Home = () => {
                 return <AppVersions />;
             case 'home':
             default:
-                // Sur desktop, on affiche AppVersions quand on est sur l'accueil
                 return isDesktop ? <AppVersions /> : null;
         }
-    };
+    }, [active, userData, connectedUsers, refresh, handleOpenChat, showChat, isDesktop]);
 
-    // Vérifier si on doit afficher le feed principal (home ou aucun actif)
-    // Sur desktop, le feed principal est toujours visible
+    // Vérifier si on doit afficher le feed principal
     const shouldShowMainFeed = isDesktop || active === 'home';
 
-    const handleHomeClick = () => {
+    const handleHomeClick = useCallback(() => {
         setActive('home');
-    };
+    }, []);
 
     return (
         <div>
@@ -309,67 +312,87 @@ const Home = () => {
                             onClick={handleHomeClick}
                         />
 
-                        {/* Afficher le feed principal seulement si aucun composant spécial n'est actif */}
+                        {/* Afficher le feed principal */}
                         {shouldShowMainFeed && (
                             <div className={styles.postSpace}>
                                 {userData?.userPP && (
                                     <div className={styles.userProfilBox}>
-                                        <div className={styles.user}>
-                                            <img src={userData.userPP} alt="mon profil" />
-                                            <p>{userData.username}</p>
-                                        </div>
-                                        <div className={styles.actions}>
+                                        {/* Section Profil */}
+                                        <div className={styles.createPostSection}>
+                                            <img 
+                                                src={userData.userPP} 
+                                                alt="mon profil"
+                                                className={styles.userAvatar}
+                                            />
                                             <input
                                                 type="text"
-                                                placeholder="Exprime-toi..."
-                                                onClick={togglePublishMenu}
+                                                placeholder={`C'est quoi l'actualité, ${userData.username?.split(' ')[0]} ?`}
+                                                onClick={goToPublishInfo}
                                                 readOnly
+                                                className={styles.createPostInput}
                                             />
-
                                         </div>
 
-                                        {/* Menu de publication étendu */}
+                                        <div className={styles.divider}></div>
+
+                                        {/* Boutons d'actions style Facebook */}
+                                        <div className={styles.actionButtons}>
+                                            <button 
+                                                className={styles.actionButton}
+                                                onClick={goToPublishInfo}
+                                            >
+                                                <FaInfo className={styles.actionButtonIcon} style={{ color: '#45bd62' }} />
+                                                <span>Information</span>
+                                            </button>
+
+                                            <button 
+                                                className={styles.actionButton}
+                                                onClick={goToCreateEvent}
+                                            >
+                                                <FaCalendar className={styles.actionButtonIcon} style={{ color: '#f3425f' }} />
+                                                <span>Événement</span>
+                                            </button>
+
+                                            <button 
+                                                className={styles.actionButton}
+                                                onClick={goToAskQuestion}
+                                            >
+                                                <FaQuestionCircle className={styles.actionButtonIcon} style={{ color: '#1877f2' }} />
+                                                <span>Question</span>
+                                            </button>
+                                        </div>
+
+                                        {/* Menu étendu si ouvert */}
                                         {showPublishMenu && (
-                                            <div className={styles.publishMenu}>
+                                            <div className={styles.extendedMenu}>
+                                                <div className={styles.divider}></div>
+                                                <div className={styles.publishMenu}>
+                                                    <button 
+                                                        className={styles.publishMenuItem}
+                                                        onClick={goToPublishInfo}
+                                                    >
+                                                        <div className={styles.publishMenuIcon} style={{ backgroundColor: '#f59e0b' }}>
+                                                            <FaBullhorn />
+                                                        </div>
+                                                        <div className={styles.publishMenuText}>
+                                                            <strong>Publier une info</strong>
+                                                            <span>Partager une annonce importante</span>
+                                                        </div>
+                                                    </button>
 
-                                                <button 
-                                                    className={styles.publishMenuItem}
-                                                    onClick={goToAskQuestion}
-                                                >
-                                                    <div className={styles.publishMenuIcon} style={{ backgroundColor: '#2563eb' }}>
-                                                        <FaQuestionCircle />
-                                                    </div>
-                                                    <div className={styles.publishMenuText}>
-                                                        <strong>Poser une question</strong>
-                                                        <span>Obtenir des réponses</span>
-                                                    </div>
-                                                </button>
-
-                                                <button 
-                                                    className={styles.publishMenuItem}
-                                                    onClick={goToPublishInfo}
-                                                >
-                                                    <div className={styles.publishMenuIcon} style={{ backgroundColor: '#f59e0b' }}>
-                                                        <FaBullhorn />
-                                                    </div>
-                                                    <div className={styles.publishMenuText}>
-                                                        <strong>Publier une info</strong>
-                                                        <span>Partager une annonce</span>
-                                                    </div>
-                                                </button>
-
-                                                <button 
-                                                    className={styles.publishMenuItem}
-                                                    onClick={goToCreateEvent}
-                                                >
-                                                    <div className={styles.publishMenuIcon} style={{ backgroundColor: '#06b6d4' }}>
-                                                        <FaCalendar />
-                                                    </div>
-                                                    <div className={styles.publishMenuText}>
-                                                        <strong>Créer un événement</strong>
-                                                        <span>Organiser une activité</span>
-                                                    </div>
-                                                </button>
+                                                    <button 
+                                                        className={styles.publishMenuItem}
+                                                        onClick={goToText}
+                                                    >
+                                                        <div className={styles.publishMenuIcon} style={{ backgroundColor: '#06b6d4' }}>
+                                                            <FaSmile />
+                                                        </div>
+                                                        <div className={styles.publishMenuText}>
+                                                            <strong>Statut</strong>
+                                                            <span>Partager vos pensées</span>
+                                                        </div>
+                                                    </button>
+                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -381,8 +404,8 @@ const Home = () => {
 
                         {toast && <Toast message={toast} />}
 
-                        {/* Afficher le composant actif (students, messenger, etc.) */}
-                        {renderActiveComponent()}
+                        {/* Afficher le composant actif */}
+                        {renderActiveComponent}
 
                         {showMessBox && <MessageBox setShowMessBox={setShowMessBox} />}
                     </main>
