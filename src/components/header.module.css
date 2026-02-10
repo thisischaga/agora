@@ -437,6 +437,7 @@
 @media (max-width: 640px) {
   .header {
     height: 56px;
+    position: relative;
   }
   .logoText {
     font-size: 26px;
@@ -480,6 +481,7 @@
 @media (max-width: 480px) {
   .header {
     height: 54px;
+    position: relative;
   }
   
   .mobileLayout {
@@ -528,6 +530,7 @@
 @media (max-width: 360px) {
   .header {
     height: 52px;
+    position: relative;
   }
   
   .mobileLayout {
@@ -565,6 +568,7 @@
 @media (max-height: 600px) and (orientation: landscape) {
   .header {
     height: 50px;
+    position: relative;
   }
   
   .mobileSearchOverlay {

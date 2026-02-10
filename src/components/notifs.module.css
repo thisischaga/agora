@@ -61,7 +61,7 @@
 
 .header h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--text-notif-strong);
 }
@@ -69,7 +69,7 @@
 .badge {
   background-color: var(--unread-dot);
   color: white;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 12px;
@@ -152,7 +152,7 @@
 .message {
   color: var(--text-notif);
   line-height: 1.4;
-  font-size: 14px;
+  font-size: 15px;
   margin: 0 0 4px 0;
   word-wrap: break-word;
 }
@@ -164,7 +164,7 @@
 
 .time {
   display: inline-block;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-notif-muted);
 }
 
@@ -204,7 +204,7 @@
 .loading p,
 .error p {
   color: var(--text-notif-muted);
-  font-size: 15px;
+  font-size: 16px;
   margin: 0;
 }
 

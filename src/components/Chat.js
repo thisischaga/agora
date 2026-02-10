@@ -212,6 +212,7 @@ const Chat = ({ receiver, onClose }) => {
         };
         
         socket.emit('sendMessage', { backendData, metaData });
+        socket.emit('message', {receiverId: receiver._id});
     }, [messageText, currentUser, receiver._id, token]);
 
     // --- GESTION CLAVIER ---

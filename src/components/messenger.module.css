@@ -70,7 +70,7 @@
 
 .header h3 {
   margin: 0;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -128,7 +128,7 @@
   border: none;
   background-color: var(--bg-search);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 15px;
   outline: none;
   transition: all 0.2s;
 }
@@ -279,7 +279,7 @@
 
 .username {
   margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
   overflow: hidden;
@@ -289,7 +289,7 @@
 }
 
 .timestamp {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
   flex-shrink: 0;
 }
@@ -302,7 +302,7 @@
 }
 
 .lastMessage {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -349,7 +349,7 @@
 .error p {
   margin: 0 0 16px 0;
   color: var(--text-secondary);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .startChatBtn,
@@ -425,7 +425,7 @@
   }
 
   .header h3 {
-    font-size: 18px;
+    font-size: 25px;
   }
 
   .searchContainer {
@@ -454,7 +454,7 @@
   }
 
   .header h3 {
-    font-size: 16px;
+    font-size: 25px;
   }
 
   .newChatBtn {

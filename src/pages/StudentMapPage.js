@@ -12,8 +12,7 @@ const StudentMapPage = () => {
     };
 
     const handleOpenChat = (receiver) => {
-        console.log('Open chat with:', receiver);
-        // Implémenter la logique de chat si nécessaire
+        alert('Télécharger agora pour envoyer des messages !')
     };
 
     return (

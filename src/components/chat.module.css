@@ -75,7 +75,7 @@
 }
 
 .loadingText {
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text-muted);
     font-weight: 500;
 }
@@ -170,7 +170,7 @@
 
 .headerName {
     margin: 0;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     color: var(--text-main);
     white-space: nowrap;
@@ -179,13 +179,13 @@
 }
 
 .desktop .headerName {
-    font-size: 17px;
+    font-size: 18px;
 }
 
 .headerStatus {
     margin: 0;
     margin-top: 2px;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-muted);
     font-weight: 500;
     display: flex;
@@ -270,7 +270,7 @@
 }
 
 .dateSeparatorText {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-muted);
     background-color: var(--bg-tabs);
@@ -391,14 +391,14 @@
 
 .messageText {
     margin: 0;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.5;
     word-wrap: break-word;
     white-space: pre-wrap;
 }
 
 .mobile .messageText {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .myMessageText {
@@ -419,7 +419,7 @@
 }
 
 .messageTime {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
 }
 
@@ -484,18 +484,18 @@
 
 .emptyTitle {
     margin: 0;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     color: var(--text-main);
     margin-bottom: 8px;
 }
 
 .mobile .emptyTitle {
-    font-size: 16px;
+    font-size: 18px;
 }
 
 .emptySubtitle {
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text-muted);
 }
 
@@ -564,7 +564,7 @@
 .textInput {
     width: 100%;
     padding: 8px 6px;
-    font-size: 15px;
+    font-size: 16px;
     color: var(--text-main);
     background: transparent;
     border: none;
@@ -578,7 +578,7 @@
 }
 
 .mobile .textInput {
-    font-size: 14px;
+    font-size: 15px;
     padding: 6px 4px;
 }
 

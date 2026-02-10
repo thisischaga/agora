@@ -26,23 +26,23 @@ const StudentMap = ({ onOpenChat, setActive, pp, active }) => {  // Ajout de la 
     }, []);
 
     useEffect(() => {
-        const checkMobile = () => {
-            const userAgent = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
-                navigator.userAgent
-            );
-            const screenWidth = window.innerWidth <= 768;
-            setIsMobile(userAgent || screenWidth);
-        };
+    const checkMobile = () => {
+        const userAgent = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
+            navigator.userAgent
+        );
+        const screenWidth = window.innerWidth <= 768;
+        setIsMobile(userAgent || screenWidth);
+    };
 
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []); 
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+}, []); // Séparé du fetchUsers
 
-    useEffect(() => {
-        fetchUsers();
-    }, [fetchUsers]);
+useEffect(() => {
+    fetchUsers();
+}, [fetchUsers]);
 
     const onRefresh = () => {
         setRefreshing(true);

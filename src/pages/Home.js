@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
@@ -32,7 +32,7 @@ import AppVersions from "../components/App.versions";
 
 const Home = () => {
     const location = useLocation();
-    const token = useMemo(() => localStorage.getItem('token'), []);
+    const token = localStorage.getItem('token');
 
     // ── États principaux ──
     const [userData, setUserData] = useState({});
@@ -41,7 +41,7 @@ const Home = () => {
     const [active, setActive] = useState('home'); // État 'home' par défaut
     const [toast, setToast] = useState(null);
     const [refresh, setRefresh] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading]= useState(false)
 
     // ── États UI modaux ──
     const [inText, setInText] = useState(false);
@@ -57,30 +57,30 @@ const Home = () => {
     const [selectedReceiver, setSelectedReceiver] = useState(null);
     const [showChat, setShowChat] = useState(false);
 
-    // ── Fonctions de navigation dans les modaux - optimisées avec useCallback ──
-    const goToEditor = useCallback(() => setInEditing(true), []);
-    const goToText = useCallback(() => {
+    // ── Fonctions de navigation dans les modaux ──
+    const goToEditor = () => setInEditing(true);
+    const goToText = () => {
         setInText(true);
         setShowPublishMenu(false);
-    }, []);
-    const goImagePosting = useCallback(() => {
+    };
+    const goImagePosting = () => {
         setInImgPosting(true);
         setShowPublishMenu(false);
-    }, []);
-    const goToPublishInfo = useCallback(() => {
+    };
+    const goToPublishInfo = () => {
         setInPublishInfo(true);
         setShowPublishMenu(false);
-    }, []);
-    const goToCreateEvent = useCallback(() => {
+    };
+    const goToCreateEvent = () => {
         setInCreateEvent(true);
         setShowPublishMenu(false);
-    }, []);
-    const goToAskQuestion = useCallback(() => {
+    };
+    const goToAskQuestion = () => {
         setInAskQuestion(true);
         setShowPublishMenu(false);
-    }, []);
+    };
 
-    const back = useCallback(() => {
+    const back = () => {
         setInText(false);
         setInEditing(false);
         setInImgPosting(false);
@@ -88,48 +88,50 @@ const Home = () => {
         setInCreateEvent(false);
         setInAskQuestion(false);
         setRefresh(prev => !prev);
-    }, []);
+    };
 
-    const togglePublishMenu = useCallback(() => {
-        setShowPublishMenu(prev => !prev);
-    }, []);
+    const togglePublishMenu = () => {
+        setShowPublishMenu(!showPublishMenu);
+    };
 
     // ── Fonction pour ouvrir le chat ──
-    const handleOpenChat = useCallback((receiver) => {
+    const handleOpenChat = (receiver) => {
         console.log('Ouverture du chat avec:', receiver);
         setSelectedReceiver(receiver);
         setShowChat(true);
-    }, []);
+    };
 
     // ── Fonction pour fermer le chat ──
-    const handleCloseChat = useCallback(() => {
+    const handleCloseChat = () => {
         setShowChat(false);
         setSelectedReceiver(null);
-    }, []);
+    };
 
     // ── Socket et récupération des données utilisateur ──
     useEffect(() => {
         setIsLoading(true);
-        
-        fetch(`${API_URL}/user_data`, {
-            headers: { Authorization: `Bearer${token}` },
-        })
-        .then(response => response.json())
-        .then(data => {
-            setUserData(data);
-            localStorage.setItem('userId', data.userId);
-            localStorage.setItem('pp', data.userPP);
-            localStorage.setItem('username', data.username);
-            setNotifications(data.notifications || []);
-        })
-        .catch(error => {
+        const token = localStorage.getItem('token');
+        try {
+            fetch(`${API_URL}/user_data`, {
+                headers: { Authorization: `Bearer${token}` },
+            })
+            .then(response => response.json())
+            .then(data => {
+                setUserData(data);
+                localStorage.setItem('userId', data.userId);
+                localStorage.setItem('pp', data.userPP);
+                localStorage.setItem('username', data.username);
+                setNotifications(data.notifications || []);
+            })
+            .catch(error => {
+                console.error(error);
+                setToast("Erreur lors de la récupération des données.");
+            });
+        } catch (error) {
             console.error(error);
-            setToast("Erreur lors de la récupération des données.");
-        })
-        .finally(() => {
-            setIsLoading(false);
-        });
-
+        }finally{
+            setIsLoading(false)
+        }
         socket.connect();
 
         socket.on("connect", async () => {
@@ -146,7 +148,7 @@ const Home = () => {
             }
         });
         
-        socket.on('notif', () => {
+        socket.on('notif', (data) => {
             setRefresh(prev => !prev);
         });
         
@@ -154,7 +156,7 @@ const Home = () => {
             socket.off('notif');
             socket.disconnect();
         };
-    }, [token]); // Dépendance uniquement sur token
+    }, [token]); // Enlevé location.pathname
 
     // ── États pour le responsive ──
     const [isDesktop, setIsDesktop] = useState(window.innerWidth > 1024);
@@ -167,8 +169,8 @@ const Home = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // ── Choix du composant actif - optimisé avec useMemo ──
-    const renderActiveComponent = useMemo(() => {
+    // ── Choix du composant actif ──
+    const renderActiveComponent = () => {
         switch(active) {
             case 'notifications':
                 return (
@@ -213,16 +215,18 @@ const Home = () => {
                 return <AppVersions />;
             case 'home':
             default:
+                // Sur desktop, on affiche AppVersions quand on est sur l'accueil
                 return isDesktop ? <AppVersions /> : null;
         }
-    }, [active, userData.userPP, userData.userId, userData.username, connectedUsers, refresh, handleOpenChat, showChat, isDesktop]);
+    };
 
     // Vérifier si on doit afficher le feed principal (home ou aucun actif)
+    // Sur desktop, le feed principal est toujours visible
     const shouldShowMainFeed = isDesktop || active === 'home';
 
-    const handleHomeClick = useCallback(() => {
+    const handleHomeClick = () => {
         setActive('home');
-    }, []);
+    };
 
     return (
         <div>
@@ -321,11 +325,13 @@ const Home = () => {
                                                 onClick={togglePublishMenu}
                                                 readOnly
                                             />
+
                                         </div>
 
                                         {/* Menu de publication étendu */}
                                         {showPublishMenu && (
                                             <div className={styles.publishMenu}>
+
                                                 <button 
                                                     className={styles.publishMenuItem}
                                                     onClick={goToAskQuestion}
@@ -376,7 +382,7 @@ const Home = () => {
                         {toast && <Toast message={toast} />}
 
                         {/* Afficher le composant actif (students, messenger, etc.) */}
-                        {renderActiveComponent}
+                        {renderActiveComponent()}
 
                         {showMessBox && <MessageBox setShowMessBox={setShowMessBox} />}
                     </main>

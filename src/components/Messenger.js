@@ -13,6 +13,7 @@ const Messenger = ({ onOpenChat, setActive, active, pp, showChat }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedConv, setSelectedConv] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
+    const [showPop, setShowPop] = useState(false);
     
     const token = useMemo(() => localStorage.getItem('token'), []);
     const navigate = useNavigate();
@@ -47,14 +48,15 @@ const Messenger = ({ onOpenChat, setActive, active, pp, showChat }) => {
         fetchConversations();
         
         // Écouter les nouveaux messages pour rafraîchir la liste
-        const handleNewMessage = () => {
-            fetchConversations();
-        };
 
-        socket.on('message', handleNewMessage);
+        socket.on('message',(data)=> {
+            //fetchConversations();
+            console.log(data)
+            alert('nouveau message')
+        });
 
         return () => {
-            socket.off('message', handleNewMessage);
+            socket.off('message');
         };
     }, [fetchConversations]); // Dépend de fetchConversations qui est stable grâce à useCallback
 
@@ -222,11 +224,27 @@ const Messenger = ({ onOpenChat, setActive, active, pp, showChat }) => {
             <>
                 <div className={styles.messenger}>
                     <div className={styles.header}>
-                        <h3>Messages</h3>
+                        <h2>Messages</h2>
                     </div>
                     <div className={styles.loading}>
                         <div className={styles.spinner}></div>
                         <p>Chargement...</p>
+                    </div>
+                </div>
+                {isMobile && <Menu pp={pp} active={active} setActive={setActive}/>}
+            </>
+        );
+    }
+
+    if (isMobile) {
+        return (
+            <>
+                <div className={styles.messenger}>
+                    <div className={styles.error}>
+                        <FaInbox />
+                        <button onClick={()=>{alert('Fonctionnalité à venir !')}} className={styles.retryBtn}>
+                            Télécharger agora pour continuer
+                        </button>
                     </div>
                 </div>
                 {isMobile && <Menu pp={pp} active={active} setActive={setActive}/>}
@@ -260,7 +278,7 @@ const Messenger = ({ onOpenChat, setActive, active, pp, showChat }) => {
             <div className={styles.messenger}>
                 {/* Header */}
                 <div className={styles.header}>
-                    <h2>Messages</h2>
+                    <h3>Messages</h3>
                     <button 
                         className={styles.newChatBtn}
                         onClick={handleNewConversation}
@@ -312,7 +330,7 @@ const Messenger = ({ onOpenChat, setActive, active, pp, showChat }) => {
             </div>
             
             {/* Menu mobile UNE SEULE FOIS en dehors */}
-            {isMobile && <Menu pp={pp} active={active} setActive={setActive}/>}
+            {isMobile & !showChat && <Menu pp={pp} active={active} setActive={setActive}/>}
         </>
     );
 };

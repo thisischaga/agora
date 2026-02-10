@@ -11,7 +11,7 @@ export const usePosts = (token) => {
       });
       return res.data;
     },
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 60, 
     cacheTime: 1000 * 60 * 5,
   });
 };

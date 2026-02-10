@@ -109,10 +109,8 @@ const Menu = ({ pp, userData, setActive, active }) => {
   const handleNavigate = (item) => {
       if (!setActive) return;
       
-      console.log('Clicked on:', item.id, 'Current active:', active, 'Is Mobile:', isMobile);
-      
       // Sur MOBILE : students, messenger et notifications naviguent vers leurs routes
-      if (isMobile && (item.id === "students" || item.id === "messenger" || item.id === "notifications")) {
+      if (isMobile && (item.id === "students" || item.id === "notifications")) {
           if (item.link) {
               navigate(item.link);
           }

@@ -160,7 +160,7 @@ main {
 
 .user p {
     margin: 0;
-    font-size: clamp(14px, 3vw, 16px);
+    font-size: clamp(15px, 3.5vw, 17px);
     font-weight: 700;
     color: var(--text-main);
     letter-spacing: -0.02em;
@@ -193,7 +193,7 @@ main {
     background-color: var(--bg-search);
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
     color: var(--text-search);
-    font-size: clamp(14px, 3vw, 15px);
+    font-size: clamp(15px, 3vw, 16px);
     font-weight: 500;
     transition: all var(--transition-base);
 }
@@ -224,7 +224,7 @@ main {
     padding: clamp(10px, 2vw, 12px) clamp(20px, 3vw, 24px);
     border: none;
     border-radius: var(--radius-md);
-    font-size: clamp(14px, 3vw, 15px);
+    font-size: clamp(15px, 3vw, 16px);
     font-weight: 700;
     cursor: pointer;
     transition: all var(--transition-base);
@@ -324,7 +324,7 @@ main {
     border-radius: var(--radius-full);
     cursor: pointer;
     font-weight: 700;
-    font-size: clamp(14px, 3vw, 15px);
+    font-size: clamp(15px, 3vw, 16px);
     transition: all var(--transition-base);
     box-shadow: var(--shadow-sm);
     white-space: nowrap;
@@ -423,14 +423,14 @@ main {
 
 .publishMenuText strong {
     color: var(--text-main);
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 700;
     letter-spacing: -0.01em;
 }
 
 .publishMenuText span {
     color: var(--text-muted);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
 }
 
@@ -448,7 +448,7 @@ main {
     text-align: center;
     padding: clamp(40px, 6vw, 60px) clamp(16px, 3vw, 20px);
     color: var(--text-muted);
-    font-size: clamp(15px, 3vw, 16px);
+    font-size: clamp(16px, 3.5vw, 17px);
     font-weight: 500;
 }
 
@@ -456,7 +456,7 @@ main {
     text-align: center;
     padding: clamp(60px, 8vw, 80px) clamp(16px, 3vw, 20px);
     color: var(--text-muted);
-    font-size: clamp(15px, 3vw, 16px);
+    font-size: clamp(16px, 3.5vw, 17px);
     font-weight: 500;
 }
 
@@ -799,6 +799,10 @@ textarea {
 
 /* Mobile */
 @media (max-width: 640px) {
+    main{
+        padding-top: 0px;
+        top: 0px;
+    }
     .postSpace {
         padding: 0;
         gap: 0;
@@ -839,7 +843,7 @@ textarea {
 /* Small mobile */
 @media (max-width: 480px) {
     main {
-        padding-top: 60px;
+        padding-top: 0px;
         padding-bottom: 70px;
     }
 
@@ -879,6 +883,10 @@ textarea {
     .postSpace {
         padding: 0;
         gap: 0;
+    }
+    main{
+        padding-top: 0px;
+        top: 0px;
     }
 
     .userProfilBox {
@@ -928,7 +936,7 @@ textarea {
 /* Landscape mode mobile */
 @media (max-height: 600px) and (orientation: landscape) {
     main {
-        padding-top: 50px;
+        padding-top: 0px;
         padding-bottom: 60px;
     }
 
