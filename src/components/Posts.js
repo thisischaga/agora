@@ -12,12 +12,12 @@ import { useNavigate } from 'react-router-dom';
 import Toast from './Toast';
 import { getNotif } from '../Utils/GetNotif';
 import { API_URL } from '../Utils/api';
+import { usePosts } from '../hooks/UsePosts'; // Importez votre hook
 
 const Posts = ({ userId, setRefresh, refresh }) => {
-    const [posts, setPosts] = useState([]);
     const [selectedPostId, setSelectedPostId] = useState(null);
     const [textContent, setTextContent] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [isCommentLoading, setIsCommentLoading] = useState(false);
     const [toast, setToast] = useState(null);
     const [savedPosts, setSavedPosts] = useState([]);
     const [showComments, setShowComments] = useState({});
@@ -27,6 +27,15 @@ const Posts = ({ userId, setRefresh, refresh }) => {
     const token = localStorage.getItem('token');
     const backendURL = API_URL;
     const navigate = useNavigate();
+
+    // Utilisation de React Query pour récupérer les posts
+    const { 
+        data: posts = [], 
+        isLoading, 
+        isError, 
+        error, 
+        refetch 
+    } = usePosts(token);
 
     // ========== UTILS ==========
     const manageTime = useCallback((postDate) => {
@@ -90,26 +99,19 @@ const Posts = ({ userId, setRefresh, refresh }) => {
         technology: '#06b6d4',
     }), []);
 
-    // ========== API CALLS ==========
+    // Rafraîchir les posts quand refresh change
     useEffect(() => {
-        const fetchPosts = async () => {
-            setIsLoading(true); 
-            try {
-                const response = await axios.get(`${backendURL}/posts`, {
-                    headers: { Authorization: `Bearer${token}` }
-                });
-                setPosts(response.data || []);
-            } catch (error) {
-                console.error(error);
-                setToast('Erreur lors du chargement des publications');
-            } finally {
-                setIsLoading(false); 
-            }
-        };
+        if (refresh) {
+            refetch();
+        }
+    }, [refresh, refetch]);
 
-        fetchPosts();
-    }, [backendURL, token, refresh]); // Ajout des dépendances appropriées
-
+    // Gérer les erreurs
+    useEffect(() => {
+        if (isError) {
+            setToast(error?.response?.data?.message || 'Erreur lors du chargement des publications');
+        }
+    }, [isError, error]);
 
     useEffect(() => {
         if (selectedPostId && commentInputRef.current) {
@@ -117,7 +119,7 @@ const Posts = ({ userId, setRefresh, refresh }) => {
         }
     }, [selectedPostId]);
 
-
+    // ========== API CALLS (mutations) ==========
     const handleLike = useCallback(async (postId, authorId, like, post) => {
         if (processingActions[`like-${postId}`]) return;
         
@@ -129,11 +131,10 @@ const Posts = ({ userId, setRefresh, refresh }) => {
                 { postId, authorId },
                 { headers: { Authorization: `Bearer${token}` } }
             );
-            setPosts((prev) =>
-                prev.map((p) =>
-                    p._id === postId ? { ...p, postLike: response.data.likes } : p
-                )
-            );
+            
+            // Refetch pour mettre à jour le cache
+            refetch();
+            
             if (userId !== authorId && !like.includes(userId)) {
                 getNotif({
                     userId,
@@ -149,25 +150,22 @@ const Posts = ({ userId, setRefresh, refresh }) => {
         } finally {
             setProcessingActions(prev => ({ ...prev, [`like-${postId}`]: false }));
         }
-    }, [processingActions, backendURL, token, userId]);
+    }, [processingActions, backendURL, token, userId, refetch]);
 
     const handleComment = useCallback(async (postId, authorId) => {
-        if (!textContent.trim() || isLoading) return;
+        if (!textContent.trim() || isCommentLoading) return;
         
-        setIsLoading(true);
+        setIsCommentLoading(true);
         try {
             const response = await axios.put(
                 `${backendURL}/post/comment`,
                 { commentary: textContent, currentPostId: postId, userId, authorId },
                 { headers: { Authorization: `Bearer${token}` } }
             );
-            setPosts((prev) =>
-                prev.map((post) =>
-                    post._id === postId
-                        ? { ...post, postComment: response.data.commentaires }
-                        : post
-                )
-            );
+            
+            // Refetch pour mettre à jour le cache
+            refetch();
+            
             setToast(response.data.message || 'Commentaire publié');
             if (userId !== authorId) {
                 getNotif({ userId, authorId, message: "a commenté votre publication", token });
@@ -177,9 +175,9 @@ const Posts = ({ userId, setRefresh, refresh }) => {
         } catch (error) {
             setToast(error.response?.data?.message || 'Erreur lors du commentaire');
         } finally {
-            setIsLoading(false);
+            setIsCommentLoading(false);
         }
-    }, [textContent, isLoading, backendURL, token, userId]);
+    }, [textContent, isCommentLoading, backendURL, token, userId, refetch]);
 
     const handleShare = useCallback(async (post) => {
         const shareData = {
@@ -209,15 +207,13 @@ const Posts = ({ userId, setRefresh, refresh }) => {
                 { currentPostId: post._id, userId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            setPosts((prev) =>
-                prev.map((p) =>
-                    p._id === post._id ? { ...p, sharing: [...(p.sharing || []), userId] } : p
-                )
-            );
+            
+            // Refetch pour mettre à jour le cache
+            refetch();
         } catch (error) {
             console.error('Erreur lors du partage :', error);
         }
-    }, [backendURL, token, userId]);
+    }, [backendURL, token, userId, refetch]);
 
     const handleSavePost = useCallback(async (postId) => {
         if (processingActions[`save-${postId}`]) return;
@@ -245,10 +241,8 @@ const Posts = ({ userId, setRefresh, refresh }) => {
         }));
     }, []);
 
-
     // ========== RENDER COMPONENTS ==========
     
-    // Actions mobiles style
     const renderMobileActions = useCallback((post) => (
         <div className={styles.mobileActions}>
             <div className={styles.leftActions}>
@@ -371,14 +365,14 @@ const Posts = ({ userId, setRefresh, refresh }) => {
                     <button 
                         className={styles.sendCommentBtn}
                         onClick={() => handleComment(post._id, post.userId)} 
-                        disabled={isLoading}
+                        disabled={isCommentLoading}
                     >
-                        {isLoading ? '...' : 'Publier'}
+                        {isCommentLoading ? '...' : 'Publier'}
                     </button>
                 )}
             </div>
         </>
-    ), [showComments, selectedPostId, textContent, isLoading, manageTime, handleComment, navigate]);
+    ), [showComments, selectedPostId, textContent, isCommentLoading, manageTime, handleComment, navigate]);
 
     const renderPostHeader = useCallback((post) => (
         <div className={styles.header}>
@@ -644,7 +638,8 @@ const Posts = ({ userId, setRefresh, refresh }) => {
             </div>
         );
     }
-    if (posts.length === 0 && isLoading === false) {
+
+    if (posts.length === 0) {
         return (
             <div className={styles.postsContainer}>
                 <div className={styles.emptyState}>
@@ -652,11 +647,9 @@ const Posts = ({ userId, setRefresh, refresh }) => {
                     <h3>Aucune publication</h3>
                     <p>Les publications de vos amis apparaîtront ici</p>
                 </div>
-                
             </div>
         );
     }
-    
 
     return (
         <div className={styles.postsContainer}>
