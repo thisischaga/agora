@@ -811,6 +811,7 @@ textarea {
     .userProfilBox {
         padding: 14px;
         border-radius: 0;
+        display: none;
     }
 
     .actions {
@@ -856,6 +857,7 @@ textarea {
         padding: 12px;
         margin-bottom: 0;
         border-radius: 0;
+        display: none;
     }
 
     .user {
@@ -892,6 +894,7 @@ textarea {
     .userProfilBox {
         padding: 10px;
         margin-bottom: 0;
+        display: none;
     }
 
     .actions input {
