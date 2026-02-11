@@ -13,6 +13,7 @@ import {
 } from 'react-icons/fa';
 import { Friend } from '../components/Friend';
 import Toast from '../components/Toast';
+import CloudinaryImage from '../Utils/CloudinaryImage';
 
 const PostPage = () => {
     const { id } = useParams();
@@ -289,10 +290,8 @@ const PostPage = () => {
                     <h3 className={styles.infoTitle}>{postData.title}</h3>
                     <p className={styles.infoBody}>{postData.content}</p>
                     
-                    {postData.imageUrl && (
-                        <div className={styles.imageWrapper}>
-                            <img src={postData.imageUrl} alt="Info" loading="lazy" />
-                        </div>
+                    {post.publicId && (
+                        <CloudinaryImage publicId={post.publicId} width={600} height={400} />
                     )}
                     
                     {postData.link && (

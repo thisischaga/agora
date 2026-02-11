@@ -13,6 +13,7 @@ import Toast from './Toast';
 import { getNotif } from '../Utils/GetNotif';
 import { API_URL } from '../Utils/api';
 import { usePosts } from '../hooks/UsePosts'; // Importez votre hook
+import CloudinaryImage from '../Utils/CloudinaryImage';
 
 const Posts = ({ userId, setRefresh, refresh }) => {
     const [selectedPostId, setSelectedPostId] = useState(null);
@@ -485,10 +486,14 @@ const Posts = ({ userId, setRefresh, refresh }) => {
                     <h3 className={styles.infoTitle}>{postData.title}</h3>
                     <p className={styles.infoBody}>{postData.content}</p>
                     
-                    {postData.imageUrl && (
+                    {/**postData.imageUrl && (
                         <div className={styles.imageWrapper}>
                             <img src={postData.imageUrl} alt="Info" />
+                            
                         </div>
+                    ) */}
+                    {post.publicId && (
+                        <CloudinaryImage publicId={post.publicId} width={600} height={400} />
                     )}
                     
                     {postData.link && (
