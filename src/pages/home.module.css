@@ -565,6 +565,15 @@ main {
 
 /* Small mobile */
 @media (max-width: 480px) {
+    main {
+        padding-top: 0;
+        top: 0;
+    }
+
+    .postSpace {
+        padding: 0;
+        gap: 8px;
+    }
     .userProfilBox {
         padding: 10px;
     }

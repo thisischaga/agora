@@ -46,8 +46,6 @@
   left: 0;
   right: 0;
   height: 56px;
-  box-shadow: 0 1px 2px var(--header-shadow);
-  border-bottom: 1px solid var(--border-color);
   z-index: 100;
   display: flex;
   align-items: center;
@@ -559,6 +557,9 @@
   .header {
     height: 56px;
     position: relative;
+    bottom: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
 
   .mobileLayout {
@@ -595,6 +596,9 @@
   .header {
     height: 54px;
     position: relative;
+    bottom: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
 
   .mobileLayout {
@@ -633,6 +637,9 @@
   .header {
     height: 52px;
     position: relative;
+    bottom: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
 
   .mobileLayout {
