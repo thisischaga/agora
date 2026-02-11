@@ -611,7 +611,7 @@
   }
 
   .logoMobile h1 {
-    font-size: 20px;
+    font-size: 25px;
   }
 
   .mobileActions {
@@ -621,9 +621,9 @@
   .mobileSearchBtn,
   .mobileNotifBtn,
   .mobilePublishBtn {
-    width: 36px;
-    height: 36px;
-    font-size: 18px;
+    width: 41px;
+    height: 41px;
+    font-size: 23px;
   }
 
   .mobileSearchOverlay,
@@ -652,7 +652,7 @@
   }
 
   .logoMobile h1 {
-    font-size: 18px;
+    font-size: 23px;
   }
 
   .mobileActions {
@@ -662,9 +662,9 @@
   .mobileSearchBtn,
   .mobileNotifBtn,
   .mobilePublishBtn {
-    width: 34px;
-    height: 34px;
-    font-size: 16px;
+    width: 39px;
+    height: 39px;
+    font-size: 21px;
   }
 
   .mobileBadge {
