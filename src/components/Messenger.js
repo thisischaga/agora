@@ -143,6 +143,8 @@ const Messenger = ({ onOpenChat, setActive, active, pp, showChat }) => {
         if (onOpenChat) {
             onOpenChat(receiver);
         }
+        navigate(`/chat/${receiver._id}`)
+
     }, [onOpenChat]);
 
     const handleNewConversation = useCallback(() => {
@@ -236,22 +238,6 @@ const Messenger = ({ onOpenChat, setActive, active, pp, showChat }) => {
         );
     }
 
-    if (isMobile) {
-        return (
-            <>
-                <div className={styles.messenger}>
-                    <div className={styles.error}>
-                        <FaInbox />
-                        <button onClick={()=>{alert('Fonctionnalité à venir !')}} className={styles.retryBtn}>
-                            Télécharger agora pour continuer
-                        </button>
-                    </div>
-                </div>
-                {isMobile && <Menu pp={pp} active={active} setActive={setActive}/>}
-            </>
-        );
-    }
-
     // Error state
     if (error) {
         return (
@@ -279,13 +265,7 @@ const Messenger = ({ onOpenChat, setActive, active, pp, showChat }) => {
                 {/* Header */}
                 <div className={styles.header}>
                     <h3>Messages</h3>
-                    <button 
-                        className={styles.newChatBtn}
-                        onClick={handleNewConversation}
-                        aria-label="Nouvelle conversation"
-                    >
-                        <FaPlus />
-                    </button>
+                    
                 </div>
 
                 {/* Search Bar */}

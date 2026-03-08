@@ -1,418 +1,189 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { useLocation } from "react-router-dom";
-import axios from "axios";
-
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import Posts from "../components/Posts";
-import ArticleEditor from "../components/ArticleEditor";
 import Text from "../components/Text";
 import Notifs from "../components/Notifs";
 import PublishInfo from "../components/PublishInfo";
 import CreateEvent from "../components/CreateEvent";
 import AskQuestion from "../components/AskQuestion";
-
-import Forums from "../components/Forums";
 import Amis from "../components/Amis";
 import Toast from "../components/Toast";
 import MessageBox from "../components/MessageBox";
 import Chat from "../components/Chat";
-
-import styles from './home.module.css';
-import socket from '../Utils/socket';
-import { API_URL } from '../Utils/api';
-import { 
-    FaImage, FaQuestionCircle, FaBullhorn, 
-    FaCalendar, FaTimes, FaVideo, FaSmile, FaMapMarkerAlt, 
-    FaInfo
-} from "react-icons/fa";
 import ImagePosting from "../components/ImagePosting";
 import Messenger from "../components/Messenger";
 import StudentMap from "../components/StudentMap";
 import AppVersions from "../components/App.versions";
+import styles from './home.module.css';
+import socket from '../Utils/socket';
+import { API_URL } from '../Utils/api';
+import axios from "axios";
+import { FaTimes, FaImage, FaCalendar, FaQuestionCircle, FaInfo, FaSmile } from "react-icons/fa";
+
+const MODALS = {
+  text: Text, imgPosting: ImagePosting,
+  publishInfo: PublishInfo, createEvent: CreateEvent, askQuestion: AskQuestion
+};
+const FULLSCREEN = ['publishInfo', 'createEvent', 'askQuestion'];
+
+const PUBLISH_CHOICES = [
+  { icon: FaSmile,          bg: '#1d9bf0', m: 'text',        label: 'Texte',      desc: 'Partager vos pensées'           },
+  { icon: FaImage,          bg: '#06b6d4', m: 'imgPosting',  label: 'Photo',       desc: 'Partager une image'             },
+  { icon: FaInfo,           bg: '#45bd62', m: 'publishInfo', label: 'Information', desc: 'Publier une annonce importante' },
+  { icon: FaCalendar,       bg: '#f3425f', m: 'createEvent', label: 'Événement',   desc: 'Créer un événement'             },
+  { icon: FaQuestionCircle, bg: '#f59e0b', m: 'askQuestion', label: 'Question',    desc: 'Poser une question à la commu'  },
+];
 
 const Home = () => {
-    const location = useLocation();
-    
-    // ── États principaux ──
-    const [userData, setUserData] = useState({});
-    const [notifications, setNotifications] = useState([]);
-    const [connectedUsers, setConnectedUsers] = useState([]);
-    const [active, setActive] = useState('home');
-    const [toast, setToast] = useState(null);
-    const [refresh, setRefresh] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-    // ── États UI modaux ──
-    const [inText, setInText] = useState(false);
-    const [inEditing, setInEditing] = useState(false);
-    const [inImgPosting, setInImgPosting] = useState(false);
-    const [inPublishInfo, setInPublishInfo] = useState(false);
-    const [inCreateEvent, setInCreateEvent] = useState(false);
-    const [inAskQuestion, setInAskQuestion] = useState(false);
-    const [showMessBox, setShowMessBox] = useState(false);
-    const [showPublishMenu, setShowPublishMenu] = useState(false);
-    
-    // ── État pour le chat ──
-    const [selectedReceiver, setSelectedReceiver] = useState(null);
-    const [showChat, setShowChat] = useState(false);
+  const [userData, setUserData]               = useState({});
+  const [active, setActive]                   = useState('home');
+  const [toast, setToast]                     = useState(null);
+  const [refresh, setRefresh]                 = useState(false);
+  const [modal, setModal]                     = useState(null);
+  const [showPublishChoice, setShowPublishChoice] = useState(false);
+  const [chat, setChat]                       = useState(null);
+  const [showMessBox, setShowMessBox]         = useState(false);
+  const [isMobile, setIsMobile]               = useState(() =>
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 768
+  );
+  const [isDesktop, setIsDesktop]             = useState(() => window.innerWidth > 1024);
 
-    // Token mémorisé
-    const token = useMemo(() => localStorage.getItem('token'), []);
+  const token = useMemo(() => localStorage.getItem('token'), []);
 
-    // ── Fonctions de navigation dans les modaux - optimisées ──
-    const goToEditor = useCallback(() => setInEditing(true), []);
-    
-    const goToText = useCallback(() => {
-        setInText(true);
-        setShowPublishMenu(false);
-    }, []);
-    
-    const goImagePosting = useCallback(() => {
-        setInImgPosting(true);
-        setShowPublishMenu(false);
-    }, []);
-    
-    const goToPublishInfo = useCallback(() => {
-        setInPublishInfo(true);
-        setShowPublishMenu(false);
-    }, []);
-    
-    const goToCreateEvent = useCallback(() => {
-        setInCreateEvent(true);
-        setShowPublishMenu(false);
-    }, []);
-    
-    const goToAskQuestion = useCallback(() => {
-        setInAskQuestion(true);
-        setShowPublishMenu(false);
-    }, []);
+  useEffect(() => {
+    const check = () => {
+      setIsMobile(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 768);
+      setIsDesktop(window.innerWidth > 1024);
+    };
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
-    const back = useCallback(() => {
-        setInText(false);
-        setInEditing(false);
-        setInImgPosting(false);
-        setInPublishInfo(false);
-        setInCreateEvent(false);
-        setInAskQuestion(false);
-        setRefresh(prev => !prev);
-    }, []);
+  useEffect(() => {
+    fetch(`${API_URL}/user_data`, { headers: { Authorization: `Bearer${token}` } })
+      .then(r => r.json())
+      .then(d => {
+        setUserData(d);
+        localStorage.setItem('userId', d.userId);
+        localStorage.setItem('pp', d.userPP);
+        localStorage.setItem('username', d.username);
+      })
+      .catch(() => setToast("Erreur lors de la récupération des données."));
 
-    const togglePublishMenu = useCallback(() => {
-        setShowPublishMenu(prev => !prev);
-    }, []);
+    socket.connect();
+    socket.on("connect", async () => {
+      try { await axios.post(`${API_URL}/socket/getSocketId`, { socketId: socket.id }, { headers: { Authorization: `Bearer${token}` } }); }
+      catch { setToast("Socket connection error."); }
+    });
+    socket.on('notif', () => setRefresh(p => !p));
+    return () => { socket.off('notif'); socket.disconnect(); };
+  }, [token]);
 
-    // ── Fonction pour ouvrir le chat ──
-    const handleOpenChat = useCallback((receiver) => {
-        console.log('Ouverture du chat avec:', receiver);
-        setSelectedReceiver(receiver);
-        setShowChat(true);
-    }, []);
+  const back      = useCallback(() => { setModal(null); setRefresh(p => !p); }, []);
+  const openModal = useCallback((name) => { setShowPublishChoice(false); setModal(name); }, []);
+  const openChat  = useCallback((receiver) => {
+    if (isMobile) navigate(`/chat/${receiver._id}`);
+    else setChat({ receiver });
+  }, [isMobile, navigate]);
 
-    // ── Fonction pour fermer le chat ──
-    const handleCloseChat = useCallback(() => {
-        setShowChat(false);
-        setSelectedReceiver(null);
-    }, []);
+  const base = useMemo(() => ({
+    setActive, active, pp: userData.userPP,
+    userId: userData.userId, setRefresh, refresh
+  }), [active, userData, refresh]);
 
-    // ── Socket et récupération des données utilisateur ──
-    useEffect(() => {
-        setIsLoading(true);
-        
-        fetch(`${API_URL}/user_data`, {
-            headers: { Authorization: `Bearer${token}` },
-        })
-        .then(response => response.json())
-        .then(data => {
-            setUserData(data);
-            localStorage.setItem('userId', data.userId);
-            localStorage.setItem('pp', data.userPP);
-            localStorage.setItem('username', data.username);
-            setNotifications(data.notifications || []);
-        })
-        .catch(error => {
-            console.error(error);
-            setToast("Erreur lors de la récupération des données.");
-        })
-        .finally(() => {
-            setIsLoading(false);
-        });
+  const renderActive = useMemo(() => {
+    switch (active) {
+      case 'notifications': return <Notifs {...base} />;
+      case 'messenger':     return <Messenger {...base} setShowMessBox={setShowMessBox} onOpenChat={openChat} showChat={!!chat} />;
+      case 'students':      return <StudentMap {...base} username={userData.username} onOpenChat={openChat} />;
+      case 'amis':          return <Amis pp={userData.userPP} setRefresh={setRefresh} refresh={refresh} />;
+      case 'appVersions':   return <AppVersions />;
+      default:              return isDesktop ? <AppVersions /> : null;
+    }
+  }, [active, base, userData, chat, isDesktop, refresh, openChat]);
 
-        socket.connect();
+  const Modal = modal ? MODALS[modal] : null;
 
-        socket.on("connect", async () => {
-            try {
-                await axios.post(
-                    `${API_URL}/socket/getSocketId`,
-                    { socketId: socket.id },
-                    { headers: { Authorization: `Bearer${token}` } }
-                );
-            } catch (err) {
-                console.error(err);
-                setToast("Socket connection error.");
-            }
-        });
-        
-        socket.on('notif', () => {
-            setRefresh(prev => !prev);
-        });
-        
-        return () => {
-            socket.off('notif');
-            socket.disconnect();
-        };
-    }, [token]);
-
-    // ── États pour le responsive ──
-    const [isDesktop, setIsDesktop] = useState(window.innerWidth > 1024);
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsDesktop(window.innerWidth > 1024);
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    // ── Choix du composant actif - mémorisé ──
-    const renderActiveComponent = useMemo(() => {
-        switch(active) {
-            case 'notifications':
-                return (
-                    <Notifs 
-                        setActive={setActive}
-                        active={active}
-                        pp={userData.userPP}
-                        userId={userData.userId} 
-                        setRefresh={setRefresh} 
-                        refresh={refresh} 
-                    />
-                );
-            case 'messenger':
-                return (
-                    <Messenger 
-                        setActive={setActive}
-                        active={active}
-                        pp={userData.userPP} 
-                        setShowMessBox={setShowMessBox} 
-                        setRefresh={setRefresh} 
-                        refresh={refresh} 
-                        onOpenChat={handleOpenChat}
-                        showChat={showChat}
-                    />
-                );
-            case 'students':
-                return (
-                    <StudentMap 
-                        setActive={setActive}
-                        active={active}
-                        pp={userData.userPP} 
-                        userId={userData.userId} 
-                        username={userData.username} 
-                        setRefresh={setRefresh} 
-                        refresh={refresh} 
-                        onOpenChat={handleOpenChat}
-                    />
-                );
-            case 'amis':
-                return <Amis pp={userData.userPP} connectedUsers={connectedUsers} setRefresh={setRefresh} refresh={refresh} />;
-            case 'appVersions':
-                return <AppVersions />;
-            case 'home':
-            default:
-                return isDesktop ? <AppVersions /> : null;
-        }
-    }, [active, userData, connectedUsers, refresh, handleOpenChat, showChat, isDesktop]);
-
-    // Vérifier si on doit afficher le feed principal
-    const shouldShowMainFeed = isDesktop || active === 'home';
-
-    const handleHomeClick = useCallback(() => {
-        setActive('home');
-    }, []);
-
-    return (
-        <div>
-            {/* Modal Text */}
-            {inText && (
-                <div className={styles.modalOverlay} onClick={() => setInText(false)}>
-                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-                        <button className={styles.closeBtn} onClick={() => setInText(false)}>
-                            <FaTimes /> Fermer
-                        </button>
-                        <Text back={() => setInText(false)} />
-                    </div>
-                </div>
-            )}
-
-            {/* Modal Image Posting */}
-            {inImgPosting && (
-                <div className={styles.modalOverlay} onClick={back}>
-                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-                        <ImagePosting back={back} />
-                    </div>
-                </div>
-            )}
-
-            {/* Modal Publish Info */}
-            {inPublishInfo && (
-                <div className={styles.modalOverlay} onClick={back}>
-                    <div className={styles.modalFullscreen} onClick={(e) => e.stopPropagation()}>
-                        <PublishInfo back={back} />
-                    </div>
-                </div>
-            )}
-
-            {/* Modal Create Event */}
-            {inCreateEvent && (
-                <div className={styles.modalOverlay} onClick={back}>
-                    <div className={styles.modalFullscreen} onClick={(e) => e.stopPropagation()}>
-                        <CreateEvent back={back} />
-                    </div>
-                </div>
-            )}
-
-            {/* Modal Ask Question */}
-            {inAskQuestion && (
-                <div className={styles.modalOverlay} onClick={back}>
-                    <div className={styles.modalFullscreen} onClick={(e) => e.stopPropagation()}>
-                        <AskQuestion back={back} />
-                    </div>
-                </div>
-            )}
-
-            {/* Modal Chat */}
-            {showChat && selectedReceiver && (
-                <div className={styles.chatOverlay} onClick={handleCloseChat}>
-                    <div className={styles.chatContainer} onClick={(e) => e.stopPropagation()}>
-                        <Chat receiver={selectedReceiver} onClose={handleCloseChat} />
-                    </div>
-                </div>
-            )}
-
-            {/* Main UI */}
-            {!(inEditing || inText || inImgPosting || inPublishInfo || inCreateEvent || inAskQuestion) && (
-                <>
-                    <Header 
-                        pp={userData.userPP} 
-                        active={active} 
-                        setActive={setActive}
-                        setInImgPosting={setInImgPosting}   
-                        setInText={setInText}
-                        setShowPublishMenu={setShowPublishMenu}
-                        showPublishMenu={showPublishMenu}
-                    />
-                    <main>
-                        <Menu 
-                            pp={userData.userPP} 
-                            active={active} 
-                            setActive={setActive} 
-                            setRefresh={setRefresh} 
-                            refresh={refresh} 
-                            onClick={handleHomeClick}
-                        />
-
-                        {/* Afficher le feed principal */}
-                        {shouldShowMainFeed && (
-                            <div className={styles.postSpace}>
-                                {userData?.userPP && (
-                                    <div className={styles.userProfilBox}>
-                                        {/* Section Profil */}
-                                        <div className={styles.createPostSection}>
-                                            <img 
-                                                src={userData.userPP} 
-                                                alt="mon profil"
-                                                className={styles.userAvatar}
-                                            />
-                                            <input
-                                                type="text"
-                                                placeholder={`C'est quoi l'actualité, ${userData.username?.split(' ')[0]} ?`}
-                                                onClick={goToPublishInfo}
-                                                readOnly
-                                                className={styles.createPostInput}
-                                            />
-                                        </div>
-
-                                        <div className={styles.divider}></div>
-
-                                        {/* Boutons d'actions style Facebook */}
-                                        <div className={styles.actionButtons}>
-                                            <button 
-                                                className={styles.actionButton}
-                                                onClick={goToPublishInfo}
-                                            >
-                                                <FaInfo className={styles.actionButtonIcon} style={{ color: '#45bd62' }} />
-                                                <span>Information</span>
-                                            </button>
-
-                                            <button 
-                                                className={styles.actionButton}
-                                                onClick={goToCreateEvent}
-                                            >
-                                                <FaCalendar className={styles.actionButtonIcon} style={{ color: '#f3425f' }} />
-                                                <span>Événement</span>
-                                            </button>
-
-                                            <button 
-                                                className={styles.actionButton}
-                                                onClick={goToAskQuestion}
-                                            >
-                                                <FaQuestionCircle className={styles.actionButtonIcon} style={{ color: '#1877f2' }} />
-                                                <span>Question</span>
-                                            </button>
-                                        </div>
-
-                                        {/* Menu étendu si ouvert */}
-                                        {showPublishMenu && (
-                                            <div className={styles.extendedMenu}>
-                                                <div className={styles.divider}></div>
-                                                <div className={styles.publishMenu}>
-                                                    <button 
-                                                        className={styles.publishMenuItem}
-                                                        onClick={goToPublishInfo}
-                                                    >
-                                                        <div className={styles.publishMenuIcon} style={{ backgroundColor: '#f59e0b' }}>
-                                                            <FaBullhorn />
-                                                        </div>
-                                                        <div className={styles.publishMenuText}>
-                                                            <strong>Publier une info</strong>
-                                                            <span>Partager une annonce importante</span>
-                                                        </div>
-                                                    </button>
-
-                                                    <button 
-                                                        className={styles.publishMenuItem}
-                                                        onClick={goToText}
-                                                    >
-                                                        <div className={styles.publishMenuIcon} style={{ backgroundColor: '#06b6d4' }}>
-                                                            <FaSmile />
-                                                        </div>
-                                                        <div className={styles.publishMenuText}>
-                                                            <strong>Statut</strong>
-                                                            <span>Partager vos pensées</span>
-                                                        </div>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                <Posts userId={userData.userId} setRefresh={setRefresh} refresh={refresh} />
-                            </div>
-                        )}
-
-                        {toast && <Toast message={toast} />}
-
-                        {/* Afficher le composant actif */}
-                        {renderActiveComponent}
-
-                        {showMessBox && <MessageBox setShowMessBox={setShowMessBox} />}
-                    </main>
-                </>
-            )}
+  return (
+    <div>
+      {/* Active modal */}
+      {Modal && (
+        <div className={styles.modalOverlay} onClick={back}>
+          <div
+            className={FULLSCREEN.includes(modal) ? styles.modalFullscreen : styles.modalContent}
+            onClick={e => e.stopPropagation()}
+          >
+            <Modal back={back} />
+          </div>
         </div>
-    );
+      )}
+
+      {/* Publish choice modal */}
+      {showPublishChoice && (
+        <div className={styles.publishChoiceOverlay} onClick={() => setShowPublishChoice(false)}>
+          <div className={styles.publishChoiceModal} onClick={e => e.stopPropagation()}>
+            <div className={styles.publishChoiceHeader}>
+              <h3>Que voulez-vous publier ?</h3>
+              <button className={styles.publishChoiceClose} onClick={() => setShowPublishChoice(false)}>
+                <FaTimes />
+              </button>
+            </div>
+            <div className={styles.publishChoiceList}>
+              {PUBLISH_CHOICES.map(({ icon: Icon, bg, m, label, desc }) => (
+                <button key={m} className={styles.publishChoiceItem} onClick={() => openModal(m)}>
+                  <div className={styles.publishChoiceIcon} style={{ background: bg }}>
+                    <Icon />
+                  </div>
+                  <div className={styles.publishChoiceText}>
+                    <strong>{label}</strong>
+                    <span>{desc}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Chat overlay — desktop only */}
+      {!isMobile && chat && (
+        <div className={styles.chatOverlay} onClick={() => setChat(null)}>
+          <div className={styles.chatContainer} onClick={e => e.stopPropagation()}>
+            <Chat receiver={chat.receiver} onClose={() => setChat(null)} />
+          </div>
+        </div>
+      )}
+
+      {!modal && (
+        <>
+          <Header pp={userData.userPP} active={active} setActive={setActive} />
+
+          <main>
+            <Menu
+              pp={userData.userPP}
+              active={active}
+              setActive={setActive}
+              onPublish={() => setShowPublishChoice(true)}
+            />
+
+            {(isDesktop || active === 'home') && (
+              <div className={styles.postSpace}>
+                <Posts userId={userData.userId} setRefresh={setRefresh} refresh={refresh} />
+              </div>
+            )}
+
+            {toast && <Toast message={toast} />}
+            {renderActive}
+            {showMessBox && <MessageBox setShowMessBox={setShowMessBox} />}
+          </main>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default Home;

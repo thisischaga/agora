@@ -109,7 +109,7 @@ const ImagePosting = ({ back, onPublish }) => {
             const token = localStorage.getItem('token');
             const response = await axios.post(
                 `${backendURL}/publication`,
-                { legend: postText, postPicture: postImage, type: "image" },
+                { postText, postPicture: postImage, },
                 { headers: { Authorization: `Bearer${token}` } }
             );
             

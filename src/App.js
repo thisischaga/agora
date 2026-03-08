@@ -12,6 +12,9 @@ import ProtectedRoute from './components/ProtectedRoutes';
 import StudentMapPage from './pages/StudentMapPage';
 import MessengerPage from './pages/MessengerPage';
 import NotificationsPage from './pages/NotificationsPage';
+import FriendsPage from './pages/FriendsPage';
+import MessageBox from './components/MessageBox';
+import ChatPage from './pages/ChatPage';
 
 
 
@@ -59,8 +62,9 @@ function App() {
                       <ProtectedRoute> <Room /> </ProtectedRoute>
                   } />
                   <Route path="/chat/:id" element={
-                      <ProtectedRoute> <Chat /> </ProtectedRoute>
+                      <ProtectedRoute> <ChatPage /> </ProtectedRoute>
                   } />
+                  
               </Routes>
           </Router>
       );
@@ -93,6 +97,9 @@ function App() {
                   <Route path="/notifications" element={
                       <ProtectedRoute> <NotificationsPage /> </ProtectedRoute>
                   } />
+                  <Route path="/friends" element={
+                      <ProtectedRoute> <FriendsPage /> </ProtectedRoute>
+                  } />
                   <Route path="/post/:id" element={
                       <ProtectedRoute> <PostPage /> </ProtectedRoute>
                   } />
@@ -100,8 +107,9 @@ function App() {
                       <ProtectedRoute> <Room /> </ProtectedRoute>
                   } />
                   <Route path="/chat/:id" element={
-                      <ProtectedRoute> <Chat /> </ProtectedRoute>
+                      <ProtectedRoute> <ChatPage /> </ProtectedRoute>
                   } />
+
               </Routes>
           </Router>
       );

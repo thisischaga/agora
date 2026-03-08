@@ -1,234 +1,123 @@
-import { FaHome, FaUserFriends, FaMap, FaCog, FaCompass, FaBookmark, FaBell, FaUser, FaCommentDots, FaHistory, FaEnvelope } from "react-icons/fa";
+import { FaHome, FaUserFriends, FaCog, FaBell, FaEnvelope, FaPlus, FaPen } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import styles from "./menu.module.css";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const Menu = ({ pp, userData, setActive, active }) => {
+const Menu = ({ pp, setActive, active, onPublish }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [notificationCount, setNotificationCount] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() =>
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 768
+  );
 
-  // Détecter si on est sur mobile
   useEffect(() => {
-    const checkMobile = () => {
-      const userAgent = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(
-        navigator.userAgent
-      );
-      const screenWidth = window.innerWidth <= 768;
-      setIsMobile(userAgent || screenWidth);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
+    const check = () =>
+      setIsMobile(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 768);
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
   }, []);
 
-  // SUPPRIMÉ le useEffect qui synchronisait avec location.pathname
-  // La synchronisation est maintenant gérée uniquement par les clics
-
-  // Menu items pour desktop
-  const desktopMenuItems = [
-    { 
-      id: "home", 
-      label: "Accueil", 
-      icon: <FaHome />, 
-      link: "/home",
-      badge: null 
-    },
-    { 
-      id: "students", 
-      label: "Étudiants", 
-      icon: <FaMap />, 
-      badge: null,
-    },
-    { 
-      id: "messenger", 
-      label: "Messages", 
-      icon: <FaEnvelope />, 
-      badge: null 
-    },
+  const desktopItems = [
+    { id: 'home',          label: 'Accueil',  icon: <FaHome />         },
+    { id: 'messenger',     label: 'Messages', icon: <FaEnvelope />     },
+    { id: 'amis',          label: 'Amis',     icon: <FaUserFriends />  },
+    { id: 'notifications', label: 'Notifs',   icon: <FaBell />         },
   ];
 
-  // Menu items pour mobile (barre du bas)
-  const mobileMenuItems = [
-    { 
-      id: "home", 
-      label: "Accueil", 
-      icon: <FaHome />, 
-      link: "/home",
-      badge: null 
-    },
-    { 
-      id: "students", 
-      label: "Carte", 
-      link: "/students",
-      icon: <FaMap />, 
-      badge: null,
-    },
-    { 
-      id: "messenger", 
-      label: "Messages", 
-      link: "/messenger",
-      icon: <FaEnvelope />, 
-      badge: null
-    },
-    { 
-      id: "notifications", 
-      label: "Notifs", 
-      link: "/notifications",
-      icon: <FaBell />, 
-      badge: notificationCount 
-    },
-    { 
-      id: "profile", 
-      label: "Profil", 
-      icon: pp ? <img src={pp} alt="Profil" className={styles.profilePic} /> : <FaUser />, 
-      link: "/me",
-      badge: null 
-    },
+  const bottomItems = [
+    { id: 'settings', label: 'Paramètres', icon: <FaCog />, link: '/settings' },
   ];
 
-  const bottomMenuItems = [
-    { 
-      id: "settings", 
-      label: "Paramètres", 
-      icon: <FaCog />, 
-      link: "/settings",
-      badge: null 
-    },
-    { 
-      id: "appVersions", 
-      label: "Mises à jour", 
-      icon: <FaHistory />, 
-      badge: null 
-    },
+  const mobileItems = [
+    { id: 'home',          label: 'Accueil',  icon: <FaHome />,        link: '/home'          },
+    { id: 'amis',          label: 'Amis',     icon: <FaUserFriends />, link: '/friends'       },
+    { id: 'messenger',     label: 'Messages', icon: <FaEnvelope />,    link: '/messenger'     },
+    { id: 'notifications', label: 'Notifs',   icon: <FaBell />,        link: '/notifications' },
   ];
 
-  const handleNavigate = (item) => {
-      if (!setActive) return;
-      
-      // Sur MOBILE : students, messenger et notifications naviguent vers leurs routes
-      if (isMobile && (item.id === "students" || item.id === "notifications")) {
-          if (item.link) {
-              navigate(item.link);
-          }
-          setActive(item.id);
-          return;
-      }
-      
-      // Sur DESKTOP : students, messenger et notifications changent juste l'état
-      if (!isMobile && (item.id === "students" || item.id === "messenger" || item.id === "notifications")) {
-          setActive(item.id);
-          console.log('Set active to:', item.id);
-          return;
-      }
-      
-      // Pour appVersions
-      if (item.id === "appVersions") {
-          setActive(item.id);
-          return;
-      }
-      
-      // Pour home : réinitialiser active
-      if (item.id === "home") {
-          setActive('home');
-          if (item.link) {
-              navigate(item.link);
-          }
-          return;
-      }
-      
-      // Pour tous les autres avec link : naviguer normalement
-      if (item.link) {
-          setActive(item.id);
-          navigate(item.link);
-      } else {
-          setActive(item.id);
-      }
+  const handleNav = (item) => {
+    if (!setActive) return;
+    if (isMobile && item.link) { navigate(item.link); }
+    setActive(item.id);
   };
 
-  return (
-    <>
-      {/* Desktop Sidebar */}
-      {!isMobile && (
-        <aside className={styles.menu}>
-          <div className={styles.menuContent}>
-            <nav className={styles.mainNav}>
-              {desktopMenuItems.map((item) => (
-                <div
-                  key={item.id}
-                  className={`${styles.menuItem} ${active === item.id ? styles.active : ""}`}
-                  onClick={() => handleNavigate(item)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={item.label}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleNavigate(item);
-                    }
-                  }}
-                >
-                  <span className={styles.icon}>{item.icon}</span>
-                  <span className={styles.label}>{item.label}</span>
-                  {item.badge && item.badge > 0 && (
-                    <span className={styles.badge}>{item.badge > 99 ? '99+' : item.badge}</span>
-                  )}
-                </div>
-              ))}
-            </nav>
+  const renderNavItem = (item) => (
+    <div
+      key={item.id}
+      className={`${styles.menuItem} ${active === item.id ? styles.active : ''}`}
+      onClick={() => handleNav(item)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleNav(item)}
+    >
+      <span className={styles.icon}>{item.icon}</span>
+      <span className={styles.label}>{item.label}</span>
+    </div>
+  );
 
-            <div className={styles.divider}></div>
+  const publishBtn = (
+    <button className={styles.publishButton} onClick={onPublish} title="Publier">
+      <FaPen />
+      <span className={styles.publishButtonLabel}>&nbsp;Publier</span>
+    </button>
+  );
 
-            <nav className={styles.bottomNav}>
-              {bottomMenuItems.map((item) => (
-                <div
-                  key={item.id}
-                  className={`${styles.menuItem} ${active === item.id ? styles.active : ""}`}
-                  onClick={() => handleNavigate(item)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={item.label}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleNavigate(item);
-                    }
-                  }}
-                >
-                  <span className={styles.icon}>{item.icon}</span>
-                  <span className={styles.label}>{item.label}</span>
-                </div>
-              ))}
-            </nav>
-          </div>
-        </aside>
-      )}
+  if (!isMobile) return (
+    <aside className={styles.menu}>
+      <div className={styles.menuContent}>
+        <nav className={styles.mainNav}>
+          {renderNavItem(desktopItems[0])}
+          {renderNavItem(desktopItems[1])}
+          {renderNavItem(desktopItems[2])}
+          {renderNavItem(desktopItems[3])}
+          {publishBtn}
+        </nav>
 
-      {/* Mobile Bottom Navigation */}
-      {isMobile && (
-        <nav className={styles.mobileNav}>
-          {mobileMenuItems.map((item) => (
-            <button
+
+
+        <nav className={styles.bottomNav}>
+          {bottomItems.map(item => (
+            <div
               key={item.id}
-              className={`${styles.mobileNavItem} ${active === item.id ? styles.mobileActive : ""}`}
-              onClick={() => handleNavigate(item)}
-              aria-label={item.label}
+              className={`${styles.menuItem} ${active === item.id ? styles.active : ''}`}
+              onClick={() => handleNav(item)}
+              role="button"
+              tabIndex={0}
             >
-              <span className={styles.mobileIcon}>
-                {item.icon}
-                {item.badge && item.badge > 0 && (
-                  <span className={styles.mobileBadge}>{item.badge > 9 ? '9+' : item.badge}</span>
-                )}
-              </span>
-              <span className={styles.mobileLabel}>{item.label}</span>
-            </button>
+              <span className={styles.icon}>{item.icon}</span>
+              <span className={styles.label}>{item.label}</span>
+            </div>
           ))}
         </nav>
-      )}
-    </>
+      </div>
+    </aside>
+  );
+
+  return (
+    <nav className={styles.mobileNav}>
+      {mobileItems.slice(0, 2).map(item => (
+        <button
+          key={item.id}
+          className={`${styles.mobileNavItem} ${active === item.id ? styles.mobileActive : ''}`}
+          onClick={() => handleNav(item)}
+        >
+          <span className={styles.mobileIcon}>{item.icon}</span>
+          <span className={styles.mobileLabel}>{item.label}</span>
+        </button>
+      ))}
+      <button className={styles.mobilePublishBtn} onClick={onPublish} title="Publier">
+        <FaPlus />
+      </button>
+      {mobileItems.slice(2).map(item => (
+        <button
+          key={item.id}
+          className={`${styles.mobileNavItem} ${active === item.id ? styles.mobileActive : ''}`}
+          onClick={() => handleNav(item)}
+        >
+          <span className={styles.mobileIcon}>{item.icon}</span>
+          <span className={styles.mobileLabel}>{item.label}</span>
+        </button>
+      ))}
+    </nav>
   );
 };
 

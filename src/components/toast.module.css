@@ -33,3 +33,9 @@
         transform: translate(-50%, 10px);
     }
 }
+@media (max-width: 480px) {
+    .toastContainer{
+
+        text-align: center;
+    }
+}
